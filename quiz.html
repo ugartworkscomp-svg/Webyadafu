@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Quick Quiz — UG Artworks</title>
+<link rel="stylesheet" href="../style.css" />
+<style>main{max-width:720px;margin:40px auto;padding:20px}.quiz-box{display:flex;flex-direction:column;gap:12px}input{padding:10px;border-radius:8px;border:1px solid #ccc}</style>
+</head>
+<body>
+  <main>
+    <h2>Quick Quiz</h2>
+    <div id="quiz-root" class="quiz-box"></div>
+    <p><small>Close this tab to return to UG Artworks.</small></p>
+  </main>
+<script>
+(function(){
+  const root = document.getElementById('quiz-root');
+  const questions = [
+    {q:'What does UG stand for?', a:'Ultimate Genius'},
+    {q:'What is 5 × 3?', a:'15'},
+    {q:'Which continent is Malawi in?', a:'Africa'}
+  ];
+  let i=0, score=0;
+  function render(){
+    if(i>=questions.length){ root.innerHTML = '<h3>Result: ' + score + '/' + questions.length + '</h3><button id="r">Retry</button>'; document.getElementById('r').onclick = ()=>{ i=0; score=0; render(); }; return; }
+    const cur = questions[i];
+    root.innerHTML = '<h4>'+cur.q+'</h4><input id="ans" autocomplete="off"><button id="s">Submit</button>';
+    document.getElementById('s').onclick = ()=>{ const val = document.getElementById('ans').value.trim(); if(val.toLowerCase()===cur.a.toLowerCase()) score++; i++; render(); };
+  }
+  render();
+})();</script>
+</body>
+</html>

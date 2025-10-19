@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>UG Artworks — Course Hacks & Mind Refresh</title>
+<link rel="stylesheet" href="style.css" />
+<script defer src="script.js"></script>
+</head>
+<body>
+  <div id="preloader"><div class="spinner"></div></div>
+
+  <header class="site-header">
+    <div class="brand">UG Artworks</div>
+    <nav class="main-nav" aria-label="Main navigation">
+      <a href="index.html">Home/Khomo</a>
+      <a href="#pdfs">Course Hacks</a>
+      <a href="#videos">Videos/makanema</a>
+      <a href="games.html">Games/masewero</a>
+    </nav>
+    <div class="actions">
+      <button id="theme-toggle" aria-label="Toggle theme">🌞 / 🌙</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="carousel" role="region" aria-roledescription="carousel" aria-label="Hero carousel">
+        <div class="slides">
+          <div class="slide active">
+            <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1600&q=80&auto=format&fit=crop" alt="Students studying">
+            <div class="caption"><h2>Empower Your Mind</h2><p>Course hacks that simplify learning — made for African students.</p></div>
+          </div>
+          <div class="slide">
+            <img src="https://images.unsplash.com/photo-1542744095-291d1f67b221?w=1600&q=80&auto=format&fit=crop" alt="Art and learning">
+            <div class="caption"><h2>Learn Smarter</h2><p>Short videos and visuals to master topics quickly.</p></div>
+          </div>
+          <div class="slide">
+            <img src="https://images.unsplash.com/photo-1535905748047-14b2415c544b?w=1600&q=80&auto=format&fit=crop" alt="Microgames">
+            <div class="caption"><h2>Refresh & Play</h2><p>Quick games to clear your mind between study sessions.</p></div>
+          </div>
+        </div>
+        <button class="prev" aria-label="Previous slide">❮</button>
+        <button class="next" aria-label="Next slide">❯</button>
+      </div>
+    </section>
+
+    <section class="about reveal">
+      <h3>About UG Artworks</h3>
+      <p>UG Artworks creates compact course-hack PDFs, curated lessons and short interactive experiences to help students learn, practice, and relax.</p>
+      <a class="btn" href="pdfs.html">Explore Course Hacks</a>
+    </section>
+
+    <section id="pdfs" class="reveal">
+      <h3>Course Hack PDFs</h3>
+      <div class="grid">
+        <div class="card"><h4>Mathematics Shortcuts</h4><a class="btn" href="pdfs/maths.pdf" download>Download</a></div>
+        <div class="card"><h4>Agriculture Basics</h4><a class="btn" href="pdfs/agriculture.pdf" download>Download</a></div>
+        <div class="card"><h4>Economics 101</h4><a class="btn" href="pdfs/economics.pdf" download>Download</a></div>
+      </div>
+    </section>
+
+    <section id="videos" class="reveal">
+      <h3>Learning Videos</h3>
+      <div class="grid">
+        <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Example video" loading="lazy"></iframe>
+        <iframe src="https://www.youtube.com/embed/3fumBcKC6RE" title="Example video 2" loading="lazy"></iframe>
+      </div>
+    </section>
+
+  </main>
+
+  <button id="topBtn" aria-label="Back to top">↑</button>
+
+  <footer><p>© 2025 UG Artworks</p></footer>
+</body>
+</html>

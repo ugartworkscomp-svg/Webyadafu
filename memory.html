@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Memory Match — UG Artworks</title>
+<link rel="stylesheet" href="../style.css" />
+<style>main{max-width:720px;margin:40px auto;padding:20px;text-align:center}#board{display:grid;grid-template-columns:repeat(4,70px);gap:10px;justify-content:center}.tile{width:70px;height:70px;border-radius:10px;background:#fff;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:1.6rem;cursor:pointer;user-select:none}.tile.revealed{background:var(--accent);color:#000}</style>
+</head>
+<body>
+  <main>
+    <h2>Memory Match</h2>
+    <div id="board"></div>
+    <p><small>Close this tab to return to UG Artworks.</small></p>
+  </main>
+<script>
+(function(){
+  const board = document.getElementById('board');
+  const symbols = ['🦁','🐘','🐊','🐅','🦓','🦒'];
+  let deck = [...symbols, ...symbols].sort(()=>0.5-Math.random());
+  board.innerHTML = deck.map((s,i)=>'<div class="tile" data-i="'+i+'"></div>').join('');
+  const tiles = Array.from(board.children);
+  let first=null, second=null, lock=false, matched=0;
+  tiles.forEach(t=>{ t.addEventListener('click', ()=>{ const i = +t.dataset.i; if(lock||t===first||t.classList.contains('revealed')) return; t.textContent = deck[i]; t.classList.add('revealed'); if(!first){ first=t; return; } second=t; lock=true; if(first.textContent===second.textContent){ matched+=2; first=null; second=null; lock=false; if(matched===deck.length){ setTimeout(()=>{ board.innerHTML = '<h3>🎉 You matched all!</h3><button id="re">Play again</button>'; document.getElementById('re').onclick = ()=> location.reload(); },400); } } else { setTimeout(()=>{ first.textContent=''; second.textContent=''; first.classList.remove('revealed'); second.classList.remove('revealed'); first=null; second=null; lock=false; },700); } }); });
+})();</script>
+</body>
+</html>
