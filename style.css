@@ -52,7 +52,8 @@ body.dark input, body.dark textarea {
   color: #fff;
   border: 1px solid #555;
 }
-/* UG Artworks — polished subtle tribal theme */
+
+/* ─────────────── UG Artworks Theme ─────────────── */
 :root{
   --bg:#f6f2ea;
   --text:#1f1f1f;
@@ -61,40 +62,290 @@ body.dark input, body.dark textarea {
   --card:#ffffffcc;
   --shadow:rgba(0,0,0,0.12);
 }
-body.dark{--bg:#0f0f10;--text:#f5f5f5;--accent:#f0b24b;--header:#1b1815}
-*{box-sizing:border-box}
-html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,'Helvetica Neue',Arial;background:var(--bg) url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgdmlld0JveD0iMCAwIDYwIDYwIj4KICA8cmVjdCB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIGZpbGw9Im5vbmUiLz4KICA8ZyBzdHJva2U9IiUyM2Q5YzI5YSIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgZmlsbD0ibm9uZSIgb3BhY2l0eT0iMC4yMiI+CiAgICA8cGF0aCBkPSJNMCAzMCBMNjAgMzAiIC8+CiAgICA8cGF0aCBkPSJNMzAgMCBMMzAgNjAiIC8+CiAgICA8cGF0aCBkPSJNMTAgMTAgTDIwIDIwIE00MCA0MCBMNTAgNTAiIC8+CiAgICA8Y2lyY2xlIGN4PSIzMCIgY3k9IjMwIiByPSI4IiAvPgogIDwvZz4KPC9zdmc+') repeat; color:var(--text);}
-header.site-header{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;background:var(--header);color:#fff;position:sticky;top:0;z-index:1000;box-shadow:0 6px 18px var(--shadow)}
-.brand{font-weight:800;font-size:1.1rem;letter-spacing:1px}
-.main-nav a{color:#fff;text-decoration:none;margin:0 10px;font-weight:600}
-.actions button,#theme-toggle{background:var(--accent);border:none;padding:8px 10px;border-radius:8px;cursor:pointer}
-/* preloader */
-#preloader{position:fixed;inset:0;background:var(--header);display:flex;align-items:center;justify-content:center;z-index:2000}
-.spinner{width:56px;height:56px;border-radius:50%;border:6px solid rgba(255,255,255,0.12);border-top-color:var(--accent);animation:spin 1s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-/* layout */
-main{max-width:1100px;margin:28px auto;padding:0 16px}
-.hero{margin-bottom:22px}
-.carousel{position:relative;border-radius:12px;overflow:hidden;box-shadow:0 12px 30px rgba(0,0,0,0.12)}
-.slides{position:relative}
-.slide{display:none}.slide.active{display:block}
-.slide img{width:100%;height:420px;object-fit:cover;display:block;filter:brightness(.85);transition:transform 10s linear}.slide.active img{transform:scale(1.02)}
-.caption{position:absolute;left:30px;bottom:30px;color:#fff;background:rgba(0,0,0,0.45);padding:12px 14px;border-radius:10px}
-.caption h2{margin:0;color:var(--accent)}
-.prev,.next{position:absolute;top:50%;transform:translateY(-50%);background:var(--accent);border:none;color:#000;padding:8px 12px;border-radius:999px;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,0.18)}
-.prev{left:12px}.next{right:12px}.prev:hover,.next:hover{transform:translateY(-50%) scale(1.06)}
-.about{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:20px;border-radius:12px;margin-bottom:18px;box-shadow:0 8px 20px rgba(0,0,0,0.08)}
-.about h3{color:var(--accent);margin-top:0}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:12px}
-.card{background:var(--card);padding:14px;border-radius:10px;box-shadow:0 6px 14px rgba(0,0,0,0.06)}
-.btn{background:var(--accent);color:#000;padding:10px 12px;border-radius:10px;text-decoration:none;font-weight:700;border:none;cursor:pointer}
-.reveal{opacity:0;transform:translateY(20px);transition:opacity .7s ease, transform .7s ease}.reveal.active{opacity:1;transform:none}
-footer{padding:18px;text-align:center;margin-top:18px}
-#topBtn{position:fixed;right:18px;bottom:18px;padding:10px 12px;border-radius:999px;border:none;background:var(--accent);cursor:pointer;display:none;box-shadow:0 10px 25px rgba(0,0,0,0.18)}
-.game-buttons{display:flex;justify-content:center;gap:12px;margin:14px 0}
-.game-box{max-width:520px;margin:12px auto;padding:12px}
-.hidden{display:none}
-#memory{display:grid;grid-template-columns:repeat(4,70px);gap:10px;justify-content:center}
-.card{width:70px;height:70px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;background:rgba(255,255,255,0.95);cursor:pointer;transition:transform .18s,background .18s}
-.card:hover{transform:scale(1.06)}
-@media (max-width:760px){.slide img{height:300px}.caption{left:16px;right:16px}}
+
+body.dark {
+  --bg:#0f0f10;
+  --text:#f5f5f5;
+  --accent:#f0b24b;
+  --header:#1b1815;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: Inter, system-ui, Segoe UI, Roboto, 'Helvetica Neue', Arial;
+  background: var(--bg)
+    url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgdmlld0JveD0iMCAwIDYwIDYwIj4KICA8cmVjdCB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIGZpbGw9Im5vbmUiLz4KICA8ZyBzdHJva2U9IiUyM2Q5YzI5YSIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgZmlsbD0ibm9uZSIgb3BhY2l0eT0iMC4yMiI+CiAgICA8cGF0aCBkPSJNMCAzMCBMNjAgMzAiIC8+CiAgICA8cGF0aCBkPSJNMzAgMCBMMzAgNjAiIC8+CiAgICA8cGF0aCBkPSJNMTAgMTAgTDIwIDIwIE00MCA0MCBMNTAgNTAiIC8+CiAgICA8Y2lyY2xlIGN4PSIzMCIgY3k9IjMwIiByPSI4IiAvPgogIDwvZz4KPC9zdmc+')
+    repeat;
+  color: var(--text);
+  line-height: 1.6;
+}
+
+/* ─────────────── Header ─────────────── */
+header.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  background: var(--header);
+  color: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 6px 14px var(--shadow);
+}
+
+.brand {
+  font-weight: 400;
+  font-size: 1.2rem;
+  letter-spacing: 3px;
+}
+
+.main-nav a {
+  color: #fff;
+  text-decoration: none;
+  margin: 0 10px;
+  font-weight: 600;
+  transition: opacity 0.3s;
+}
+
+.main-nav a:hover {
+  opacity: 0.8;
+}
+
+.actions button,
+#theme-toggle {
+  background: var(--accent);
+  border: none;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.actions button:hover,
+#theme-toggle:hover {
+  opacity: 0.9;
+}
+
+/* ─────────────── Layout & Hero ─────────────── */
+main {
+  max-width: 1100px;
+  margin: 28px auto;
+  padding: 0 18px;
+}
+
+.hero {
+  margin-bottom: 22px;
+  text-align: center;
+}
+
+/* ─────────────── Carousel ─────────────── */
+.carousel {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+}
+
+.slide img {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+  filter: brightness(0.85);
+  transition: transform 10s linear;
+}
+
+.slide.active img {
+  transform: scale(1.02);
+}
+
+.caption {
+  position: absolute;
+  left: 5%;
+  right: 5%;
+  bottom: 25px;
+  color: #fff;
+  background: rgba(0,0,0,0.5);
+  padding: 12px 14px;
+  border-radius: 10px;
+  text-align: left;
+}
+
+.caption h2 {
+  margin: 0;
+  color: var(--accent);
+  font-size: 1.3rem;
+}
+
+/* ─────────────── Navigation Arrows ─────────────── */
+.prev, .next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--accent);
+  border: none;
+  color: #000;
+  padding: 8px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+  transition: transform 0.2s;
+}
+.prev:hover, .next:hover {
+  transform: translateY(-50%) scale(1.06);
+}
+.prev { left: 12px; }
+.next { right: 12px; }
+
+/* ─────────────── About Section ─────────────── */
+.about {
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+  padding: 24px;
+  border-radius: 12px;
+  margin-bottom: 18px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  text-align: justify;
+}
+
+.about h3 {
+  color: var(--accent);
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+/* ─────────────── Cards Grid ─────────────── */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 12px;
+  padding: 0 10px;
+}
+
+.card {
+  background: var(--card);
+  padding: 16px;
+  border-radius: 10px;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.06);
+  transition: transform 0.25s ease;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+}
+
+/* ─────────────── Buttons ─────────────── */
+.btn {
+  background: var(--accent);
+  color: #000;
+  padding: 10px 14px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  display: inline-block;
+}
+
+.btn:hover {
+  opacity: 0.9;
+}
+
+/* ─────────────── Footer ─────────────── */
+footer {
+  padding: 20px;
+  text-align: center;
+  margin-top: 24px;
+  font-size: 0.9rem;
+}
+
+/* ─────────────── Mobile Optimization ─────────────── */
+@media (max-width: 760px) {
+  header.site-header {
+    flex-direction: column;
+    padding: 14px;
+    text-align: center;
+  }
+
+  .main-nav {
+    margin-top: 10px;
+  }
+
+  .main-nav a {
+    display: inline-block;
+    margin: 6px 8px;
+  }
+
+  .slide img {
+    height: 260px;
+  }
+
+  .caption {
+    font-size: 0.9rem;
+    left: 10px;
+    right: 10px;
+    padding: 10px;
+  }
+
+  .about {
+    padding: 16px;
+  }
+
+  .grid {
+    padding: 0;
+  }
+
+  .card {
+    padding: 12px;
+  }
+
+  .brand {
+    font-size: 1rem;
+  }
+}
+/* ─────────────── Reveal Animations ─────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.reveal.active {
+  opacity: 1;
+  transform: none;
+}
+
+/* Optional stagger for multiple cards */
+.grid .card:nth-child(1) { transition-delay: 0.1s; }
+.grid .card:nth-child(2) { transition-delay: 0.2s; }
+.grid .card:nth-child(3) { transition-delay: 0.3s; }
+.grid .card:nth-child(4) { transition-delay: 0.4s; }
+
+/* ─────────────── Smooth Page Fade In ─────────────── */
+body {
+  opacity: 0;
+  animation: fadeIn 1s ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ─────────────── Micro Games Slide (Image) ─────────────── */
+.slide.micro-games img {
+  content: url('images/micro-games-banner.jpg'); /* 👈 your file path */
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+  border-radius: 10px;
+  filter: brightness(0.85);
+  transition: transform 10s linear;
+}
+
