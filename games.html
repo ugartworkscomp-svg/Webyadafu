@@ -1,32 +1,49 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>UG Artworks — Games</title>
-<link rel="stylesheet" href="style.css" />
-<script defer src="script.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Mind Games & Tests — UG Artworks</title>
+  <link rel="icon" href="favicon.svg" />
+  <link rel="stylesheet" href="style.css" />
+  <script defer src="script.js"></script>
 </head>
 <body>
-  <div id="preloader"><div class="spinner"></div></div>
-  <header class="site-header">
+  <header class="site-header stacked">
     <div class="brand">UG Artworks</div>
-    <nav class="main-nav"><a href="./">Home</a><a href="./#pdfs">Course Hacks</a><a href="./#videos">Videos</a><a href="./games">mind Games and tests</a></nav>
-    <div class="actions"><button id="theme-toggle" aria-label="Toggle theme">🌞 / 🌙</button></div>
+    <nav class="main-nav centered" aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="courses.html">Course Hacks</a>
+      <a href="videos.html">Videos</a>
+      <a href="games.html" class="active">Mind Games and Tests</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <div class="actions centered"><button id="theme-toggle">🌞 / 🌙</button></div>
   </header>
 
   <main>
     <section class="about reveal">
-      <h3>Mini Games — Open in New Tab</h3>
-      <div class="game-buttons">
-        <a class="btn" href="./quiz" target="_blank" rel="noopener">🧠 Quick Quiz (New Tab)</a>
-        <a class="btn" href="./memory" target="_blank" rel="noopener">🎴 Memory Match (New Tab)</a>
+      <h3>🎮 Mind Games & Tests</h3>
+      <p class="about-text">Low-data microgames and short tests to refresh your mind between study sessions.</p>
+    </section>
+
+    <section class="reveal">
+      <div class="grid store-grid">
+        <article class="store-card">
+          <div class="store-thumb"><img src="https://images.unsplash.com/photo-1526378729264-9b2f5a3b5b9e?w=1200&q=80&auto=format&fit=crop" alt="Mini quiz"></div>
+          <div class="store-body"><h4>Quick Quiz: Focus</h4><p class="muted">5 questions — 2 min</p><div class="store-actions"><a class="btn small" href="#">Play</a></div></div>
+        </article>
+
+        <article class="store-card">
+          <div class="store-thumb"><img src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=1200&q=80&auto=format&fit=crop" alt="Memory game"></div>
+          <div class="store-body"><h4>Memory Match</h4><p class="muted">Short memory challenge</p><div class="store-actions"><a class="btn small" href="#">Play</a></div></div>
+        </article>
+
+        <!-- add more game cards as you build games -->
       </div>
-      <p style="text-align:center;color:rgba(0,0,0,0.65);margin-top:12px">Games open in a new tab so you can keep studying while you play.</p>
     </section>
   </main>
 
-  <button id="topBtn" aria-label="Back to top">↑</button>
-  <footer><p>© 2025 UG Artworks.James Mlelemba</p></footer>
+  <footer><p>© 2025 UG Artworks | James Mlelemba</p></footer>
 </body>
 </html>

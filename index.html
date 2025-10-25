@@ -1,82 +1,186 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>UG Artworks — Course Hacks & Mind Refresh</title>
-<link rel="stylesheet" href="style.css" />
-<script defer src="script.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>UG Artworks — Course Hacks & Mind Refresh</title>
+  <link rel="icon" href="favicon.svg" />
+  <link rel="stylesheet" href="style.css" />
+  <script defer src="script.js"></script>
 </head>
 <body>
-  <div id="preloader"><div class="spinner"></div></div>
+  <div id="preloader"><div class="spinner" aria-hidden="true"></div></div>
 
-  <header class="site-header">
+  <!-- Header: brand centered, nav on second row, toggle under nav -->
+  <header class="site-header stacked">
     <div class="brand">UG Artworks</div>
-    <nav class="main-nav" aria-label="Main navigation">
-      <a href="./">Home</a>
-      <a href="#pdfs">Course Hacks</a>
-      <a href="#videos">Videos</a>
-      <a href="./games">mind Games and tests</a>
-      <a href="./contact">Contact</a>
+
+    <nav class="main-nav centered" aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="courses.html">Course Hacks</a>
+      <a href="videos.html">Videos</a>
+      <a href="games.html">Mind Games & Tests</a>
+      <a href="contact.html">Contact</a>
     </nav>
-    <div class="actions">
-      <button id="theme-toggle" aria-label="Toggle theme">🌞 / 🌙</button>
+
+    <div class="actions centered">
+      <button id="theme-toggle" aria-pressed="false" aria-label="Toggle theme">🌞 / 🌙</button>
     </div>
   </header>
 
   <main>
+    <!-- HERO / CAROUSEL -->
     <section class="hero">
       <div class="carousel" role="region" aria-roledescription="carousel" aria-label="Hero carousel">
         <div class="slides">
-          <div class="slide active">
+          <div class="slide active" aria-hidden="false">
             <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1600&q=80&auto=format&fit=crop" alt="Students studying">
-            <div class="caption"><h2>Empower Your Mind</h2><p>Course hacks that simplify learning — made for African students.</p></div>
+            <div class="caption">
+              <h2>Empower Your Mind</h2>
+              <p>Course hacks that simplify learning — made for African students.</p>
+            </div>
           </div>
-          <div class="slide">
+
+          <div class="slide" aria-hidden="true">
             <img src="https://images.unsplash.com/photo-1542744095-291d1f67b221?w=1600&q=80&auto=format&fit=crop" alt="Art and learning">
-            <div class="caption"><h2>Learn Smarter</h2><p>Short videos and visuals to master topics quickly.</p></div>
+            <div class="caption">
+              <h2>Learn Smarter</h2>
+              <p>Short videos and visuals to master topics quickly.</p>
+            </div>
           </div>
-          <div class="slide">
-            <img src="https://images.unsplash.com/photo-1573319916431-78e894a2fb16?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=712" alt="Microgames">
-            <div class="caption"><h2>Refresh & Play</h2><p>Quick games to test and clear your mind between study sessions.</p></div>
+
+          <div class="slide" aria-hidden="true">
+            <img src="https://images.unsplash.com/photo-1573319916431-78e894a2fb16?auto=format&fit=crop&q=80&w=1200" alt="Microgames">
+            <div class="caption">
+              <h2>Refresh & Play</h2>
+              <p>Quick games to test and clear your mind between study sessions.</p>
+            </div>
           </div>
         </div>
+
         <button class="prev" aria-label="Previous slide">❮</button>
         <button class="next" aria-label="Next slide">❯</button>
       </div>
     </section>
 
+    <!-- ABOUT -->
     <section class="about reveal">
       <h3>About UG Artworks</h3>
-      <p>UG Artworks creates compact course-hack PDFs, curated lessons and short interactive experiences to help students learn, practice, and relax.</p>
-      <a class="btn" href="./pdfs">Explore Course Hacks</a>
-      <a class="btn" href="./videos">Watch videos</a>
+      <p class="about-text">UG Artworks creates compact course-hack PDFs, curated lessons and short interactive experiences to help students learn, practice, and relax.</p>
+      <a class="btn" href="courses.html">Explore Course Hacks</a>
+      <a class="btn" href="videos.html">Watch videos</a>
     </section>
 
+    <!-- COURSE CARDS: game-store style grid -->
     <section id="pdfs" class="reveal">
       <h3>Course Hack PDFs</h3>
-      <div class="grid">
-        <div class="card"><h4>Elementary Microeconomics</h4><a class="btn" href="AAEshort.pdf" download>Download</a></div>
-        <div class="card"><h4>Fundamentals of Accounting</h4><a class="btn" href="ABMshort.pdf" download>Download</a></div>
-        <div class="card"><h4>Organisational Psychology</h4><a class="btn" href="BBSshort.pdf" download>Download</a></div>
-        <div class="card"><h4>Introduction to Computer systems</h4><a class="btn" href="CAPshort.pdf" download>Download</a></div>
-        <div class="card"><h4>Life & Managerial skills</h4><a class="btn" href="DECshort.pdf" download>Download</a></div>
-        <div class="card"><h4>English for Academic purspose</h4><a class="btn" href="LDCshort.pdf" download>Download</a></div>
+      <div class="store-grid">
+        <!-- card 1 -->
+        <article class="store-card">
+          <div class="store-thumb">
+            <img src=https://images.unsplash.com/photo-1734866689982-2afd07eb149a?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=687 alt="Economics students">
+          </div>
+          <div class="store-body">
+            <h4>Elementary Microeconomics</h4>
+            <p class="muted">Compact cheat-sheet & key formulas</p>
+            <div class="store-actions">
+              <a class="btn small" href="AAEshort.pdf" download>Download</a>
+            </div>
+          </div>
+        </article>
+
+        <!-- card 2 -->
+        <article class="store-card">
+          <div class="store-thumb">
+            <img src="https://images.unsplash.com/photo-1649209979970-f01d950cc5ed?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=741"" alt="Accounting">
+          </div>
+          <div class="store-body">
+            <h4>Fundamentals of Accounting</h4>
+            <p class="muted">Worked examples & exam tips</p>
+            <div class="store-actions">
+              <a class="btn small" href="ABMshort.pdf" download>Download</a>
+            </div>
+          </div>
+        </article>
+
+        <!-- card 3 -->
+        <article class="store-card">
+          <div class="store-thumb">
+            <img src=https://images.unsplash.com/photo-1740042372484-67c211647db9?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8QWZyaWNhbiUyMGluJTIwb3JnYW5pemVkJTIwd29ya3BsYWNlfGVufDB8fDB8fHww&auto=format&fit=crop&q=60&w=600 alt="Teamwork">
+          </div>
+          <div class="store-body">
+            <h4>Organisational Psychology</h4>
+            <p class="muted">Key theories & class summaries</p>
+            <div class="store-actions">
+              <a class="btn small" href="BBSshort.pdf" download>Download</a>
+            </div>
+          </div>
+        </article>
+
+        <!-- card 4 -->
+        <article class="store-card">
+          <div class="store-thumb">
+            <img src="https://images.unsplash.com/photo-1710770563074-6d9cc0d3e338?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8QWZyaWNhbiUyMGluJTIwY29tcHV0ZXJzJTIwc3R1ZGllc3xlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&q=60&w=600" alt="Student with laptop">
+          </div>
+          <div class="store-body">
+            <h4>Introduction to Computer systems</h4>
+            <p class="muted">Diagrams & quick guides</p>
+            <div class="store-actions">
+              <a class="btn small" href="CAPshort.pdf" download>Download</a>
+            </div>
+          </div>
+        </article>
+
+        <!-- card 5 -->
+        <article class="store-card">
+          <div class="store-thumb">
+            <img src="https://images.unsplash.com/photo-1552318415-cc99d956c134?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8bGlmZSUyMGFuZCUyMG1hbmFnZXJpYWwlMjBza2lsbHN8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&q=60&w=600" "alt="Leadership planning">
+          </div>
+          <div class="store-body">
+            <h4>Life & Managerial skills</h4>
+            <p class="muted">Practical tips for leaders</p>
+            <div class="store-actions">
+              <a class="btn small" href="DECshort.pdf" download>Download</a>
+            </div>
+          </div>
+        </article>
+
+        <!-- card 6 -->
+        <article class="store-card">
+          <div class="store-thumb">
+            <img src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=1200&q=80&auto=format&fit=crop" alt="Student reading">
+          </div>
+          <div class="store-body">
+            <h4>English for Academic purpose</h4>
+            <p class="muted">Essay structure & examples</p>
+            <div class="store-actions">
+              <a class="btn small" href="LDCshort.pdf" download>Download</a>
+            </div>
+          </div>
+        </article>
       </div>
     </section>
 
-    <section id="videos" class="reveal">
-      <h3>Learning Videos</h3>
-      <div class="grid">
-        <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Example video" loading="lazy"></iframe>
-        <iframe src="https://www.youtube.com/embed/3fumBcKC6RE" title="Example video 2" loading="lazy"></iframe>
+    <!-- VIDEOS PREVIEW -->
+    <section id="videos-preview" class="reveal">
+      <h3>Featured Videos</h3>
+      <div class="grid videos-grid">
+        <div class="video-card">
+          <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Example video" loading="lazy" allowfullscreen></iframe>
+          <div class="video-meta"><strong>Study Hacks Ep.1</strong></div>
+        </div>
+        <div class="video-card">
+          <iframe src="https://www.youtube.com/embed/3fumBcKC6RE" title="Example video 2" loading="lazy" allowfullscreen></iframe>
+          <div class="video-meta"><strong>Mind Refresh Short</strong></div>
+        </div>
       </div>
+      <div class="center"><a class="btn" href="videos.html">All Videos</a></div>
     </section>
 
   </main>
 
   <button id="topBtn" aria-label="Back to top">↑</button>
 
-  <footer><p>© 2025 UG Artworks.James Mlelemba</p></footer>
+  <footer><p>© 2025 UG Artworks | James Mlelemba — 📞 0887742404 — ✉ ugartworks.comp@gmail.com</p></footer>
 </body>
 </html>
