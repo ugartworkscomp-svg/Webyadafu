@@ -1,0 +1,853 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Command Prompt — Luanar CMD Simulator</title>
+<style>
+  /* Classic CMD look */
+  :root{
+    --bg:#000000;
+    --fg:#dcdcdc;
+    --accent:#00b400; /* optional green prompt highlight */
+  }
+  html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font-family:Consolas, 'Lucida Console', monospace;}
+  .window{
+    display:flex;flex-direction:column;height:100vh;box-sizing:border-box;
+  }
+  /* fake title bar similar to cmd */
+  .title-bar{
+    background:linear-gradient(#0b3a6a,#062b55);
+    color:#fff;padding:6px 10px;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:space-between;
+  }
+  .title-left{display:flex;align-items:center;gap:10px}
+  .title-text{letter-spacing:0.4px}
+  .controls{display:flex;gap:6px}
+  .ctrl{width:18px;height:16px;background:#c0c0c0;border:1px solid #8b8b8b;color:#000;display:flex;align-items:center;justify-content:center;font-size:12px}
+  /* terminal area */
+  .terminal{
+    padding:10px;flex:1;overflow:auto;background:var(--bg);box-sizing:border-box;
+  }
+  .line{white-space:pre-wrap;font-size:14px;line-height:1.25;margin:0 0:4px;color:var(--fg)}
+  .prompt-line{display:flex;align-items:center;gap:8px}
+  .prompt{color:var(--fg);white-space:nowrap}
+  .cmd-input{flex:1;background:transparent;border:0;color:var(--fg);outline:none;font:inherit;padding:0;margin:0}
+  /* blinking caret when input is focused (for a more CRT feel we also show border) */
+  .caret{width:0.6em;height:1em;background:var(--fg);display:inline-block;vertical-align:middle;margin-left:4px;animation:blink 1s step-start infinite}
+  @keyframes blink{50%{opacity:0}}
+  /* small footer */
+  .footer{padding:6px 10px;font-size:12px;color:#9acd32;background:linear-gradient(transparent, rgba(255,255,255,0.02));text-align:right}
+  /* scrollbar more compact */
+  .terminal::-webkit-scrollbar{width:10px}
+  .terminal::-webkit-scrollbar-thumb{background:#222;border-radius:6px}
+  /* mobile friendliness */
+  @media(max-width:520px){
+    .title-bar{font-size:12px;padding:6px}
+    .cmd-input{font-size:16px}
+  }
+</style>
+</head>
+<body>
+  <div class="window" id="window">
+    <div class="title-bar">
+      <div class="title-left">
+        <div class="title-text" id="window-title">Command Prompt</div>
+        <div style="font-size:12px;opacity:0.9">Luanar CMD Simulator</div>
+      </div>
+      <div class="controls">
+        <div class="ctrl" title="Minimize">_</div>
+        <div class="ctrl" title="Maximize">□</div>
+        <div class="ctrl" title="Close">×</div>
+      </div>
+    </div>
+
+    <div class="terminal" id="terminal" tabindex="0" aria-label="Terminal window">
+      <!-- startup text -->
+      <div class="line">Microsoft Windows [Version 10.0.19045.4412]</div>
+      <div class="line">(c) Microsoft Corporation. All rights reserved.</div>
+      <div class="line">[Designed by James Mlelemba].</div>
+      <div style="height:8px"></div>
+    </div>
+
+    <div style="padding:8px 10px;background:#000;border-top:1px solid #111;">
+      <div class="prompt-line" id="input-row">
+        <div class="prompt" id="prompt-text">C:\Users\Student&gt;</div>
+        <input id="cmd-input" class="cmd-input" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off">
+        <span class="caret" aria-hidden="true"></span>
+      </div>
+        <div id="terminalOutput"></div>
+    </div>
+  
+    <div class="footer">Designed by James Mlelemba</div>
+  </div>
+
+<script>
+(() => {
+  // --- Utilities ---
+  const el = id => document.getElementById(id);
+  const terminal = el('terminal');
+  const promptTextEl = el('prompt-text');
+  const input = el('cmd-input');
+  const windowTitleEl = el('window-title');
+
+  function printLine(text='', cls='line'){
+    const d = document.createElement('div');
+    d.className = cls;
+    d.textContent = text;
+    terminal.appendChild(d);
+    terminal.scrollTop = terminal.scrollHeight;
+    return d;
+  }
+
+  function findKeyIgnoreCase(obj, key){
+    if(!obj) return undefined;
+    const lk = key.toLowerCase();
+    for(const k of Object.keys(obj)) if(k.toLowerCase()===lk) return k;
+    return undefined;
+  }
+
+  function deepClone(obj){ return JSON.parse(JSON.stringify(obj)); }
+
+  // --- Virtual filesystem (persistent) ---
+  const STORAGE_KEY = 'luanar_cmd_fs_v2';
+  let FS = loadFS();
+
+  function loadFS(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(raw) return JSON.parse(raw);
+    }catch(e){}
+    const now = new Date().toISOString();
+    // minimal realistic tree
+    return {
+      'C:': { type:'dir', items:{
+        'Windows':{type:'dir', items:{
+          'System32':{type:'dir', items:{ 'cmd.exe': {type:'file', content:'Command Processor', size:382464, date:now} } },
+          'Temp':{type:'dir', items:{}}
+        }},
+        'Program Files':{type:'dir', items:{'Common Files':{type:'dir', items:{}}}},
+        'Users':{type:'dir', items:{
+          'Public':{type:'dir', items:{}},
+          'Student':{type:'dir', items:{
+            'Desktop':{type:'dir', items:{'readme.txt':{type:'file', content:'Welcome to Luanar CMD Simulator\\nPractice Windows commands safely here.', size:156, date:now}}},
+            'Documents':{type:'dir', items:{'notes.txt':{type:'file',content:'Class notes:\\n- Command Prompt Basics',size:89,date:now}}},
+            'Downloads':{type:'dir', items:{}}
+          }}
+        }}
+      }}
+    };
+  }
+
+  function saveFS(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(FS)); }catch(e){} }
+
+  // --- Current state ---
+  let currentDrive = 'C:';
+  let currentPath = ['Users','Student']; // array of directory names within drive
+  let commandHistory = [];
+  let historyPos = -1;
+  let promptPattern = '%CD%>'; // supports PROMPT later
+  let windowTitle = 'Command Prompt';
+  let colorScheme = { fg: getComputedStyle(document.documentElement).getPropertyValue('--fg').trim(), bg: getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() };
+
+  // --- Path helpers ---
+  function getCurrentDirectory(){ return currentDrive + '\\' + (currentPath.length ? currentPath.join('\\') : ''); }
+  function getCurrentPrompt(){ return getCurrentDirectory() + '>'; }
+
+  function getDriveNode(drive){
+    return FS[drive];
+  }
+
+  // return object {drive, path:Array, type:'dir'|'file', node: reference}
+  function resolvePath(inputPath){
+    if(!inputPath || inputPath.trim()==='.') return { drive: currentDrive, path: currentPath.slice(), type:'dir', node: getDriveNode(currentDrive) && getDriveNode(currentDrive).items ? getNodeByPath(getDriveNode(currentDrive), currentPath) : null };
+    // Preprocess: unify slashes
+    inputPath = inputPath.trim();
+    // If path starts with drive letter e.g., C:\...
+    const driveMatch = inputPath.match(/^([a-zA-Z]:)(.*)$/);
+    if(driveMatch){
+      const drv = driveMatch[1].toUpperCase();
+      let rest = driveMatch[2].replace(/^[\\\/]+/, '');
+      const parts = rest ? rest.split(/[\\\/]+/).filter(Boolean) : [];
+      return resolvePathArray(drv, parts);
+    }
+    // If starts with backslash => absolute within current drive
+    if(/^[\\\/]/.test(inputPath)){
+      const rest = inputPath.replace(/^[\\\/]+/,'');
+      const parts = rest ? rest.split(/[\\\/]+/).filter(Boolean) : [];
+      return resolvePathArray(currentDrive, parts);
+    }
+    // Relative or simple names
+    const parts = inputPath.split(/[\\\/]+/).filter(Boolean);
+    const normParts = normalizePathArray(currentPath.concat(parts));
+    return resolvePathArray(currentDrive, normParts);
+  }
+
+  function resolvePathArray(drive, partsArray){
+    const driveNode = getDriveNode(drive);
+    if(!driveNode) return null;
+    let node = driveNode; // start at drive
+    const pathSoFar = [];
+    for(let i=0;i<partsArray.length;i++){
+      const seg = partsArray[i];
+      if(seg==='.' ) continue;
+      if(seg==='..'){
+        if(pathSoFar.length>0) pathSoFar.pop();
+        node = getNodeByPath(driveNode, pathSoFar);
+        if(!node) return null;
+        continue;
+      }
+      // lookup case-insensitive
+      if(!node.items) return null;
+      const realKey = findKeyIgnoreCase(node.items, seg);
+      if(!realKey){
+        // If last part maybe it's a file with that exact name; try file match
+        if(i===partsArray.length-1){
+          const fileKey = findKeyIgnoreCase(node.items, seg);
+          if(fileKey && node.items[fileKey].type==='file') return {drive, path:pathSoFar, type:'file', node: node.items[fileKey]};
+        }
+        return null;
+      }
+      const child = node.items[realKey];
+      pathSoFar.push(realKey);
+      node = child;
+    }
+    return { drive, path: pathSoFar.slice(), type: node.type, node };
+  }
+
+  function getNodeByPath(driveNode, pathArray){
+    let node = driveNode;
+    for(const seg of pathArray){
+      if(!node.items) return null;
+      const real = findKeyIgnoreCase(node.items, seg);
+      if(!real) return null;
+      node = node.items[real];
+      if(!node) return null;
+      if(node.type !== 'dir' && pathArray.indexOf(seg) !== pathArray.length-1) return null;
+    }
+    return node;
+  }
+
+  function resolvePathToParent(path){
+    // returns { parent: <items object>, name }
+    const parts = path.split(/[\\\/]+/).filter(Boolean);
+    const name = parts.pop();
+    const parentPath = parts.length ? parts.join('\\') : '.';
+    const parentRes = resolvePath(parentPath);
+    if(!parentRes || parentRes.type !== 'dir') return null;
+    return { parent: parentRes.node.items, name };
+  }
+
+  function normalizePathArray(arr){
+    const res = [];
+    for(const p of arr){
+      if(p==='.'){ continue; }
+      if(p==='..'){ if(res.length>0) res.pop(); continue; }
+      res.push(p);
+    }
+    return res;
+  }
+
+  function formatSize(bytes){
+    if(!bytes && bytes !== 0) return '';
+    return bytes.toString().padStart(10);
+  }
+
+  // --- Command parsing and smart pre-processing (handles cd/, cd.., cd\Windows etc) ---
+  function parseCommandLine(line){
+    // split args preserving quoted strings
+    const re = /(?:[^\s"]+|"[^"]*")+/g;
+    const rawParts = (line.match(re) || []).map(s => s.replace(/^"|"$/g,''));
+    // Smart single-token split: if user typed "cd.." or "cd/Windows" etc
+    if(rawParts.length === 1){
+      const token = rawParts[0];
+      const known = ['cd','dir','del','erase','ren','rename','copy','move','type','mkdir','md','rmdir','rd'];
+      for(const k of known){
+        if(token.toLowerCase().startsWith(k) && token.length>k.length){
+          const remainder = token.slice(k.length);
+          if(/^[\\/\.:"']/.test(remainder) || /^[a-zA-Z]:/.test(remainder)){
+            // split: [cmd, remainder]
+            return [k, remainder.replace(/^["']|["']$/g,'')];
+          }
+        }
+      }
+    }
+    return rawParts;
+  }
+
+  // --- Core: command implementations ---
+  const commands = {
+    'cd': cmd_cd,
+    'dir': cmd_dir,
+    'cls': cmd_cls,
+    'echo': cmd_echo,
+    'type': cmd_type,
+    'copy': cmd_copy,
+    'move': cmd_move,
+    'ren': cmd_ren,
+    'rename': cmd_ren,
+    'del': cmd_del,
+    'erase': cmd_del,
+    'mkdir': cmd_mkdir,
+    'md': cmd_mkdir,
+    'rmdir': cmd_rmdir,
+    'rd': cmd_rmdir,
+    'date': cmd_date,
+    'time': cmd_time,
+    'ver': cmd_ver,
+    'shutdown': cmd_shutdown,
+    'help': cmd_help,
+    'exit': cmd_exit,
+    'color': cmd_color,
+    'title': cmd_title,
+    'tree': cmd_tree,
+    'whoami': cmd_whoami,
+    'ipconfig': cmd_ipconfig,
+    'ping': cmd_ping,
+    'attrib': cmd_attrib,
+    'path': cmd_path,
+    'prompt': cmd_prompt
+  };
+
+  // Command implementations (each returns string or array of strings or nothing)
+  function cmd_cd(args){
+    const arg = (args && args.length) ? args.join(' ') : '';
+    if(!arg) return getCurrentDirectory();
+    // Recognize .. forms and slashes
+    if(['..','/..','\\..'].includes(arg)) {
+      if(currentPath.length>0) currentPath.pop();
+      return '';
+    }
+    if(arg==='/' || arg==='\\'){ currentPath = []; return ''; }
+    // drive letter alone: "D:" -> change drive keeping path at root
+    if(/^[a-zA-Z]:$/.test(arg)){
+      const drv = arg.toUpperCase();
+      if(FS[drv]){ currentDrive = drv; currentPath = []; return ''; } else return 'The system cannot find the drive specified.';
+    }
+    const res = resolvePath(arg);
+    if(res && res.type === 'dir'){ currentDrive = res.drive; currentPath = res.path.slice(); return ''; }
+    // Try relative normalization fallback
+    const norm = normalizePathArray(currentPath.concat(arg.split(/[\\\/]+/).filter(Boolean)));
+    const res2 = resolvePathArray(currentDrive, norm);
+    if(res2 && res2.type === 'dir'){ currentPath = norm; return ''; }
+    return 'The system cannot find the path specified.';
+  }
+
+  function cmd_dir(args, opts = {}) {
+  // opts: { termWidth: number, termHeight: number }
+  const termWidth = Number(opts.termWidth) || 80;
+  const termHeight = Number(opts.termHeight) || 20;
+
+  // parse args: switches (/w, /p) and path parts
+  const switches = new Set();
+  const pathParts = [];
+  for (const a of (args || [])) {
+    if (!a && a !== 0) continue;
+    const token = String(a);
+    const la = token.toLowerCase();
+    if (la.startsWith('/') || la.startsWith('-')) {
+      // allow combined flags like "/wp" or "/p/w" and full tokens like "/w"
+      for (const ch of la.slice(1)) {
+        if (ch === 'w') switches.add('w');
+        else if (ch === 'p') switches.add('p');
+      }
+    } else {
+      pathParts.push(token);
+    }
+  }
+
+  const target = pathParts.length ? pathParts.join(' ') : '.';
+  const res = resolvePath(target);
+  if (!res || res.type !== 'dir') return 'File Not Found';
+
+  const items = res.node && res.node.items ? res.node.items : {};
+  const names = Object.keys(items).sort((a, b) => a.localeCompare(b));
+  const header = ' Directory of ' + (res.drive || '') + '\\' + (res.path && res.path.length ? res.path.join('\\') + '\\' : '');
+  const lines = [header, ''];
+
+  // Build list objects
+  const list = names.map(name => {
+    const it = items[name];
+    const isDir = it && it.type === 'dir';
+    const size = isDir ? null : (it && (it.size || 0));
+    const dt = it && it.date ? new Date(it.date) : null;
+    // keep same locale formatting as before
+    const dateStr = dt ? dt.toLocaleDateString() + ' ' + dt.toLocaleTimeString() : '';
+    return { name, isDir, size, dateStr };
+  });
+
+  let files = 0, dirs = 0, totalSize = 0;
+  for (const it of list) {
+    if (it.isDir) dirs++; else { files++; totalSize += it.size || 0; }
+  }
+
+  // padding helpers
+  const padEnd = (s, n) => {
+    s = String(s === null || s === undefined ? '' : s);
+    return s.length >= n ? s : s + ' '.repeat(n - s.length);
+  };
+  const padStart = (s, n) => {
+    s = String(s === null || s === undefined ? '' : s);
+    return s.length >= n ? s : ' '.repeat(n - s.length) + s;
+  };
+
+  if (switches.has('w')) {
+    // Wide format: multiple columns of names only
+    const namesOnly = list.map(x => x.name);
+    const maxLen = namesOnly.reduce((m, n) => Math.max(m, (n || '').length), 0);
+    const colWidth = Math.min(30, maxLen + 2); // cap each column to keep layout reasonable
+    const columns = Math.max(1, Math.floor(termWidth / colWidth));
+    const rowsCount = Math.ceil(namesOnly.length / columns);
+
+    for (let r = 0; r < rowsCount; r++) {
+      let row = '';
+      for (let c = 0; c < columns; c++) {
+        const idx = c * rowsCount + r;
+        if (idx < namesOnly.length) {
+          row += padEnd(namesOnly[idx], colWidth);
+        } else {
+          row += ' '.repeat(colWidth);
+        }
+      }
+      lines.push(row.replace(/\s+$/, ''));
+    }
+  } else {
+    // Detailed listing (date, size/<DIR>, name)
+    for (const it of list) {
+      const datePart = padEnd(it.dateStr, 20);
+      const sizePart = it.isDir ? padStart('<DIR>', 10) : padStart(it.size || '', 10);
+      lines.push(`${datePart} ${sizePart} ${it.name}`);
+    }
+  }
+
+  // footer lines (same structure you had)
+  lines.push('', `              ${files} File(s)     ${totalSize} bytes`, `              ${dirs} Dir(s)    ${getFreeSpace()} bytes free`);
+
+  // If /p requested, insert page-break markers
+  if (switches.has('p')) {
+    const paged = [];
+    let count = 0;
+    // Count header/footer as normal lines. Use termHeight as lines-per-page.
+    for (let i = 0; i < lines.length; i++) {
+      paged.push(lines[i]);
+      count++;
+      if (count >= termHeight) {
+        // marker your UI can watch for and pause on
+        paged.push('Press any key to continue . . .');
+        count = 0;
+      }
+    }
+    return paged;
+  }
+
+  return lines;
+}
+
+  function cmd_cls(){
+    terminal.innerHTML = '';
+    return '';
+  }
+  
+  function displayheader(){  
+    // Recreate the original startup text exactly
+    printLine('Microsoft Windows [Version 10.0.19045.4412]');
+    printLine('(c) Microsoft Corporation. All rights reserved.');
+    printLine('[Designed by James Mlelemba].');
+    
+    // Add spacer
+    const spacer = document.createElement('div');
+    spacer.style.height = '8px';
+    terminal.appendChild(spacer);
+    
+    // Re-add the help message
+    printLine('Type "help" for a list of commands.');
+    
+    return '';
+}
+
+  function cmd_echo(args){
+    if(!args || args.length===0) return 'ECHO is on.';
+    return args.join(' ');
+  }
+
+  function cmd_type(args){
+    if(!args || args.length===0) return 'The syntax of the command is incorrect.';
+    const path = args.join(' ');
+    const res = resolvePath(path);
+    if(!res) return 'The system cannot find the file specified.';
+    if(res.type !== 'file') return 'The system cannot find the file specified.';
+    return res.node.content || '';
+  }
+
+  function cmd_copy(args){
+    if(!args || args.length<2) return 'The syntax of the command is incorrect.';
+    const src = args[0], dest = args[1];
+    const srcRes = resolvePath(src);
+    if(!srcRes || srcRes.type!=='file') return 'The system cannot find the file specified.';
+    const destRes = resolvePath(dest);
+    if(destRes && destRes.type==='dir'){
+      const name = src.split(/[\\\/]/).pop();
+      destRes.node.items[name] = deepClone(srcRes.node);
+      saveFS();
+      return '        1 file(s) copied.';
+    }
+    const parent = resolvePathToParent(dest);
+    if(parent){
+      parent.parent[parent.name] = deepClone(srcRes.node);
+      saveFS();
+      return '        1 file(s) copied.';
+    }
+    return 'The system cannot find the path specified.';
+  }
+
+  function cmd_move(args){
+    if(!args || args.length<2) return 'The syntax of the command is incorrect.';
+    const src = args[0], dest = args[1];
+    const srcParent = resolvePathToParent(src);
+    if(!srcParent || !srcParent.parent[srcParent.name]) return 'The system cannot find the file specified.';
+    const node = srcParent.parent[srcParent.name];
+    const destRes = resolvePath(dest);
+    if(destRes && destRes.type==='dir'){
+      destRes.node.items[srcParent.name] = node;
+      delete srcParent.parent[srcParent.name];
+      saveFS();
+      return '        1 file(s) moved.';
+    }
+    const destParent = resolvePathToParent(dest);
+    if(destParent){
+      destParent.parent[destParent.name] = node;
+      delete srcParent.parent[srcParent.name];
+      saveFS();
+      return '        1 file(s) moved.';
+    }
+    return 'The system cannot find the path specified.';
+  }
+
+  function cmd_ren(args){
+    if(!args || args.length<2) return 'The syntax of the command is incorrect.';
+    const oldp = args[0], newn = args[1];
+    const src = resolvePathToParent(oldp);
+    if(!src || !src.parent[src.name]) return 'The system cannot find the file specified.';
+    if(src.parent[newn]) return 'A duplicate file name exists, or the file\ncannot be found.';
+    src.parent[newn] = src.parent[src.name];
+    delete src.parent[src.name];
+    saveFS();
+    return '';
+  }
+
+  function cmd_del(args){
+    if(!args || args.length===0) return 'The syntax of the command is incorrect.';
+    const p = args.join(' ');
+    const target = resolvePathToParent(p);
+    if(!target || !target.parent[target.name]) return 'Could not find file.';
+    if(target.parent[target.name].type === 'dir') return 'Access is denied.';
+    delete target.parent[target.name];
+    saveFS();
+    return '';
+  }
+
+  function cmd_mkdir(args){
+    if(!args || args.length===0) return 'The syntax of the command is incorrect.';
+    const p = args.join(' ');
+    const parent = resolvePathToParent(p);
+    if(!parent) return 'The system cannot find the path specified.';
+    if(parent.parent[parent.name]) return 'A subdirectory or file already exists.';
+    parent.parent[parent.name] = { type:'dir', items:{} };
+    saveFS();
+    return '';
+  }
+
+  function cmd_rmdir(args){
+    if(!args || args.length===0) return 'The syntax of the command is incorrect.';
+    const res = resolvePath(args.join(' '));
+    if(!res || res.type!=='dir') return 'The system cannot find the file specified.';
+    if(Object.keys(res.node.items || {}).length>0) return 'The directory is not empty.';
+    const parent = resolvePathToParent(args.join(' '));
+    if(parent){
+      delete parent.parent[parent.name];
+      saveFS();
+    }
+    return '';
+  }
+
+  function cmd_date(){ return `The current date is: ${new Date().toLocaleDateString()}\nEnter new date: (mm-dd-yy) [SIMULATION]`; }
+  function cmd_time(){ return `The current time is: ${new Date().toLocaleTimeString()}\nEnter new time: [SIMULATION]`; }
+  function cmd_ver(){ return 'Microsoft Windows [Version 10.0.19045.4412]'; }
+
+  function cmd_shutdown(args) {
+  let s = args.join(' ').toLowerCase();
+  const output = document.getElementById('terminalOutput');
+
+  // Default countdown time
+  let seconds = 5;
+  const tMatch = s.match(/\/t[:=]?(\d+)/);
+  if (tMatch) {
+    seconds = parseInt(tMatch[1]);
+    if (isNaN(seconds) || seconds < 1) seconds = 5;
+  }
+
+  // Abort
+  if (s.includes('/a')) {
+    if (window._shutdownTimer) {
+      clearInterval(window._shutdownTimer);
+      window._shutdownTimer = null;
+      output.innerText += "\nShutdown aborted.\n[SIMULATION]";
+      return;
+    }
+    output.innerText += "\nNo shutdown in progress.\n[SIMULATION]";
+    return;
+  }
+
+  function startCountdown(action) {
+    let remaining = seconds;
+    clearInterval(window._shutdownTimer);
+    output.innerText += `\nSystem will ${action} in ${remaining} seconds.\n[SIMULATION]`;
+
+    window._shutdownTimer = setInterval(() => {
+      remaining--;
+      if (remaining > 0) {
+        output.innerText += `\n${action.charAt(0).toUpperCase() + action.slice(1)} in ${remaining}...`;
+        output.scrollTop = output.scrollHeight;
+      } else {
+        clearInterval(window._shutdownTimer);
+        window._shutdownTimer = null;
+
+        if (action === "shutdown") {
+          output.innerText = "\nSystem is now shut down.\n[SIMULATION]";
+          cmd_exit();
+        } else if (action === "restart") {
+          output.innerText = "\nRestarting system...\n[SIMULATION]";
+          input.disabled = true;
+          setTimeout(() => {
+            output.innerText = "System restarted successfully.\n[SIMULATION]";
+            setTimeout(() => {
+            input.disabled = false;
+            output.innerText =' ';
+            cmd_cls();
+            displayheader();
+            },2500);
+          }, 3000);
+        }
+      }
+    }, 1000);
+  }
+
+  if (s.includes('/s')) return startCountdown("shutdown");
+  if (s.includes('/r')) return startCountdown("restart");
+
+  output.innerText += "\nYou don't have permission to shutdown this computer.\nContact your system administrator.\n[SIMULATION]";
+}
+
+  function cmd_help(args){
+    if(args && args.length>0){
+      const c = args[0].toLowerCase();
+      const helpMap = {
+        'cd':'CD changes current directory',
+        'dir':'DIR displays files and subdirectories',
+        'copy':'COPY copies files',
+        'move':'MOVE moves files',
+        'del':'DEL deletes files',
+        'type':'TYPE displays file contents',
+        'cls':'CLS clears the screen',
+        'exit':'EXIT closes the session',
+        'color':'COLOR changes foreground/background colors (hex or names)',
+        'tree':'TREE displays directory tree'
+      };
+      return helpMap[c] || `No help available for ${c}`;
+    }
+    return ['Supported commands: cd dir cls echo type copy move ren del mkdir rmdir date time ver shutdown help exit color title tree whoami ipconfig ping attrib path prompt'];
+  }
+
+  function cmd_exit() {
+    input.disabled = true;
+    setTimeout(() => {
+        // Try to close the tab first (works if opened via JS)
+        window.close();
+
+        // If the tab wasn't opened by JS (most cases), go back instead
+        if (!window.closed) {
+            window.history.back();
+        }
+    }, 2000); // wait a bit for "Session closed." message to show
+
+    return 'Session closed.';
+}
+
+  function cmd_color(args){
+    if(!args || args.length===0) return `Current colors - FG: ${colorScheme.fg} BG: ${colorScheme.bg}`;
+    let fg = args[0], bg = args[1] || colorScheme.bg;
+    // allow hex or basic names
+    colorScheme = { fg, bg };
+    document.documentElement.style.setProperty('--fg', fg);
+    document.documentElement.style.setProperty('--bg', bg);
+    document.body.style.background = bg;
+    return '';
+  }
+
+  function cmd_title(args){
+    if(!args || args.length===0) return 'The syntax of the command is incorrect.';
+    windowTitle = args.join(' ');
+    windowTitleEl.textContent = windowTitle;
+    return '';
+  }
+
+  function cmd_tree(args){
+    const target = args && args.length ? args.join(' ') : '.';
+    const res = resolvePath(target);
+    if(!res || res.type!=='dir') return 'The system cannot find the path specified.';
+    const lines = [];
+    buildTree(res.node.items, '', lines);
+    return lines;
+  }
+  function buildTree(node, prefix, out){
+    const keys = Object.keys(node).sort((a,b)=>a.localeCompare(b));
+    for(const k of keys){
+      out.push(prefix + k);
+      if(node[k].type==='dir') buildTree(node[k].items, prefix + '  ', out);
+    }
+  }
+
+  function cmd_whoami(){ return 'Student'; }
+  function cmd_ipconfig(){ return ['Windows IP Configuration', '', 'Ethernet adapter Local Area Connection:', '   IPv4 Address. . . . . . . . . . . : 192.168.1.100']; }
+  function cmd_ping(args){ const host = args && args.length ? args[0] : 'localhost'; return [`Pinging ${host} with 32 bytes of data:`,`Reply from 127.0.0.1: bytes=32 time<1ms TTL=128`,`Ping statistics for 127.0.0.1:`,`    Packets: Sent = 1, Received = 1, Lost = 0 (0% loss),`]; }
+  function cmd_attrib(args){ return 'ATTRIB not fully simulated.'; }
+  function cmd_path(args){
+    if(!args || args.length===0) return 'PATH=' + (window._sim_path || '(not set)');
+    window._sim_path = args.join(' ');
+    return '';
+  }
+  function cmd_prompt(args){
+    if(!args || args.length===0) return 'Current prompt: ' + promptPattern;
+    promptPattern = args.join(' ');
+    updatePromptText();
+    return '';
+  }
+
+  // helper for resolvePathArray used in some fallbacks
+  function resolvePathArray(drive, parts){
+    return resolvePathArrayImpl(drive, parts);
+  }
+  function resolvePathArrayImpl(drive, parts){
+    const driveNode = getDriveNode(drive);
+    if(!driveNode) return null;
+    let node = driveNode;
+    const pathSoFar = [];
+    for(const seg of parts){
+      if(seg==='.') continue;
+      if(seg==='..'){ if(pathSoFar.length>0) pathSoFar.pop(); node = getNodeByPath(driveNode, pathSoFar); if(!node) return null; continue; }
+      if(!node.items) return null;
+      const realKey = findKeyIgnoreCase(node.items, seg);
+      if(!realKey) return null;
+      const child = node.items[realKey];
+      pathSoFar.push(realKey);
+      node = child;
+    }
+    return { drive, path: pathSoFar.slice(), type: node.type, node };
+  }
+  function getNodeByPath(driveNode, pathArray){
+    return getNodeByPathImpl(driveNode, pathArray);
+  }
+  function getNodeByPathImpl(driveNode, pathArray){
+    let node = driveNode;
+    for(const seg of pathArray){
+      if(!node.items) return null;
+      const real = findKeyIgnoreCase(node.items, seg);
+      if(!real) return null;
+      node = node.items[real];
+    }
+    return node;
+  }
+
+  function getFreeSpace(){ return 104857600; }
+
+  // --- Execution flow ---
+  function dispatch(line){
+    const parts = parseCommandLine(line);
+    if(!parts || parts.length===0) return;
+    const cmd = parts[0].toLowerCase();
+    const args = parts.slice(1);
+    const fn = commands[cmd];
+    if(!fn) return `'${cmd}' is not recognized as an internal or external command,\noperable program or batch file.`;
+    try{
+      return fn(args);
+    }catch(e){
+      return `Error: ${e.message}`;
+    }
+  }
+
+  // --- Input handlers: history, autocomplete, special keys ---
+  input.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter'){
+      e.preventDefault();
+      const raw = input.value;
+      printLine(getCurrentPrompt() + raw);
+      // store history
+      if(raw.trim()) { commandHistory.unshift(raw); if(commandHistory.length>200) commandHistory.pop(); }
+      historyPos = -1;
+      const out = dispatch(raw);
+      if(out !== undefined && out !== null){
+        if(Array.isArray(out)) out.forEach(l => printLine(l));
+        else if(String(out).length) printLine(out);
+      }
+      input.value = '';
+      saveFS();
+      updatePromptText();
+    } else if(e.key === 'ArrowUp'){
+      e.preventDefault();
+      if(commandHistory.length === 0) return;
+      historyPos = Math.min(commandHistory.length - 1, historyPos + 1);
+      input.value = commandHistory[historyPos] || '';
+    } else if(e.key === 'ArrowDown'){
+      e.preventDefault();
+      if(historyPos <= 0){ historyPos = -1; input.value = ''; }
+      else { historyPos--; input.value = commandHistory[historyPos] || ''; }
+    } else if(e.key === 'Tab'){
+      e.preventDefault();
+      attemptAutocomplete();
+    }
+  });
+
+  // clicking terminal brings focus to input (mobile friendly)
+  terminal.addEventListener('click', () => input.focus());
+
+  function attemptAutocomplete(){
+    const cur = input.value;
+    // try commands first
+    const cmds = Object.keys(commands).filter(c => c.startsWith(cur.toLowerCase()));
+    if(cmds.length === 1){ input.value = cmds[0] + ' '; return; }
+    // then file/dir in current dir
+    const dirObj = resolvePath('.');
+    if(!dirObj || dirObj.type !== 'dir') return;
+    const items = Object.keys(dirObj.node.items || {});
+    const matches = items.filter(i => i.toLowerCase().startsWith(cur.toLowerCase()));
+    if(matches.length === 1) input.value = matches[0];
+  }
+
+  function updatePromptText(){
+    // support simple %CD% pattern; can be extended
+    const cd = getCurrentDirectory();
+    promptTextEl.textContent = cd + '>';
+  }
+
+  // initial prompt
+  updatePromptText();
+
+  // preload helpful default message
+  printLine('Type "help" for a list of commands.');
+
+  // expose some debugging helpers on window for quick dev (optional)
+  window.__luanar = { FS, saveFS, resolvePath, getCurrentDirectory, dispatch };
+
+  // put focus on input
+  input.focus();
+
+  // small credit hotkey: Ctrl+Alt+C
+  document.addEventListener('keydown', (e) => {
+    if(e.ctrlKey && e.altKey && e.key.toLowerCase() === 'c'){
+      printLine('Luanar CMD Simulator - Designed by James Mlelemba');
+    }
+  });
+
+})();
+</script>
+</body>
+</html>

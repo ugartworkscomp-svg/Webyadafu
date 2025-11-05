@@ -13,21 +13,48 @@
     <div id="quiz-root" class="quiz-box"></div>
     <p><small>Close this tab to return to UG Artworks.</small></p>
   </main>
-<script>
+<<script>
 (function(){
   const root = document.getElementById('quiz-root');
   const questions = [
-    {q:'What does UG stand for?', a:'Ultimate Genius'},
+    {q:'What does LUANAR stand for?', a:'Lilongwe University of Agriculture and Natural Resources'},
+    {q:'Who is the Vice Chancellor of LUANAR?', a:['professor Emmanuel Kaunda','prof. Emmanuel Kaunda','prof Emmanuel Kaunda']},
     {q:'What is 5 × 3?', a:'15'},
+    {q:'What is the capital city of Malawi?', a:'Lilongwe'},
     {q:'Which continent is Malawi in?', a:'Africa'}
   ];
-  let i=0, score=0;
+
+  let i = 0, score = 0;
+
   function render(){
-    if(i>=questions.length){ root.innerHTML = '<h3>Result: ' + score + '/' + questions.length + '</h3><button id="r">Retry</button>'; document.getElementById('r').onclick = ()=>{ i=0; score=0; render(); }; return; }
+    if(i >= questions.length){
+      root.innerHTML = `<h3>Result: ${score}/${questions.length}</h3>
+      <button id="r">Retry</button>`;
+      document.getElementById('r').onclick = () => { i = 0; score = 0; render(); };
+      return;
+    }
+
     const cur = questions[i];
-    root.innerHTML = '<h4>'+cur.q+'</h4><input id="ans" autocomplete="off"><button id="s">Submit</button>';
-    document.getElementById('s').onclick = ()=>{ const val = document.getElementById('ans').value.trim(); if(val.toLowerCase()===cur.a.toLowerCase()) score++; i++; render(); };
+    root.innerHTML = `
+      <h4>${cur.q}</h4>
+      <input id="ans" autocomplete="off">
+      <button id="s">Submit</button>
+    `;
+
+    document.getElementById('s').onclick = () => {
+      const val = document.getElementById('ans').value.trim().toLowerCase();
+
+      // Convert answer(s) to lowercase array for flexible checking
+      const answers = Array.isArray(cur.a)
+        ? cur.a.map(a => a.toLowerCase())
+        : [cur.a.toLowerCase()];
+
+      if (answers.includes(val)) score++;
+      i++;
+      render();
+    };
   }
+
   render();
 })();</script>
 </body>
