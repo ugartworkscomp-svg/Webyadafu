@@ -5,8 +5,448 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Videos — UG Artworks</title>
   <link rel="icon" href="favicon.svg" />
-  <link rel="stylesheet" href="style.css" />
-  <script defer src="script.js"></script>
+  <style>
+    :root {
+      --bg: #f6f2ea;
+      --text: #1f1f1f;
+      --accent: #3b2412;
+      --accent-strong: #d99a2b;
+      --header: #3b2412;
+      --card: #ffffffee;
+      --shadow: rgba(0,0,0,0.12);
+      --caption-bg: rgba(0,0,0,0.48);
+      --transition: all 0.3s ease;
+    }
+
+    body.dark {
+      --bg: #0b0b0b;
+      --text: #f5f5f5;
+      --accent: #f0b24b;
+      --accent-strong: #d99a2b;
+      --header: #0b0b0b;
+      --card: #161616dd;
+      --shadow: rgba(0,0,0,0.6);
+      --caption-bg: rgba(0,0,0,0.72);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: Inter, system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      transition: var(--transition);
+    }
+
+    /* Header */
+    .site-header {
+      display: block;
+      background: var(--header);
+      color: #fff;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 6px 14px var(--shadow);
+      padding: 18px 12px;
+    }
+
+    .brand {
+      font-weight: 500;
+      font-size: 1.25rem;
+      letter-spacing: 3px;
+      text-align: center;
+      margin-bottom: 10px;
+      color: #fff;
+    }
+
+    .main-nav.centered {
+      display: flex;
+      justify-content: center;
+      gap: 28px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .main-nav.centered a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 700;
+      padding: 8px 10px;
+      border-radius: 6px;
+      transition: var(--transition);
+    }
+
+    .main-nav.centered a:hover {
+      background: rgba(255,255,255,0.06);
+    }
+
+    .main-nav.centered a.active {
+      background: rgba(0,0,0,0.12);
+    }
+
+    .actions.centered {
+      text-align: center;
+    }
+
+    .actions button, #theme-toggle {
+      background: var(--accent-strong);
+      border: none;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700;
+      color: #000;
+      transition: var(--transition);
+    }
+
+    /* Main Content */
+    main {
+      max-width: 1200px;
+      margin: 22px auto;
+      padding: 0 18px;
+    }
+
+    /* Search and Filter Section */
+    .search-filter-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      max-width: 800px;
+      margin: 0 auto 2rem;
+      padding: 0 1rem;
+    }
+
+    @media (min-width: 768px) {
+      .search-filter-container {
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+
+    .search-bar {
+      flex: 1;
+      max-width: 500px;
+    }
+
+    .search-bar input {
+      width: 100%;
+      padding: 0.8rem 1.5rem;
+      border-radius: 25px;
+      border: 2px solid var(--accent);
+      outline: none;
+      font-size: 1rem;
+      background: var(--card);
+      color: var(--text);
+      box-shadow: 0 2px 10px var(--shadow);
+      transition: var(--transition);
+    }
+
+    .search-bar input:focus {
+      border-color: var(--accent-strong);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .search-bar input::placeholder {
+      color: #aaa;
+    }
+
+    /* Modern Dropdown Filter */
+    .filter-container {
+      position: relative;
+      flex: 0 0 auto;
+    }
+
+    .filter-dropdown {
+      position: relative;
+      min-width: 200px;
+    }
+
+    .filter-selected {
+      padding: 0.8rem 1.5rem;
+      border-radius: 25px;
+      border: 2px solid var(--accent);
+      background: var(--card);
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px var(--shadow);
+      transition: var(--transition);
+      font-weight: 500;
+    }
+
+    .filter-selected:hover {
+      border-color: var(--accent-strong);
+    }
+
+    .filter-selected::after {
+      content: "▼";
+      font-size: 0.8rem;
+      transition: var(--transition);
+    }
+
+    .filter-dropdown.active .filter-selected::after {
+      transform: rotate(180deg);
+    }
+
+    .filter-options {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--card);
+      border-radius: 12px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+      margin-top: 5px;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: var(--transition);
+      z-index: 10;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .filter-dropdown.active .filter-options {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .filter-option {
+      padding: 0.8rem 1.5rem;
+      cursor: pointer;
+      transition: var(--transition);
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .filter-option:last-child {
+      border-bottom: none;
+    }
+
+    .filter-option:hover {
+      background: rgba(0,0,0,0.05);
+    }
+
+    .filter-option.active {
+      background: var(--accent-strong);
+      color: #000;
+      font-weight: 600;
+    }
+
+    /* About Section */
+    .about {
+      text-align: center;
+      margin-bottom: 2rem;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .about.active {
+      opacity: 1;
+      transform: none;
+    }
+
+    .about h3 {
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+      color: var(--header);
+    }
+
+    .about-text {
+      color: var(--text);
+      opacity: 0.8;
+    }
+
+    /* Video Grid */
+    .videos-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+
+    .video-card {
+      background: var(--card);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+      transition: var(--transition);
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    .video-card.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .video-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+    }
+
+    .thumb {
+      position: relative;
+      width: 100%;
+      padding-bottom: 56.25%; /* 16:9 aspect ratio */
+      overflow: hidden;
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+    }
+
+    .thumb.loaded {
+      background: none;
+      animation: none;
+    }
+
+    .thumb img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: var(--transition);
+    }
+
+    .video-body {
+      padding: 1rem;
+    }
+
+    .video-body h4 {
+      margin-bottom: 0.8rem;
+      font-size: 1.1rem;
+      line-height: 1.4;
+      color: var(--header);
+      min-height: 3.2em;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .btn {
+      background: var(--accent-strong);
+      color: #000;
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      display: inline-block;
+      transition: var(--transition);
+      text-align: center;
+    }
+
+    .btn:hover {
+      background: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    /* No Results Message */
+    .no-results {
+      text-align: center;
+      padding: 3rem 1rem;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: var(--transition);
+    }
+
+    .no-results.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .no-results h3 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      color: var(--header);
+    }
+
+    .no-results p {
+      color: var(--text);
+      opacity: 0.7;
+    }
+
+    /* Footer */
+    footer {
+      padding: 20px;
+      text-align: center;
+      margin-top: 24px;
+      font-size: 0.9rem;
+      background: var(--header);
+      color: #fff;
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes loading {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .main-nav.centered {
+        gap: 14px;
+      }
+      
+      .search-filter-container {
+        flex-direction: column;
+      }
+      
+      .videos-container {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1rem;
+      }
+      
+      .brand {
+        font-size: 1rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .videos-container {
+        grid-template-columns: 1fr;
+      }
+      
+      .site-header {
+        padding: 14px;
+      }
+    }
+
+    /* Page Fade In */
+    body {
+      opacity: 0;
+      animation: fadeIn 0.5s ease forwards;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  </style>
 </head>
 <body>
   <header class="site-header stacked">
@@ -22,124 +462,297 @@
   </header>
 
   <main>
-    <div class="search-bar">
-      <input type="text" id="videoSearch" placeholder="Search videos...">
+    <div class="search-filter-container">
+      <div class="search-bar">
+        <input type="text" id="videoSearch" placeholder="Search videos...">
+      </div>
+      
+      <div class="filter-container">
+        <div class="filter-dropdown" id="courseFilter">
+          <div class="filter-selected">All Courses</div>
+          <div class="filter-options">
+            <div class="filter-option active" data-value="all">All Courses</div>
+            <div class="filter-option" data-value="elementary-microeconomics">Elementary Microeconomics</div>
+            <div class="filter-option" data-value="fundamentals-of-accounting">Fundamentals of Accounting</div>
+            <div class="filter-option" data-value="english-for-academic-purposes">English for Academic Purposes</div>
+            <div class="filter-option" data-value="introduction-to-computer-systems">Introduction to Computer Systems</div>
+            <div class="filter-option" data-value="life-and-managerial-skills">Life and Managerial Skills</div>
+            <div class="filter-option" data-value="organisational-psychology">Organisational Psychology</div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <section class="about reveal">
+    <section class="about">
       <h3>Learning Videos</h3>
       <p class="about-text">Short tutorials and study hacks — click Watch to open on YouTube.</p>
     </section>
 
-    <section class="reveal">
-      <h4>ELEMENTARY MICROECONOMICS Videos</h4>
-      <div class="grid videos-grid">
-        <article class="video-card">
-          <div class="thumb">
-            <img src="https://i.ytimg.com/vi/732nGYPMMg0/hqdefault.jpg" alt="Video 1 thumbnail">
-          </div>
-          <div class="video-body">
-            <h4>Video 1</h4>
-            <a class="btn" href="https://www.youtube.com/watch?v=732nGYPMMg0" target="_blank" rel="noopener">Watch</a>
-          </div>
-        </article>
+    <div id="videosGrid" class="videos-container">
+      <!-- Videos will be dynamically inserted here -->
+    </div>
 
-        <article class="video-card">
-          <div class="thumb">
-            <img src="https://i.ytimg.com/vi/7xL2sVdOFaM/hqdefault.jpg" alt="Video 2 thumbnail">
-          </div>
-          <div class="video-body">
-            <h4>Video 2</h4>
-            <a class="btn" href="https://www.youtube.com/watch?v=7xL2sVdOFaM" target="_blank" rel="noopener">Watch</a>
-          </div>
-        </article>
-
-        <article class="video-card">
-          <div class="thumb">
-            <img src="https://i.ytimg.com/vi/UQiS7_3C_ng/hqdefault.jpg" alt="Video 3 thumbnail">
-          </div>
-          <div class="video-body">
-            <h4>Video 3</h4>
-            <a class="btn" href="https://www.youtube.com/watch?v=UQiS7_3C_ng" target="_blank" rel="noopener">Watch</a>
-          </div>
-        </article>
-
-        <article class="video-card">
-          <div class="thumb">
-            <img src="https://i.ytimg.com/vi/3_5K3hLSlZg/hqdefault.jpg" alt="Video 4 thumbnail">
-          </div>
-          <div class="video-body">
-            <h4>Video 4</h4>
-            <a class="btn" href="https://www.youtube.com/watch?v=3_5K3hLSlZg" target="_blank" rel="noopener">Watch</a>
-          </div>
-        </article>
-
-        <article class="video-card">
-          <div class="thumb">
-            <img src="https://i.ytimg.com/vi/P5wp1KINoIw/hqdefault.jpg" alt="Video 5 thumbnail">
-          </div>
-          <div class="video-body">
-            <h4>Video 5</h4>
-            <a class="btn" href="https://www.youtube.com/watch?v=P5wp1KINoIw" target="_blank" rel="noopener">Watch</a>
-          </div>
-        </article>
-
-        <article class="video-card">
-          <div class="thumb">
-            <img src="https://i.ytimg.com/vi/WnjuEbTNzhk/hqdefault.jpg" alt="Video 6 thumbnail">
-          </div>
-          <div class="video-body">
-            <h4>Video 6</h4>
-            <a class="btn" href="https://www.youtube.com/watch?v=WnjuEbTNzhk" target="_blank" rel="noopener">Watch</a>
-          </div>
-        </article>
-
-        <article class="video-card">
-          <div class="thumb">
-            <img src="https://i.ytimg.com/vi/mAG5PEBAKU8/hqdefault.jpg" alt="Video 7 thumbnail">
-          </div>
-          <div class="video-body">
-            <h4>Video 7</h4>
-            <a class="btn" href="https://www.youtube.com/watch?v=mAG5PEBAKU8" target="_blank" rel="noopener">Watch</a>
-          </div>
-        </article>
-
-        <article class="video-card">
-          <div class="thumb">
-            <img src="https://i.ytimg.com/vi/_4foaVn9xn8/hqdefault.jpg" alt="Video 8 thumbnail">
-          </div>
-          <div class="video-body">
-            <h4>Video 8</h4>
-            <a class="btn" href="https://www.youtube.com/watch?v=_4foaVn9xn8" target="_blank" rel="noopener">Watch</a>
-          </div>
-        </article>
-
-        <article class="video-card">
-          <div class="thumb">
-            <img src="https://i.ytimg.com/vi/xnwGDPTMtIA/hqdefault.jpg" alt="Video 9 thumbnail">
-          </div>
-          <div class="video-body">
-            <h4>Video 9</h4>
-            <a class="btn" href="https://www.youtube.com/watch?v=xnwGDPTMtIA" target="_blank" rel="noopener">Watch</a>
-          </div>
-        </article>
-      </div> <!-- close grid -->
-
-      <h4>FUNDAMENTALS OF ACCOUNTING Videos</h4>
-      <div class="grid videos-grid">
-        <article class="video-card">
-          <div class="thumb">
-            <img src="https://i.ytimg.com/vi/7xL2sVdOFaM/hqdefault.jpg" alt="next video1 thumbnail">
-          </div>
-          <div class="video-body">
-            <h4>next video1</h4>
-            <a class="btn" href="https://www.youtube.com/watch?v=7xL2sVdOFaM" target="_blank" rel="noopener">Watch</a>
-          </div>
-        </article>
-      </div>
-    </section>
+    <div class="no-results" id="noResults">
+      <h3>No videos found</h3>
+      <p>Try adjusting your search or filter criteria</p>
+    </div>
   </main>
 
   <footer><p>© 2025 UG Artworks | Designed by James Mlelemba</p></footer>
+
+  <script>
+    // Video data - all courses and videos
+    const videoData = [
+      {
+        course: "elementary-microeconomics",
+        title: "Elementary Microeconomics",
+        videos: [
+          { id: "fSo777le8qo", title: "Scarcity and Opportunity Cost" },
+          { id: "kIFBaaPJUO0", title: "Supply and Demand" },
+          { id: "1XXhpHJTglg", title: "Elasticity" },
+          { id: "8fm9FjDV0iA", title: "Total Product, Marginal Product and Average Product" },
+          { id: "lt6LpwBNSlM", title: "Law of Diminishing Returns" },
+          { id: "0CHyHeNCJ30", title: "Fixed Cost, Variable Cost, Marginal Cost and Average Cost" },
+          { id: "u1xIZOieOUw", title: "Four Market Structures" },
+          { id: "13JOGWzY8kE", title: "Market Failures" },
+          { id: "4kFLOoA5l4s", title: "Production Functions" },
+          { id: "M25CsaA8xCk", title: "Graphs and Graphing" }
+        ]
+      },
+      {
+        course: "fundamentals-of-accounting",
+        title: "Fundamentals of Accounting",
+        videos: [
+          { id: "qISkyoiGHcI", title: "Financial vs Managerial Accounting" },
+          { id: "56xscQ4viWE", title: "Accounting Equation" },
+          { id: "8XzevXYzCEw", title: "Double Entry and T Accounts" },
+          { id: "kA9snSvCgW8", title: "T Accounts" },
+          { id: "3_PfoTzSCQE", title: "Trial Balance" },
+          { id: "Fi1wkUczuyk", title: "Financial Statements" },
+          { id: "-dPLqWYuT_k", title: "Trial Balance to Financial Statements" },
+          { id: "_-lVFKG5_08", title: "Assets, Liabilities and Capital" }
+        ]
+      },
+      {
+        course: "english-for-academic-purposes",
+        title: "English for Academic Purposes",
+        videos: [
+          { id: "hKu2-tjNMok", title: "Citations and References APA 7th Edition" },
+          { id: "7wUCyjiyXdg", title: "Active Listening" },
+          { id: "BXjpsMKEkXc", title: "Cornell Note Taking System" },
+          { id: "liyFKUFCQno", title: "Essay Writing" },
+          { id: "W7BW9gv_OkU", title: "Reading Comprehension Skills" }
+        ]
+      },
+      {
+        course: "introduction-to-computer-systems",
+        title: "Introduction to Computer Systems",
+        videos: [
+          { id: "OdziYWEkDIM", title: "Computer Hardware Components" },
+          { id: "Ow1BLT29p9w", title: "History of Computer" },
+          { id: "FUJ-nvjSP20", title: "Classification of Computer" },
+          { id: "BTB86HeZVwk", title: "Computer Software" },
+          { id: "tSodBEAJz9Y", title: "Computer Networks" },
+          { id: "1vO9l1idWac", title: "Storage Devices" },
+          { id: "p3q5zWCw8J4", title: "Computer Memory" },
+          { id: "T3cnK8vK2lA", title: "File Management" },
+          { id: "fOcoLKHeOTI", title: "How Computer Works" },
+          { id: "FFDMzbrEXaE", title: "Number System Conversion" }
+        ]
+      },
+      {
+        course: "life-and-managerial-skills",
+        title: "Life and Managerial Skills",
+        videos: [
+          { id: "JGosaTGJQt8", title: "Management Skills" },
+          { id: "pJ7RgUCEd5M", title: "Communication Skills" },
+          { id: "He0XiDnAH_Y", title: "Time Management" },
+          { id: "0fL-pn80s-c", title: "Stress Management" },
+          { id: "RM8hCCT3sJA", title: "Interpersonal Relationships" },
+          { id: "eHJnEHyyN1Y", title: "Entrepreneur Skills" }
+        ]
+      },
+      {
+        course: "organisational-psychology",
+        title: "Organisational Psychology",
+        videos: [
+          { id: "pQwXvsFTQCs", title: "Introduction to Industrial Organizational Psychology" },
+          { id: "woa2Qa8i80U", title: "Motivation Theories" },
+          { id: "YV_LBx3t6pA", title: "Maslow, Herzberg, McGregor Theories of Motivation" }
+        ]
+      }
+    ];
+
+    // DOM elements
+    const videosGrid = document.getElementById('videosGrid');
+    const videoSearch = document.getElementById('videoSearch');
+    const courseFilter = document.getElementById('courseFilter');
+    const filterSelected = courseFilter.querySelector('.filter-selected');
+    const filterOptions = courseFilter.querySelectorAll('.filter-option');
+    const noResults = document.getElementById('noResults');
+    const aboutSection = document.querySelector('.about');
+
+    // Current filter state
+    let currentFilter = 'all';
+    let currentSearch = '';
+
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', () => {
+      // Render all videos initially
+      renderVideos();
+      
+      // Initialize theme
+      initTheme();
+      
+      // Initialize scroll animations
+      initScrollAnimations();
+      
+      // Set up event listeners
+      setupEventListeners();
+    });
+
+    // Initialize theme
+    function initTheme() {
+      const themeToggle = document.getElementById('theme-toggle');
+      const savedTheme = localStorage.getItem('ug-theme');
+      
+      if (savedTheme === 'dark') {
+        document.body.classList.add('dark');
+      } else if (savedTheme === 'light') {
+        document.body.classList.remove('dark');
+      } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+      }
+      
+      themeToggle.addEventListener('click', () => {
+        const isDark = document.body.classList.toggle('dark');
+        localStorage.setItem('ug-theme', isDark ? 'dark' : 'light');
+      });
+    }
+
+    // Set up event listeners
+    function setupEventListeners() {
+      // Search input
+      videoSearch.addEventListener('input', (e) => {
+        currentSearch = e.target.value.toLowerCase().trim();
+        renderVideos();
+      });
+
+      // Filter dropdown
+      filterSelected.addEventListener('click', () => {
+        courseFilter.classList.toggle('active');
+      });
+
+      // Filter options
+      filterOptions.forEach(option => {
+        option.addEventListener('click', () => {
+          const value = option.getAttribute('data-value');
+          const text = option.textContent;
+          
+          // Update selected filter
+          currentFilter = value;
+          filterSelected.textContent = text;
+          
+          // Update active option
+          filterOptions.forEach(opt => opt.classList.remove('active'));
+          option.classList.add('active');
+          
+          // Close dropdown and render videos
+          courseFilter.classList.remove('active');
+          renderVideos();
+        });
+      });
+
+      // Close dropdown when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!courseFilter.contains(e.target)) {
+          courseFilter.classList.remove('active');
+        }
+      });
+    }
+
+    // Render videos based on current filter and search
+    function renderVideos() {
+      // Clear the grid
+      videosGrid.innerHTML = '';
+      
+      // Filter videos based on search and course filter
+      let filteredVideos = [];
+      
+      videoData.forEach(course => {
+        if (currentFilter === 'all' || course.course === currentFilter) {
+          course.videos.forEach(video => {
+            if (currentSearch === '' || video.title.toLowerCase().includes(currentSearch)) {
+              filteredVideos.push({
+                ...video,
+                courseTitle: course.title
+              });
+            }
+          });
+        }
+      });
+      
+      // Show/hide no results message
+      if (filteredVideos.length === 0) {
+        noResults.classList.add('active');
+      } else {
+        noResults.classList.remove('active');
+      }
+      
+      // Render filtered videos
+      filteredVideos.forEach(video => {
+        const videoCard = createVideoCard(video);
+        videosGrid.appendChild(videoCard);
+      });
+      
+      // Animate cards after a short delay
+      setTimeout(() => {
+        const cards = videosGrid.querySelectorAll('.video-card');
+        cards.forEach((card, index) => {
+          setTimeout(() => {
+            card.classList.add('active');
+          }, index * 50);
+        });
+      }, 100);
+    }
+
+    // Create a video card element
+    function createVideoCard(video) {
+      const card = document.createElement('article');
+      card.className = 'video-card';
+      card.setAttribute('data-course', video.course);
+      
+      card.innerHTML = `
+        <div class="thumb">
+          <img 
+            src="https://i.ytimg.com/vi/${video.id}/hqdefault.jpg" 
+            alt="${video.title}" 
+            loading="lazy"
+            onload="this.parentElement.classList.add('loaded')"
+          >
+        </div>
+        <div class="video-body">
+          <h4>${video.title}</h4>
+          <a class="btn" href="https://youtu.be/${video.id}" target="_blank" rel="noopener">Watch</a>
+        </div>
+      `;
+      
+      return card;
+    }
+
+    // Initialize scroll animations
+    function initScrollAnimations() {
+      // About section animation
+      const aboutObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('active');
+          }
+        });
+      }, { threshold: 0.1 });
+      
+      aboutObserver.observe(aboutSection);
+    }
+  </script>
 </body>
 </html>

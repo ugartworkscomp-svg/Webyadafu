@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Microeconomics CourseHack | UG Artworks</title>
+  <style>
+    :root {
+      --bg: #f6f2ea;
+      --text: #1f1f1f;
+      --accent: #3b2412;
+      --accent-strong: #d99a2b;
+      --header: #3b2412;
+      --card: #ffffffee;
+      --shadow: rgba(0,0,0,0.12);
+      --transition: all 0.3s ease;
+    }
+
+    body.dark {
+      --bg: #0b0b0b;
+      --text: #f5f5f5;
+      --accent: #f0b24b;
+      --accent-strong: #d99a2b;
+      --header: #0b0b0b;
+      --card: #161616dd;
+      --shadow: rgba(0,0,0,0.6);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Inter, system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      transition: var(--transition);
+      padding: 0;
+    }
+
+    /* Header */
+    .site-header {
+      background: var(--header);
+      color: #fff;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 6px 14px var(--shadow);
+      padding: 18px 12px;
+    }
+
+    .brand {
+      font-weight: 500;
+      font-size: 1.25rem;
+      letter-spacing: 3px;
+      text-align: center;
+      margin-bottom: 10px;
+      color: #fff;
+    }
+
+    .main-nav.centered {
+      display: flex;
+      justify-content: center;
+      gap: 28px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .main-nav.centered a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 700;
+      padding: 8px 10px;
+      border-radius: 6px;
+      transition: var(--transition);
+    }
+
+    .main-nav.centered a:hover {
+      background: rgba(255,255,255,0.06);
+    }
+
+    .main-nav.centered a.active {
+      background: rgba(0,0,0,0.12);
+    }
+
+    .actions.centered {
+      text-align: center;
+    }
+
+    .actions button, #theme-toggle {
+      background: var(--accent-strong);
+      border: none;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700;
+      color: #000;
+      transition: var(--transition);
+    }
+
+    /* Main Content */
+    main {
+      max-width: 1000px;
+      margin: 22px auto;
+      padding: 0 18px;
+    }
+
+    .quiz-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .quiz-header h1 {
+      color: var(--header);
+      margin-bottom: 0.5rem;
+    }
+
+    .quiz-header p {
+      color: var(--text);
+      opacity: 0.8;
+    }
+
+    .instructions {
+      background: var(--card);
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+      margin-bottom: 2rem;
+    }
+
+    .instructions h3 {
+      color: var(--header);
+      margin-bottom: 1rem;
+    }
+
+    .instructions ul {
+      padding-left: 1.5rem;
+    }
+
+    .instructions li {
+      margin-bottom: 0.5rem;
+    }
+
+    /* Quiz Container */
+    .quiz-container {
+      background: var(--card);
+      border-radius: 12px;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .question {
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .dark .question {
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .question:last-child {
+      border-bottom: none;
+    }
+
+    .question-text {
+      font-weight: 600;
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    .option {
+      display: flex;
+      align-items: flex-start;
+      padding: 0.8rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: var(--transition);
+      border: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .dark .option {
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .option:hover {
+      background: rgba(0,0,0,0.03);
+    }
+
+    .dark .option:hover {
+      background: rgba(255,255,255,0.05);
+    }
+
+    .option.selected {
+      background: rgba(217, 154, 43, 0.1);
+      border-color: var(--accent-strong);
+    }
+
+    .option input {
+      margin-right: 0.8rem;
+      margin-top: 0.2rem;
+    }
+
+    .option-label {
+      font-weight: 500;
+      margin-right: 0.5rem;
+      min-width: 1.5rem;
+    }
+
+    .option-text {
+      flex: 1;
+    }
+
+    /* Quiz Controls */
+    .quiz-controls {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 2rem;
+    }
+
+    .btn {
+      background: var(--accent-strong);
+      color: #000;
+      padding: 0.8rem 1.5rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      display: inline-block;
+      transition: var(--transition);
+      text-align: center;
+    }
+
+    .btn:hover {
+      background: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: rgba(0,0,0,0.1);
+      color: var(--text);
+    }
+
+    .dark .btn-secondary {
+      background: rgba(255,255,255,0.1);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(0,0,0,0.2);
+    }
+
+    .dark .btn-secondary:hover {
+      background: rgba(255,255,255,0.2);
+    }
+
+    /* Results Section */
+    .results {
+      background: var(--card);
+      border-radius: 12px;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+      padding: 2rem;
+      text-align: center;
+      margin-bottom: 2rem;
+      display: none;
+    }
+
+    .results.active {
+      display: block;
+    }
+
+    .score-circle {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background: var(--accent-strong);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #000;
+    }
+
+    .grade {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: var(--header);
+    }
+
+    .feedback {
+      margin-bottom: 1.5rem;
+    }
+
+    .detailed-results {
+      text-align: left;
+      margin-top: 2rem;
+    }
+
+    .detailed-results h3 {
+      color: var(--header);
+      margin-bottom: 1rem;
+    }
+
+    .result-item {
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 0.8rem;
+      background: rgba(0,0,0,0.03);
+    }
+
+    .dark .result-item {
+      background: rgba(255,255,255,0.05);
+    }
+
+    .result-item.correct {
+      border-left: 4px solid #4CAF50;
+    }
+
+    .result-item.incorrect {
+      border-left: 4px solid #F44336;
+    }
+
+    .result-question {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .result-answer {
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    /* Drag and Drop Styles */
+    .drag-drop-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+
+    .drag-column, .drop-column {
+      flex: 1;
+      min-width: 250px;
+    }
+
+    .drag-column h4, .drop-column h4 {
+      margin-bottom: 0.5rem;
+      color: var(--header);
+    }
+
+    .drag-item, .drop-zone {
+      padding: 0.8rem;
+      margin-bottom: 0.5rem;
+      border-radius: 6px;
+      cursor: move;
+      transition: var(--transition);
+    }
+
+    .drag-item {
+      background: rgba(217, 154, 43, 0.2);
+      border: 1px dashed var(--accent-strong);
+    }
+
+    .drop-zone {
+      background: rgba(0,0,0,0.05);
+      border: 1px dashed rgba(0,0,0,0.2);
+      min-height: 50px;
+    }
+
+    .dark .drop-zone {
+      background: rgba(255,255,255,0.05);
+      border: 1px dashed rgba(255,255,255,0.2);
+    }
+
+    .drop-zone.highlight {
+      background: rgba(217, 154, 43, 0.1);
+      border-color: var(--accent-strong);
+    }
+
+    .matched {
+      background: rgba(76, 175, 80, 0.2);
+      border: 1px solid #4CAF50;
+    }
+
+    /* Math Problem Styles */
+    .math-problem {
+      background: rgba(0,0,0,0.03);
+      padding: 1rem;
+      border-radius: 8px;
+      margin: 1rem 0;
+    }
+
+    .dark .math-problem {
+      background: rgba(255,255,255,0.05);
+    }
+
+    .math-input {
+      padding: 0.5rem;
+      border-radius: 4px;
+      border: 1px solid rgba(0,0,0,0.2);
+      background: var(--card);
+      color: var(--text);
+      margin: 0.5rem 0;
+      width: 100%;
+      max-width: 200px;
+    }
+
+    .dark .math-input {
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    /* Interactive Table Styles */
+    .interactive-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+    }
+
+    .interactive-table th, .interactive-table td {
+      padding: 0.8rem;
+      text-align: left;
+      border: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .dark .interactive-table th, .dark .interactive-table td {
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .interactive-table th {
+      background: rgba(0,0,0,0.05);
+      font-weight: 600;
+    }
+
+    .dark .interactive-table th {
+      background: rgba(255,255,255,0.05);
+    }
+
+    .table-option {
+      padding: 0.5rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: var(--transition);
+      text-align: center;
+    }
+
+    .table-option:hover {
+      background: rgba(0,0,0,0.05);
+    }
+
+    .dark .table-option:hover {
+      background: rgba(255,255,255,0.05);
+    }
+
+    .table-option.selected {
+      background: rgba(217, 154, 43, 0.2);
+      border: 1px solid var(--accent-strong);
+    }
+
+    /* Footer */
+    footer {
+      padding: 20px;
+      text-align: center;
+      margin-top: 24px;
+      font-size: 0.9rem;
+      background: var(--header);
+      color: #fff;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .main-nav.centered {
+        gap: 14px;
+      }
+      
+      .quiz-container, .instructions, .results {
+        padding: 1.5rem;
+      }
+      
+      .quiz-controls {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      
+      .quiz-controls .btn {
+        width: 100%;
+      }
+      
+      .drag-drop-container {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header stacked">
+    <div class="brand">UG Artworks</div>
+    <nav class="main-nav centered" aria-label="Main navigation">
+      <a href="./index">Home</a>
+      <a href="./courses">Course Hacks</a>
+      <a href="./videos">Videos</a>
+      <a href="./games" class="active">Mind Games & Tests</a>
+      <a href="./contact">Contact</a>
+    </nav>
+    <div class="actions centered">
+      <button id="theme-toggle" aria-label="Toggle theme">🌞 / 🌙</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="quiz-header">
+      <h1>Microeconomics CourseHack</h1>
+      <p>Master microeconomics concepts with this interactive revision kit</p>
+    </div>
+
+    <section class="instructions">
+      <h3>How to Use This Revision Kit</h3>
+      <ul>
+        <li>This interactive kit covers all key microeconomics concepts from your notes</li>
+        <li>Complete multiple-choice questions, drag-and-drop exercises, and mathematical problems</li>
+        <li>All content is based on Malawian economic contexts for real-world relevance</li>
+        <li>Check your answers as you go or complete everything and submit for a final score</li>
+        <li>Use this to prepare for exams and strengthen your understanding of microeconomics</li>
+      </ul>
+    </section>
+
+    <!-- Section 1: Multiple Choice Questions -->
+    <div class="quiz-container" id="multiple-choice">
+      <h2>Core Concepts Multiple Choice</h2>
+      
+      <div class="question">
+        <div class="question-text">1. Which of the following best explains scarcity?</div>
+        <div class="options">
+          <div class="option" data-value="a">
+            <input type="radio" id="q1a" name="q1">
+            <label class="option-label" for="q1a">A</label>
+            <div class="option-text">When there's not enough money in the economy</div>
+          </div>
+          <div class="option" data-value="b">
+            <input type="radio" id="q1b" name="q1">
+            <label class="option-label" for="q1b">B</label>
+            <div class="option-text">The fundamental economic problem of unlimited wants but limited resources</div>
+          </div>
+          <div class="option" data-value="c">
+            <input type="radio" id="q1c" name="q1">
+            <label class="option-label" for="q1c">C</label>
+            <div class="option-text">When goods are not available in the market</div>
+          </div>
+          <div class="option" data-value="d">
+            <input type="radio" id="q1d" name="q1">
+            <label class="option-label" for="q1d">D</label>
+            <div class="option-text">Government restrictions on production</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="question-text">2. What best explains choice in economics?</div>
+        <div class="options">
+          <div class="option" data-value="a">
+            <input type="radio" id="q2a" name="q2">
+            <label class="option-label" for="q2a">A</label>
+            <div class="option-text">The decision to buy luxury items</div>
+          </div>
+          <div class="option" data-value="b">
+            <input type="radio" id="q2b" name="q2">
+            <label class="option-label" for="q2b">B</label>
+            <div class="option-text">Selecting among alternatives due to scarcity</div>
+          </div>
+          <div class="option" data-value="c">
+            <input type="radio" id="q2c" name="q2">
+            <label class="option-label" for="q2c">C</label>
+            <div class="option-text">Consumer preferences for certain brands</div>
+          </div>
+          <div class="option" data-value="d">
+            <input type="radio" id="q2d" name="q2">
+            <label class="option-label" for="q2d">D</label>
+            <div class="option-text">Government economic policies</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="question-text">3. What is the meaning of opportunity cost?</div>
+        <div class="options">
+          <div class="option" data-value="a">
+            <input type="radio" id="q3a" name="q3">
+            <label class="option-label" for="q3a">A</label>
+            <div class="option-text">The cost of business opportunities</div>
+          </div>
+          <div class="option" data-value="b">
+            <input type="radio" id="q3b" name="q3">
+            <label class="option-label" for="q3b">B</label>
+            <div class="option-text">The value of the next best alternative forgone when making a choice</div>
+          </div>
+          <div class="option" data-value="c">
+            <input type="radio" id="q3c" name="q3">
+            <label class="option-label" for="q3c">C</label>
+            <div class="option-text">The price of goods and services</div>
+          </div>
+          <div class="option" data-value="d">
+            <input type="radio" id="q3d" name="q3">
+            <label class="option-label" for="q3d">D</label>
+            <div class="option-text">The cost of production</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="question-text">4. Which option best differentiates macro and micro economics?</div>
+        <div class="options">
+          <div class="option" data-value="a">
+            <input type="radio" id="q4a" name="q4">
+            <label class="option-label" for="q4a">A</label>
+            <div class="option-text">Micro studies individual markets; macro studies the whole economy</div>
+          </div>
+          <div class="option" data-value="b">
+            <input type="radio" id="q4b" name="q4">
+            <label class="option-label" for="q4b">B</label>
+            <div class="option-text">Micro is theoretical; macro is practical</div>
+          </div>
+          <div class="option" data-value="c">
+            <input type="radio" id="q4c" name="q4">
+            <label class="option-label" for="q4c">C</label>
+            <div class="option-text">Micro studies government; macro studies businesses</div>
+          </div>
+          <div class="option" data-value="d">
+            <input type="radio" id="q4d" name="q4">
+            <label class="option-label" for="q4d">D</label>
+            <div class="option-text">Micro studies developed countries; macro studies developing countries</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="question-text">5. This best describes how demand and supply affect the setting of prices:</div>
+        <div class="options">
+          <div class="option" data-value="a">
+            <input type="radio" id="q5a" name="q5">
+            <label class="option-label" for="q5a">A</label>
+            <div class="option-text">Prices are set by the government</div>
+          </div>
+          <div class="option" data-value="b">
+            <input type="radio" id="q5b" name="q5">
+            <label class="option-label" for="q5b">B</label>
+            <div class="option-text">Prices are determined by the interaction of demand and supply in the market</div>
+          </div>
+          <div class="option" data-value="c">
+            <input type="radio" id="q5c" name="q5">
+            <label class="option-label" for="q5c">C</label>
+            <div class="option-text">Prices are set by producers alone</div>
+          </div>
+          <div class="option" data-value="d">
+            <input type="radio" id="q5d" name="q5">
+            <label class="option-label" for="q5d">D</label>
+            <div class="option-text">Prices are determined by international markets</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="question-text">6. This explains utility:</div>
+        <div class="options">
+          <div class="option" data-value="a">
+            <input type="radio" id="q6a" name="q6">
+            <label class="option-label" for="q6a">A</label>
+            <div class="option-text">The satisfaction derived from consuming a good or service</div>
+          </div>
+          <div class="option" data-value="b">
+            <input type="radio" id="q6b" name="q6">
+            <label class="option-label" for="q6b">B</label>
+            <div class="option-text">The usefulness of a product</div>
+          </div>
+          <div class="option" data-value="c">
+            <input type="radio" id="q6c" name="q6">
+            <label class="option-label" for="q6c">C</label>
+            <div class="option-text">The price of a good or service</div>
+          </div>
+          <div class="option" data-value="d">
+            <input type="radio" id="q6d" name="q6">
+            <label class="option-label" for="q6d">D</label>
+            <div class="option-text">The cost of production</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="question-text">7. Why does utility decrease with consumption?</div>
+        <div class="options">
+          <div class="option" data-value="a">
+            <input type="radio" id="q7a" name="q7">
+            <label class="option-label" for="q7a">A</label>
+            <div class="option-text">Because of the law of diminishing marginal utility</div>
+          </div>
+          <div class="option" data-value="b">
+            <input type="radio" id="q7b" name="q7">
+            <label class="option-label" for="q7b">B</label>
+            <div class="option-text">Because products become less valuable over time</div>
+          </div>
+          <div class="option" data-value="c">
+            <input type="radio" id="q7c" name="q7">
+            <label class="option-label" for="q7c">C</label>
+            <div class="option-text">Because of inflation</div>
+          </div>
+          <div class="option" data-value="d">
+            <input type="radio" id="q7d" name="q7">
+            <label class="option-label" for="q7d">D</label>
+            <div class="option-text">Because consumers get bored</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="question-text">8. What is this situation called? (Limited income, unlimited wants)</div>
+        <div class="options">
+          <div class="option" data-value="a">
+            <input type="radio" id="q8a" name="q8">
+            <label class="option-label" for="q8a">A</label>
+            <div class="option-text">Budget constraint</div>
+          </div>
+          <div class="option" data-value="b">
+            <input type="radio" id="q8b" name="q8">
+            <label class="option-label" for="q8b">B</label>
+            <div class="option-text">Utility maximization</div>
+          </div>
+          <div class="option" data-value="c">
+            <input type="radio" id="q8c" name="q8">
+            <label class="option-label" for="q8c">C</label>
+            <div class="option-text">Income effect</div>
+          </div>
+          <div class="option" data-value="d">
+            <input type="radio" id="q8d" name="q8">
+            <label class="option-label" for="q8d">D</label>
+            <div class="option-text">Substitution effect</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="question-text">9. This best explains demand elasticity:</div>
+        <div class="options">
+          <div class="option" data-value="a">
+            <input type="radio" id="q9a" name="q9">
+            <label class="option-label" for="q9a">A</label>
+            <div class="option-text">The responsiveness of quantity demanded to changes in price or income</div>
+          </div>
+          <div class="option" data-value="b">
+            <input type="radio" id="q9b" name="q9">
+            <label class="option-label" for="q9b">B</label>
+            <div class="option-text">How much demand changes over time</div>
+          </div>
+          <div class="option" data-value="c">
+            <input type="radio" id="q9c" name="q9">
+            <label class="option-label" for="q9c">C</label>
+            <div class="option-text">The flexibility of prices</div>
+          </div>
+          <div class="option" data-value="d">
+            <input type="radio" id="q9d" name="q9">
+            <label class="option-label" for="q9d">D</label>
+            <div class="option-text">How suppliers respond to demand</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="question-text">10. What option differentiates TP, MP, AP?</div>
+        <div class="options">
+          <div class="option" data-value="a">
+            <input type="radio" id="q10a" name="q10">
+            <label class="option-label" for="q10a">A</label>
+            <div class="option-text">TP is total output, MP is extra output from one more input, AP is output per unit of input</div>
+          </div>
+          <div class="option" data-value="b">
+            <input type="radio" id="q10b" name="q10">
+            <label class="option-label" for="q10b">B</label>
+            <div class="option-text">TP is total profit, MP is marginal profit, AP is average profit</div>
+          </div>
+          <div class="option" data-value="c">
+            <input type="radio" id="q10c" name="q10">
+            <label class="option-label" for="q10c">C</label>
+            <div class="option-text">TP is total price, MP is marginal price, AP is average price</div>
+          </div>
+          <div class="option" data-value="d">
+            <input type="radio" id="q10d" name="q10">
+            <label class="option-label" for="q10d">D</label>
+            <div class="option-text">TP is total product, MP is maximum product, AP is actual product</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2: Drag and Drop - Cost Terms -->
+    <div class="quiz-container" id="drag-drop-costs">
+      <h2>Drag and Drop: Cost Terms</h2>
+      <p>Drag the cost terms on the left to match with their correct definitions on the right.</p>
+      
+      <div class="drag-drop-container">
+        <div class="drag-column">
+          <h4>Cost Terms</h4>
+          <div class="drag-item" draggable="true" data-term="FC">Fixed Cost (FC)</div>
+          <div class="drag-item" draggable="true" data-term="VC">Variable Cost (VC)</div>
+          <div class="drag-item" draggable="true" data-term="TC">Total Cost (TC)</div>
+          <div class="drag-item" draggable="true" data-term="AC">Average Cost (AC)</div>
+          <div class="drag-item" draggable="true" data-term="MC">Marginal Cost (MC)</div>
+        </div>
+        
+        <div class="drop-column">
+          <h4>Definitions</h4>
+          <div class="drop-zone" data-term="MC">The additional cost of producing one more unit of output</div>
+          <div class="drop-zone" data-term="VC">Costs that vary with the level of output</div>
+          <div class="drop-zone" data-term="AC">The cost per unit of output</div>
+          <div class="drop-zone" data-term="FC">Costs that do not vary with the level of output</div>
+          <div class="drop-zone" data-term="TC">The sum of fixed and variable costs</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3: Mathematical Problems - Elasticity -->
+    <div class="quiz-container" id="math-elasticity">
+      <h2>Mathematical Problems: Elasticity</h2>
+      
+      <div class="question">
+        <div class="question-text">1. Price Elasticity of Demand (Malawi Context)</div>
+        <div class="math-problem">
+          <p>When the price of maize in Lilongwe increased from MWK 150 per kg to MWK 180 per kg, the quantity demanded decreased from 5000 kg to 4000 kg per month. Calculate the price elasticity of demand.</p>
+          <p>Formula: PED = (% Change in Quantity Demanded) / (% Change in Price)</p>
+          <label for="ped-answer">Your Answer:</label>
+          <input type="number" step="0.01" id="ped-answer" class="math-input" placeholder="Enter PED value">
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="question-text">2. Income Elasticity of Demand (Malawi Context)</div>
+        <div class="math-problem">
+          <p>In Blantyre, when average household income increased from MWK 50,000 to MWK 60,000 per month, demand for rice increased from 2000 kg to 2500 kg per month. Calculate the income elasticity of demand.</p>
+          <p>Formula: YED = (% Change in Quantity Demanded) / (% Change in Income)</p>
+          <label for="yed-answer">Your Answer:</label>
+          <input type="number" step="0.01" id="yed-answer" class="math-input" placeholder="Enter YED value">
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="question-text">3. Cross-Price Elasticity of Demand (Malawi Context)</div>
+        <div class="math-problem">
+          <p>When the price of Airtel mobile data bundles decreased by 10%, the demand for TNM data bundles decreased by 5%. Calculate the cross-price elasticity of demand.</p>
+          <p>Formula: XED = (% Change in Quantity Demanded of Good A) / (% Change in Price of Good B)</p>
+          <label for="xed-answer">Your Answer:</label>
+          <input type="number" step="0.01" id="xed-answer" class="math-input" placeholder="Enter XED value">
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 4: Production Calculations -->
+    <div class="quiz-container" id="production-calculations">
+      <h2>Production Calculations</h2>
+      
+      <div class="question">
+        <div class="question-text">1. Total Product (TP), Marginal Product (MP), and Average Product (AP)</div>
+        <div class="math-problem">
+          <p>A smallholder farmer in Mzuzu employs different numbers of workers on their 2-acre farm. With 3 workers, they harvest 60 bags of soybeans. With 4 workers, they harvest 75 bags. Calculate:</p>
+          <p>a) Total Product with 4 workers: <input type="number" id="tp-answer" class="math-input" placeholder="TP value"></p>
+          <p>b) Marginal Product of the 4th worker: <input type="number" id="mp-answer" class="math-input" placeholder="MP value"></p>
+          <p>c) Average Product with 4 workers: <input type="number" step="0.01" id="ap-answer" class="math-input" placeholder="AP value"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 5: Interactive Table - MP and AP Relationship -->
+    <div class="quiz-container" id="mp-ap-table">
+      <h2>MP and AP Relationship</h2>
+      <p>Select what happens to Average Product (AP) in each situation:</p>
+      
+      <table class="interactive-table">
+        <thead>
+          <tr>
+            <th>Situation</th>
+            <th>What happens to AP</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>MP > AP</td>
+            <td>
+              <div class="table-option" data-situation="mp-greater" data-value="increases">Increases</div>
+              <div class="table-option" data-situation="mp-greater" data-value="decreases">Decreases</div>
+              <div class="table-option" data-situation="mp-greater" data-value="constant">Remains constant</div>
+            </td>
+          </tr>
+          <tr>
+            <td>MP < AP</td>
+            <td>
+              <div class="table-option" data-situation="mp-less" data-value="increases">Increases</div>
+              <div class="table-option" data-situation="mp-less" data-value="decreases">Decreases</div>
+              <div class="table-option" data-situation="mp-less" data-value="constant">Remains constant</div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Section 6: Cost Calculations -->
+    <div class="quiz-container" id="cost-calculations">
+      <h2>Cost Calculations</h2>
+      
+      <div class="question">
+        <div class="question-text">A small business in Lilongwe has fixed costs of MWK 10,000 per month. When producing 100 units, their variable costs are MWK 5,000. When producing 101 units, their total costs are MWK 15,150. Calculate:</div>
+        <div class="math-problem">
+          <p>a) Total Cost at 100 units: <input type="number" id="tc-answer" class="math-input" placeholder="TC value"></p>
+          <p>b) Average Cost at 100 units: <input type="number" id="ac-answer" class="math-input" placeholder="AC value"></p>
+          <p>c) Marginal Cost of the 101st unit: <input type="number" id="mc-cost-answer" class="math-input" placeholder="MC value"></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="quiz-controls">
+      <button class="btn-secondary" id="reset-btn">Reset All Answers</button>
+      <button class="btn" id="submit-btn">Submit All Answers</button>
+    </div>
+
+    <div class="results" id="results">
+      <div class="score-circle" id="score-circle">0%</div>
+      <div class="grade" id="grade">Need Improvement</div>
+      <div class="feedback" id="feedback">You need to review the course material to improve your understanding.</div>
+      
+      <div class="detailed-results">
+        <h3>Question Review</h3>
+        <div id="detailed-results">
+          <!-- Detailed results will be inserted here -->
+        </div>
+      </div>
+      
+      <button class="btn" id="retry-btn" style="margin-top: 1.5rem;">Try Again</button>
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2025 UG Artworks | Microeconomics CourseHack</p>
+  </footer>
+
+  <script>
+    // Theme Toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    const savedTheme = localStorage.getItem('ug-theme');
+    
+    if (savedTheme === 'dark') {
+      document.body.classList.add('dark');
+    } else if (savedTheme === 'light') {
+      document.body.classList.remove('dark');
+    } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      document.body.classList.add('dark');
+    }
+    
+    themeToggle.addEventListener('click', () => {
+      const isDark = document.body.classList.toggle('dark');
+      localStorage.setItem('ug-theme', isDark ? 'dark' : 'light');
+    });
+
+    // Quiz Functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      // Multiple Choice Options
+      const options = document.querySelectorAll('.option');
+      const submitBtn = document.getElementById('submit-btn');
+      const resetBtn = document.getElementById('reset-btn');
+      const retryBtn = document.getElementById('retry-btn');
+      const results = document.getElementById('results');
+      const scoreCircle = document.getElementById('score-circle');
+      const grade = document.getElementById('grade');
+      const feedback = document.getElementById('feedback');
+      const detailedResults = document.getElementById('detailed-results');
+      
+      // Table Options
+      const tableOptions = document.querySelectorAll('.table-option');
+      
+      // Correct answers
+      const correctAnswers = {
+        // Multiple Choice
+        q1: 'b',
+        q2: 'b',
+        q3: 'b',
+        q4: 'a',
+        q5: 'b',
+        q6: 'a',
+        q7: 'a',
+        q8: 'a',
+        q9: 'a',
+        q10: 'a',
+        
+        // Math Problems
+        ped: -1.5,  // Price Elasticity of Demand
+        yed: 1.25,  // Income Elasticity of Demand
+        xed: 0.5,   // Cross-Price Elasticity of Demand
+        tp: 75,     // Total Product
+        mp: 15,     // Marginal Product
+        ap: 18.75,  // Average Product
+        tc: 15000,  // Total Cost
+        ac: 150,    // Average Cost
+        mc: 150,    // Marginal Cost
+        
+        // MP/AP Table
+        mpGreater: 'increases',
+        mpLess: 'decreases'
+      };
+      
+      // Drag and Drop functionality
+      const dragItems = document.querySelectorAll('.drag-item');
+      const dropZones = document.querySelectorAll('.drop-zone');
+      
+      let draggedItem = null;
+      
+      dragItems.forEach(item => {
+        item.addEventListener('dragstart', function() {
+          draggedItem = this;
+          setTimeout(() => this.style.display = 'none', 0);
+        });
+        
+        item.addEventListener('dragend', function() {
+          setTimeout(() => this.style.display = 'block', 0);
+          draggedItem = null;
+        });
+      });
+      
+      dropZones.forEach(zone => {
+        zone.addEventListener('dragover', function(e) {
+          e.preventDefault();
+          this.classList.add('highlight');
+        });
+        
+        zone.addEventListener('dragleave', function() {
+          this.classList.remove('highlight');
+        });
+        
+        zone.addEventListener('drop', function(e) {
+          e.preventDefault();
+          this.classList.remove('highlight');
+          
+          if (draggedItem) {
+            // Check if the drop is correct
+            const term = draggedItem.getAttribute('data-term');
+            const correctTerm = this.getAttribute('data-term');
+            
+            if (term === correctTerm) {
+              this.innerHTML = draggedItem.textContent;
+              this.classList.add('matched');
+              draggedItem.style.display = 'none';
+            } else {
+              // Return to original position if incorrect
+              draggedItem.style.display = 'block';
+            }
+          }
+        });
+      });
+      
+      // Option selection for multiple choice
+      options.forEach(option => {
+        option.addEventListener('click', function() {
+          const question = this.closest('.question');
+          const optionsInQuestion = question.querySelectorAll('.option');
+          const input = this.querySelector('input');
+          
+          // Deselect all options in this question
+          optionsInQuestion.forEach(opt => {
+            opt.classList.remove('selected');
+            opt.querySelector('input').checked = false;
+          });
+          
+          // Select clicked option
+          this.classList.add('selected');
+          input.checked = true;
+        });
+      });
+      
+      // Table option selection
+      tableOptions.forEach(option => {
+        option.addEventListener('click', function() {
+          const situation = this.getAttribute('data-situation');
+          const tableRow = this.closest('tr');
+          const optionsInRow = tableRow.querySelectorAll('.table-option');
+          
+          // Deselect all options in this row
+          optionsInRow.forEach(opt => {
+            opt.classList.remove('selected');
+          });
+          
+          // Select clicked option
+          this.classList.add('selected');
+        });
+      });
+      
+      // Reset answers
+      resetBtn.addEventListener('click', function() {
+        // Reset multiple choice
+        const allOptions = document.querySelectorAll('.option');
+        allOptions.forEach(option => {
+          option.classList.remove('selected');
+          option.querySelector('input').checked = false;
+        });
+        
+        // Reset math inputs
+        const mathInputs = document.querySelectorAll('.math-input');
+        mathInputs.forEach(input => {
+          input.value = '';
+        });
+        
+        // Reset table options
+        tableOptions.forEach(option => {
+          option.classList.remove('selected');
+        });
+        
+        // Reset drag and drop
+        dragItems.forEach(item => {
+          item.style.display = 'block';
+        });
+        
+        dropZones.forEach(zone => {
+          zone.classList.remove('matched');
+          // Reset to original definitions
+          const term = zone.getAttribute('data-term');
+          if (term === 'MC') zone.innerHTML = 'The additional cost of producing one more unit of output';
+          if (term === 'VC') zone.innerHTML = 'Costs that vary with the level of output';
+          if (term === 'AC') zone.innerHTML = 'The cost per unit of output';
+          if (term === 'FC') zone.innerHTML = 'Costs that do not vary with the level of output';
+          if (term === 'TC') zone.innerHTML = 'The sum of fixed and variable costs';
+        });
+      });
+      
+      // Submit quiz
+      submitBtn.addEventListener('click', function() {
+        let score = 0;
+        let totalQuestions = 0;
+        let resultsHTML = '';
+        
+        // Check multiple choice questions (10 questions)
+        for (let i = 1; i <= 10; i++) {
+          totalQuestions++;
+          const questionName = `q${i}`;
+          const selectedOption = document.querySelector(`input[name="${questionName}"]:checked`);
+          
+          if (selectedOption) {
+            const questionElement = selectedOption.closest('.question');
+            const questionText = questionElement.querySelector('.question-text').textContent;
+            const userAnswer = selectedOption.closest('.option').dataset.value;
+            const isCorrect = userAnswer === correctAnswers[questionName];
+            
+            if (isCorrect) {
+              score++;
+            }
+            
+            // Add to detailed results
+            resultsHTML += `
+              <div class="result-item ${isCorrect ? 'correct' : 'incorrect'}">
+                <div class="result-question">${questionText}</div>
+                <div class="result-answer">Your answer: ${userAnswer.toUpperCase()} - ${isCorrect ? 'Correct' : 'Incorrect'}</div>
+              </div>
+            `;
+          } else {
+            // No answer selected
+            const questionElement = document.querySelector(`input[name="${questionName}"]`).closest('.question');
+            const questionText = questionElement.querySelector('.question-text').textContent;
+            
+            resultsHTML += `
+              <div class="result-item incorrect">
+                <div class="result-question">${questionText}</div>
+                <div class="result-answer">No answer selected - Incorrect</div>
+              </div>
+            `;
+          }
+        }
+        
+        // Check math problems
+        const mathProblems = [
+          { id: 'ped-answer', key: 'ped', name: 'Price Elasticity of Demand' },
+          { id: 'yed-answer', key: 'yed', name: 'Income Elasticity of Demand' },
+          { id: 'xed-answer', key: 'xed', name: 'Cross-Price Elasticity of Demand' },
+          { id: 'tp-answer', key: 'tp', name: 'Total Product' },
+          { id: 'mp-answer', key: 'mp', name: 'Marginal Product' },
+          { id: 'ap-answer', key: 'ap', name: 'Average Product' },
+          { id: 'tc-answer', key: 'tc', name: 'Total Cost' },
+          { id: 'ac-answer', key: 'ac', name: 'Average Cost' },
+          { id: 'mc-cost-answer', key: 'mc', name: 'Marginal Cost' }
+        ];
+        
+        mathProblems.forEach(problem => {
+          totalQuestions++;
+          const userAnswer = parseFloat(document.getElementById(problem.id).value);
+          const isCorrect = userAnswer === correctAnswers[problem.key];
+          
+          if (isCorrect) {
+            score++;
+          }
+          
+          resultsHTML += `
+            <div class="result-item ${isCorrect ? 'correct' : 'incorrect'}">
+              <div class="result-question">${problem.name}</div>
+              <div class="result-answer">Your answer: ${userAnswer || 'No answer'} - ${isCorrect ? 'Correct' : 'Incorrect'}. Correct answer: ${correctAnswers[problem.key]}</div>
+            </div>
+          `;
+        });
+        
+        // Check MP/AP table
+        const mpGreaterSelected = document.querySelector('.table-option[data-situation="mp-greater"].selected');
+        const mpLessSelected = document.querySelector('.table-option[data-situation="mp-less"].selected');
+        
+        if (mpGreaterSelected) {
+          totalQuestions++;
+          const userAnswer = mpGreaterSelected.getAttribute('data-value');
+          const isCorrect = userAnswer === correctAnswers.mpGreater;
+          
+          if (isCorrect) {
+            score++;
+          }
+          
+          resultsHTML += `
+            <div class="result-item ${isCorrect ? 'correct' : 'incorrect'}">
+              <div class="result-question">MP > AP relationship</div>
+              <div class="result-answer">Your answer: AP ${userAnswer} - ${isCorrect ? 'Correct' : 'Incorrect'}. Correct answer: AP increases</div>
+            </div>
+          `;
+        } else {
+          totalQuestions++;
+          resultsHTML += `
+            <div class="result-item incorrect">
+              <div class="result-question">MP > AP relationship</div>
+              <div class="result-answer">No answer selected - Incorrect. Correct answer: AP increases</div>
+            </div>
+          `;
+        }
+        
+        if (mpLessSelected) {
+          totalQuestions++;
+          const userAnswer = mpLessSelected.getAttribute('data-value');
+          const isCorrect = userAnswer === correctAnswers.mpLess;
+          
+          if (isCorrect) {
+            score++;
+          }
+          
+          resultsHTML += `
+            <div class="result-item ${isCorrect ? 'correct' : 'incorrect'}">
+              <div class="result-question">MP < AP relationship</div>
+              <div class="result-answer">Your answer: AP ${userAnswer} - ${isCorrect ? 'Correct' : 'Incorrect'}. Correct answer: AP decreases</div>
+            </div>
+          `;
+        } else {
+          totalQuestions++;
+          resultsHTML += `
+            <div class="result-item incorrect">
+              <div class="result-question">MP < AP relationship</div>
+              <div class="result-answer">No answer selected - Incorrect. Correct answer: AP decreases</div>
+            </div>
+          `;
+        }
+        
+        // Check drag and drop (5 items)
+        const matchedZones = document.querySelectorAll('.drop-zone.matched');
+        matchedZones.forEach(zone => {
+          totalQuestions++;
+          const term = zone.getAttribute('data-term');
+          const isCorrect = zone.textContent.includes(term);
+          
+          if (isCorrect) {
+            score++;
+          }
+          
+          resultsHTML += `
+            <div class="result-item ${isCorrect ? 'correct' : 'incorrect'}">
+              <div class="result-question">Drag and Drop: ${zone.textContent}</div>
+              <div class="result-answer">${isCorrect ? 'Correct match' : 'Incorrect match'}</div>
+            </div>
+          `;
+        });
+        
+        // Calculate percentage
+        const percentage = Math.round((score / totalQuestions) * 100);
+        
+        // Update results
+        scoreCircle.textContent = `${percentage}%`;
+        detailedResults.innerHTML = resultsHTML;
+        
+        // Set grade and feedback
+        if (percentage >= 90) {
+          grade.textContent = "Excellent!";
+          feedback.textContent = "You have mastered microeconomics concepts. Keep up the great work!";
+        } else if (percentage >= 80) {
+          grade.textContent = "Very Good";
+          feedback.textContent = "You have a strong understanding of microeconomics with minor areas for improvement.";
+        } else if (percentage >= 70) {
+          grade.textContent = "Good";
+          feedback.textContent = "You understand the key concepts but should review some specific areas.";
+        } else if (percentage >= 60) {
+          grade.textContent = "Fair";
+          feedback.textContent = "You have a basic understanding but need more study to master the concepts.";
+        } else {
+          grade.textContent = "Needs Improvement";
+          feedback.textContent = "You should thoroughly review the course material to improve your understanding.";
+        }
+        
+        // Show results
+        results.classList.add('active');
+        results.scrollIntoView({ behavior: 'smooth' });
+      });
+      
+      // Retry quiz
+      retryBtn.addEventListener('click', function() {
+        results.classList.remove('active');
+        resetBtn.click();
+        document.querySelector('.quiz-container').scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+  </script>
+</body>
+</html>

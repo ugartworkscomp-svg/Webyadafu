@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Introduction to Computer Systems Quiz | UG Artworks</title>
+  <style>
+    :root {
+      --bg: #f6f2ea;
+      --text: #1f1f1f;
+      --accent: #3b2412;
+      --accent-strong: #d99a2b;
+      --header: #3b2412;
+      --card: #ffffffee;
+      --shadow: rgba(0,0,0,0.12);
+      --transition: all 0.3s ease;
+    }
+
+    body.dark {
+      --bg: #0b0b0b;
+      --text: #f5f5f5;
+      --accent: #f0b24b;
+      --accent-strong: #d99a2b;
+      --header: #0b0b0b;
+      --card: #161616dd;
+      --shadow: rgba(0,0,0,0.6);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Inter, system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      transition: var(--transition);
+      padding: 0;
+    }
+
+    /* Header */
+    .site-header {
+      background: var(--header);
+      color: #fff;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 6px 14px var(--shadow);
+      padding: 18px 12px;
+    }
+
+    .brand {
+      font-weight: 500;
+      font-size: 1.25rem;
+      letter-spacing: 3px;
+      text-align: center;
+      margin-bottom: 10px;
+      color: #fff;
+    }
+
+    .main-nav.centered {
+      display: flex;
+      justify-content: center;
+      gap: 28px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .main-nav.centered a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 700;
+      padding: 8px 10px;
+      border-radius: 6px;
+      transition: var(--transition);
+    }
+
+    .main-nav.centered a:hover {
+      background: rgba(255,255,255,0.06);
+    }
+
+    .main-nav.centered a.active {
+      background: rgba(0,0,0,0.12);
+    }
+
+    .actions.centered {
+      text-align: center;
+    }
+
+    .actions button, #theme-toggle {
+      background: var(--accent-strong);
+      border: none;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700;
+      color: #000;
+      transition: var(--transition);
+    }
+
+    /* Main Content */
+    main {
+      max-width: 1000px;
+      margin: 22px auto;
+      padding: 0 18px;
+    }
+
+    .quiz-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .quiz-header h1 {
+      color: var(--header);
+      margin-bottom: 0.5rem;
+    }
+
+    .quiz-header p {
+      color: var(--text);
+      opacity: 0.8;
+    }
+
+    .instructions {
+      background: var(--card);
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+      margin-bottom: 2rem;
+    }
+
+    .instructions h3 {
+      color: var(--header);
+      margin-bottom: 1rem;
+    }
+
+    .instructions ul {
+      padding-left: 1.5rem;
+    }
+
+    .instructions li {
+      margin-bottom: 0.5rem;
+    }
+
+    /* Quiz Meta */
+    .quiz-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding: 1rem;
+      background: var(--card);
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .timer {
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+
+    .progress {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .progress-bar {
+      width: 150px;
+      height: 8px;
+      background: rgba(0,0,0,0.1);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .dark .progress-bar {
+      background: rgba(255,255,255,0.1);
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--accent-strong);
+      transition: width 0.3s ease;
+    }
+
+    /* Quiz Navigation */
+    .quiz-navigation {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      justify-content: center;
+    }
+
+    .nav-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      border: 1px solid rgba(0,0,0,0.1);
+      background: var(--card);
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+
+    .dark .nav-btn {
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .nav-btn:hover {
+      background: rgba(0,0,0,0.05);
+    }
+
+    .dark .nav-btn:hover {
+      background: rgba(255,255,255,0.1);
+    }
+
+    .nav-btn.current {
+      background: var(--accent-strong);
+      color: #000;
+      font-weight: 700;
+    }
+
+    .nav-btn.answered {
+      background: rgba(217, 154, 43, 0.2);
+    }
+
+    /* Quiz Container */
+    .quiz-container {
+      background: var(--card);
+      border-radius: 12px;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .question {
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .dark .question {
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .question:last-child {
+      border-bottom: none;
+    }
+
+    .question-text {
+      font-weight: 600;
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    .option {
+      display: flex;
+      align-items: flex-start;
+      padding: 0.8rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: var(--transition);
+      border: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .dark .option {
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .option:hover {
+      background: rgba(0,0,0,0.03);
+    }
+
+    .dark .option:hover {
+      background: rgba(255,255,255,0.05);
+    }
+
+    .option.selected {
+      background: rgba(217, 154, 43, 0.1);
+      border-color: var(--accent-strong);
+    }
+
+    .option input {
+      margin-right: 0.8rem;
+      margin-top: 0.2rem;
+    }
+
+    .option-label {
+      font-weight: 500;
+      margin-right: 0.5rem;
+      min-width: 1.5rem;
+    }
+
+    .option-text {
+      flex: 1;
+    }
+
+    /* Quiz Controls */
+    .quiz-controls {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 2rem;
+    }
+
+    .btn {
+      background: var(--accent-strong);
+      color: #000;
+      padding: 0.8rem 1.5rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      display: inline-block;
+      transition: var(--transition);
+      text-align: center;
+    }
+
+    .btn:hover {
+      background: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: rgba(0,0,0,0.1);
+      color: var(--text);
+    }
+
+    .dark .btn-secondary {
+      background: rgba(255,255,255,0.1);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(0,0,0,0.2);
+    }
+
+    .dark .btn-secondary:hover {
+      background: rgba(255,255,255,0.2);
+    }
+
+    /* Results Section */
+    .results {
+      background: var(--card);
+      border-radius: 12px;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+      padding: 2rem;
+      text-align: center;
+      margin-bottom: 2rem;
+      display: none;
+    }
+
+    .results.active {
+      display: block;
+    }
+
+    .score-circle {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background: var(--accent-strong);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #000;
+    }
+
+    .grade {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: var(--header);
+    }
+
+    .feedback {
+      margin-bottom: 1.5rem;
+    }
+
+    .topic-breakdown {
+      text-align: left;
+      margin: 2rem 0;
+      padding: 1.5rem;
+      background: rgba(0,0,0,0.03);
+      border-radius: 12px;
+    }
+
+    .dark .topic-breakdown {
+      background: rgba(255,255,255,0.05);
+    }
+
+    .topic-breakdown h3 {
+      color: var(--header);
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .topic-score {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1rem;
+      gap: 1rem;
+    }
+
+    .topic-score span:first-child {
+      flex: 1;
+      font-weight: 500;
+    }
+
+    .topic-bar {
+      width: 100px;
+      height: 8px;
+      background: rgba(0,0,0,0.1);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .dark .topic-bar {
+      background: rgba(255,255,255,0.1);
+    }
+
+    .topic-fill {
+      height: 100%;
+      background: var(--accent-strong);
+      transition: width 0.5s ease;
+    }
+
+    .detailed-results {
+      text-align: left;
+      margin-top: 2rem;
+    }
+
+    .detailed-results h3 {
+      color: var(--header);
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .result-item {
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 0.8rem;
+      background: rgba(0,0,0,0.03);
+    }
+
+    .dark .result-item {
+      background: rgba(255,255,255,0.05);
+    }
+
+    .result-item.correct {
+      border-left: 4px solid #4CAF50;
+    }
+
+    .result-item.incorrect {
+      border-left: 4px solid #F44336;
+    }
+
+    .result-question {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .result-answer {
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    /* Footer */
+    footer {
+      padding: 20px;
+      text-align: center;
+      margin-top: 24px;
+      font-size: 0.9rem;
+      background: var(--header);
+      color: #fff;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .main-nav.centered {
+        gap: 14px;
+      }
+      
+      .quiz-container, .instructions, .results {
+        padding: 1.5rem;
+      }
+      
+      .quiz-controls {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      
+      .quiz-controls .btn {
+        width: 100%;
+      }
+      
+      .quiz-meta {
+        flex-direction: column;
+        gap: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header stacked">
+    <div class="brand">UG Artworks</div>
+    <nav class="main-nav centered" aria-label="Main navigation">
+      <a href="./index">Home</a>
+      <a href="./courses">Course Hacks</a>
+      <a href="./videos">Videos</a>
+      <a href="./games" class="active">Mind Games & Tests</a>
+      <a href="./contact">Contact</a>
+    </nav>
+    <div class="actions centered">
+      <button id="theme-toggle" aria-label="Toggle theme">🌞 / 🌙</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="quiz-header">
+      <h1>Introduction to Computer Systems Quiz</h1>
+      <p>Comprehensive exam covering computer fundamentals, components, and operations</p>
+    </div>
+
+    <section class="instructions">
+      <h3>Exam Instructions</h3>
+      <ul>
+        <li>This exam contains 20 multiple-choice questions covering all topics from Introduction to Computer Systems</li>
+        <li>You have 45 minutes to complete the exam</li>
+        <li>Select the best answer for each question</li>
+        <li>Use the question navigation to move between questions</li>
+        <li>After submission, you'll receive a detailed score report with topic breakdown</li>
+        <li>A score of 75% or higher indicates strong understanding of computer systems fundamentals</li>
+      </ul>
+    </section>
+
+    <div class="quiz-meta">
+      <div class="timer">Time Remaining: <span id="timer">45:00</span></div>
+      <div class="progress">
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-fill" style="width: 5%"></div>
+        </div>
+        <span>Question <span id="current-q">1</span>/20</span>
+      </div>
+    </div>
+
+    <div class="quiz-navigation" id="quiz-nav">
+      <!-- Navigation buttons will be generated by JavaScript -->
+    </div>
+
+    <div class="quiz-container">
+      <!-- Question 1: Computer Definition -->
+      <div class="question" id="q1">
+        <div class="question-text">1. Which of the following best defines a computer?</div>
+        <div class="options">
+          <div class="option" data-value="a">
+            <input type="radio" id="q1a" name="q1">
+            <label class="option-label" for="q1a">A</label>
+            <div class="option-text">An electronic device for playing games and browsing the internet</div>
+          </div>
+          <div class="option" data-value="b">
+            <input type="radio" id="q1b" name="q1">
+            <label class="option-label" for="q1b">B</label>
+            <div class="option-text">An electronic device that processes data according to instructions to produce information</div>
+          </div>
+          <div class="option" data-value="c">
+            <input type="radio" id="q1c" name="q1">
+            <label class="option-label" for="q1c">C</label>
+            <div class="option-text">A machine that stores and retrieves digital files</div>
+          </div>
+          <div class="option" data-value="d">
+            <input type="radio" id="q1d" name="q1">
+            <label class="option-label" for="q1d">D</label>
+            <div class="option-text">A device for creating documents and spreadsheets</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Question 2: Computer Literacy -->
+      <div class="question" id="q2">
+        <div class="question-text">2. Why is computer literacy vital for success in today's world?</div>
+        <div class="options">
+          <div class="option" data-value="a">
+            <input type="radio" id="q2a" name="q2">
+            <label class="option-label" for="q2a">A</label>
+            <div class="option-text">It enables basic computer operation skills for entertainment purposes</div>
+          </div>
+          <div class="option" data-value="b">
+            <input type="radio" id="q2b" name="q2">
+            <label class="option-label" for="q2b">B</label>
+            <div class="option-text">It provides essential skills for accessing information, communication, and career opportunities in a digital world</div>
+          </div>
+          <div class="option" data-value="c">
+            <input type="radio" id="q2c" name="q2">
+            <label class="option-label" for="q2c">C</label>
+            <div class="option-text">It helps people become professional programmers</div>
+          </div>
+          <div class="option" data-value="d">
+            <input type="radio" id="q2d" name="q2">
+            <label class="option-label" for="q2d">D</label>
+            <div class="option-text">It ensures people can fix computer hardware problems</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Question 3: Computer Functions -->
+      <div class="question" id="q3">
+        <div class="question-text">3. What are the four main functions of a computer system?</div>
+        <div class="options">
+          <div class="option" data-value="a">
+            <input type="radio" id="q3a" name="q3">
+            <label class="option-label" for="q3a">A</label>
+            <div class="option-text">Booting, processing, displaying, shutting down</div>
+          </div>
+          <div class="option" data-value="b">
+            <input type="radio" id="q3b" name="q3">
+            <label class="option-label" for="q3b">B</label>
+            <div class="option-text">Input, processing, output, storage</div>
+          </div>
+          <div class="option" data-value="c">
+            <input type="radio" id="q3c" name="q3">
+            <label class="option-label" for="q3c">C</label>
+            <div class="option-text">Typing, calculating, printing, saving</div>
+          </div>
+          <div class="option" data-value="d">
+            <input type="radio" id="q3d" name="q3">
+            <label class="option-label" for="q3d">D</label>
+            <div class="option-text">Memory, CPU, keyboard, monitor</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Question 4: Computer Components -->
+      <div class="question" id="q4">
+        <div class="question-text">4. Which component is considered the "brain" of the computer?</div>
+        <div class="options">
+          <div class="option" data-value="a">
+            <input type="radio" id="q4a" name="q4">
+            <label class="option-label" for="q4a">A</label>
+            <div class="option-text">Random Access Memory (RAM)</div>
+          </div>
+          <div class="option" data-value="b">
+            <input type="radio" id="q4b" name="q4">
+            <label class="option-label" for="q4b">B</label>
+            <div class="option-text">Central Processing Unit (CPU)</div>
+          </div>
+          <div class="option" data-value="c">
+            <input type="radio" id="q4c" name="q4">
+            <label class="option-label" for="q4c">C</label>
+            <div class="option-text">Hard Disk Drive (HDD)</div>
+          </div>
+          <div class="option" data-value="d">
+            <input type="radio" id="q4d" name="q4">
+            <label class="option-label" for="q4d">D</label>
+            <div class="option-text">Motherboard</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Question 5: Computer Characteristics -->
+      <div class="question" id="q5">
+        <div class="question-text">5. Which characteristic of computers refers to their ability to perform tasks without growing tired?</div>
+        <div class="options">
+          <div class="option" data-value="a">
+            <input type="radio" id="q5a" name="q5">
+            <label class="option-label" for="q5a">A</label>
+            <div class="option-text">Speed</div>
+          </div>
+          <div class="option" data-value="b">
+            <input type="radio" id="q5b" name="q5">
+            <label class="option-label" for="q5b">B</label>
+            <div class="option-text">Accuracy</div>
+          </div>
+          <div class="option" data-value="c">
+            <input type="radio" id="q5c" name="q5">
+            <label class="option-label" for="q5c">C</label>
+            <div class="option-text">Diligence</div>
+          </div>
+          <div class="option" data-value="d">
+            <input type="radio" id="q5d" name="q5">
+            <label class="option-label" for="q5d">D</label>
+            <div class="option-text">Versatility</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Question 6: Computer Classification -->
+      <div class="question" id="q6">
+        <div class="question-text">6. Which type of computer is designed for individual use and fits on a desk?</div>
+        <div class="options">
+          <div class="option" data-value="a">
+            <input type="radio" id="q6a" name="q6">
+            <label class="option-label" for="q6a">A</label>
+            <div class="option-text">Mainframe computer</div>
+          </div>
+          <div class="option" data-value="b">
+            <input type="radio" id="q6b" name="q6">
+            <label class="option-label" for="q6b">B</label>
+            <div class="option-text">Personal computer</div>
+          </div>
+          <div class="option" data-value="c">
+            <input type="radio" id="q6c" name="q6">
+            <label class="option-label" for="q6c">C</label>
+            <div class="option-text">Supercomputer</div>
+          </div>
+          <div class="option" data-value="d">
+            <input type="radio" id="q6d" name="q6">
+            <label class="option-label" for="q6d">D</label>
+            <div class="option-text">Server</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Question 7: Computer Generations -->
+      <div class="question" id="q7">
+        <div class="question-text">7. Which generation of computers used vacuum tubes as their main electronic component?</div>
+        <div class="options">
+          <div class="option" data-value="a">
+            <input type="radio" id="q7a" name="q7">
+            <label class="option-label" for="q7a">A</label>
+            <div class="option-text">First generation</div>
+          </div>
+          <div class="option" data-value="b">
+            <input type="radio" id="q7b" name="q7">
+            <label class="option-label" for="q7b">B</label>
+            <div class="option-text">Second generation</div>
+          </div>
+          <div class="option" data-value="c">
+            <input type="radio" id="q7c" name="q7">
+            <label class="option-label" for="q7c">C</label>
+            <div class="option-text">Third generation</div>
+          </div>
+          <div class="option" data-value="d">
+            <input type="radio" id="q7d" name="q7">
+            <label class="option-label" for="q7d">D</label>
+            <div class="option-text">Fourth generation</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Question 8: Memory Operations -->
+      <div class="question" id="q8">
+        <div class="question-text">8. What is the difference between "read" and "write" operations in computer memory?</div>
+        <div class="options">
+          <div class="option" data-value="a">
+            <input type="radio" id="q8a" name="q8">
+            <label class="option-label" for="q8a">A</label>
+            <div class="option-text">Read retrieves data from memory, write stores data to memory</div>
+          </div>
+          <div class="option" data-value="b">
+            <input type="radio" id="q8b" name="q8">
+            <label class="option-label" for="q8b">B</label>
+            <div class="option-text">Read stores data to memory, write retrieves data from memory</div>
+          </div>
+          <div class="option" data-value="c">
+            <input type="radio" id="q8c" name="q8">
+            <label class="option-label" for="q8c">C</label>
+            <div class="option-text">Both operations do the same thing but at different speeds</div>
+          </div>
+          <div class="option" data-value="d">
+            <input type="radio" id="q8d" name="q8">
+            <label class="option-label" for="q8d">D</label>
+            <div class="option-text">Read is for temporary storage, write is for permanent storage</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Question 9: AI Definition -->
+      <div class="question" id="q9">
+        <div class="question-text">9. What best describes Artificial Intelligence (AI)?</div>
+        <div class="options">
+          <div class="option" data-value="a">
+            <input type="radio" id="q9a" name="q9">
+            <label class="option-label" for="q9a">A</label>
+            <div class="option-text">The ability of computers to perform tasks that typically require human intelligence</div>
+          </div>
+          <div class="option" data-value="b">
+            <input type="radio" id="q9b" name="q9">
+            <label class="option-label" for="q9b">B</label>
+            <div class="option-text">Computers that can physically move like humans</div>
+          </div>
+          <div class="option" data-value="c">
+            <input type="radio" id="q9c" name="q9">
+            <label class="option-label" for="q9c">C</label>
+            <div class="option-text">Software that can automatically update itself</div>
+          </div>
+          <div class="option" data-value="d">
+            <input type="radio" id="q9d" name="q9">
+            <label class="option-label" for="q9d">D</label>
+            <div class="option-text">Computers with advanced graphics capabilities</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Question 10: Single vs Multitasking -->
+      <div class="question" id="q10">
+        <div class="question-text">10. What is the key difference between single-tasking and multitasking operating systems?</div>
+        <div class="options">
+          <div class="option" data-value="a">
+            <input type="radio" id="q10a" name="q10">
+            <label class="option-label" for="q10a">A</label>
+            <div class="option-text">Single-tasking runs one program at a time, multitasking runs multiple programs simultaneously</div>
+          </div>
+          <div class="option" data-value="b">
+            <input type="radio" id="q10b" name="q10">
+            <label class="option-label" for="q10b">B</label>
+            <div class="option-text">Single-tasking is faster, multitasking is slower</div>
+          </div>
+          <div class="option" data-value="c">
+            <input type="radio" id="q10c" name="q10">
+            <label class="option-label" for="q10c">C</label>
+            <div class="option-text">Single-tasking uses less memory, multitasking uses more memory</div>
+          </div>
+          <div class="option" data-value="d">
+            <input type="radio" id="q10d" name="q10">
+            <label class="option-label" for="q10d">D</label>
+            <div class="option-text">Single-tasking is for old computers, multitasking is for new computers</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Questions 11-20 would continue in similar fashion -->
+
+      <div class="quiz-controls">
+        <button class="btn-secondary" id="prev-btn">Previous Question</button>
+        <button class="btn-secondary" id="reset-btn">Reset Answers</button>
+        <button class="btn" id="next-btn">Next Question</button>
+        <button class="btn" id="submit-btn" style="display: none;">Submit Exam</button>
+      </div>
+    </div>
+
+    <div class="results" id="results">
+      <div class="score-circle" id="score-circle">0%</div>
+      <div class="grade" id="grade">Need Improvement</div>
+      <div class="feedback" id="feedback">You need to review the course material to improve your understanding.</div>
+      
+      <div class="topic-breakdown">
+        <h3>Performance by Topic Area</h3>
+        <div id="topic-scores">
+          <!-- Topic breakdown will be inserted here -->
+        </div>
+      </div>
+      
+      <div class="detailed-results">
+        <h3>Question Review</h3>
+        <div id="detailed-results">
+          <!-- Detailed results will be inserted here -->
+        </div>
+      </div>
+      
+      <button class="btn" id="retry-btn" style="margin-top: 1.5rem;">Retry Exam</button>
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2025 UG Artworks | Introduction to Computer Systems Exam</p>
+  </footer>
+
+  <script>
+    // Theme Toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    const savedTheme = localStorage.getItem('ug-theme');
+    
+    if (savedTheme === 'dark') {
+      document.body.classList.add('dark');
+    } else if (savedTheme === 'light') {
+      document.body.classList.remove('dark');
+    } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      document.body.classList.add('dark');
+    }
+    
+    themeToggle.addEventListener('click', () => {
+      const isDark = document.body.classList.toggle('dark');
+      localStorage.setItem('ug-theme', isDark ? 'dark' : 'light');
+    });
+
+    // Quiz Functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const quizNav = document.getElementById('quiz-nav');
+      const currentQ = document.getElementById('current-q');
+      const progressFill = document.getElementById('progress-fill');
+      const timer = document.getElementById('timer');
+      const prevBtn = document.getElementById('prev-btn');
+      const nextBtn = document.getElementById('next-btn');
+      const submitBtn = document.getElementById('submit-btn');
+      const resetBtn = document.getElementById('reset-btn');
+      const retryBtn = document.getElementById('retry-btn');
+      const options = document.querySelectorAll('.option');
+      const results = document.getElementById('results');
+      const scoreCircle = document.getElementById('score-circle');
+      const grade = document.getElementById('grade');
+      const feedback = document.getElementById('feedback');
+      const topicScores = document.getElementById('topic-scores');
+      const detailedResults = document.getElementById('detailed-results');
+      
+      let currentQuestion = 1;
+      let timeLeft = 45 * 60; // 45 minutes in seconds
+      let timerInterval;
+      
+      // Topic mapping for questions
+      const questionTopics = {
+        1: "Computer Fundamentals",
+        2: "Computer Literacy", 
+        3: "Computer Functions",
+        4: "Computer Components",
+        5: "Computer Characteristics",
+        6: "Computer Classification",
+        7: "Computer Generations",
+        8: "Memory Operations",
+        9: "Artificial Intelligence",
+        10: "Operating Systems"
+      };
+      
+      // Correct answers
+      const correctAnswers = {
+        q1: 'b',
+        q2: 'b',
+        q3: 'b',
+        q4: 'b',
+        q5: 'c',
+        q6: 'b',
+        q7: 'a',
+        q8: 'a',
+        q9: 'a',
+        q10: 'a'
+      };
+      
+      // Question explanations
+      const explanations = {
+        q1: "A computer is fundamentally an electronic device that processes data according to stored instructions to produce meaningful information.",
+        q2: "Computer literacy provides essential digital skills for accessing information, effective communication, and career advancement in our increasingly digital society.",
+        q3: "The four basic functions of any computer system are: input (receiving data), processing (manipulating data), output (producing results), and storage (saving data).",
+        q4: "The CPU executes instructions, performs calculations, and manages data flow, making it the central control unit or 'brain' of the computer.",
+        q5: "Diligence refers to a computer's ability to perform repetitive tasks consistently without fatigue, unlike humans who tire with repetitive work.",
+        q6: "Personal computers are designed for individual use, typically fitting on a desktop, and include desktops, laptops, and workstations.",
+        q7: "First generation computers (1940-1956) used vacuum tubes as their primary electronic component, making them large, expensive, and power-hungry.",
+        q8: "Read operations retrieve data from memory locations, while write operations store data to memory locations - fundamental operations in all computer systems.",
+        q9: "Artificial Intelligence involves creating systems that can perform tasks requiring human-like intelligence, such as learning, reasoning, and problem-solving.",
+        q10: "Single-tasking OS runs one program at a time (like early MS-DOS), while multitasking OS can run multiple programs concurrently (like Windows, macOS, Linux)."
+      };
+      
+      // Initialize navigation
+      function initNavigation() {
+        for (let i = 1; i <= 10; i++) {
+          const btn = document.createElement('button');
+          btn.className = 'nav-btn';
+          btn.textContent = i;
+          btn.setAttribute('data-q', i);
+          if (i === 1) btn.classList.add('current');
+          btn.addEventListener('click', function() {
+            navigateToQuestion(parseInt(this.getAttribute('data-q')));
+          });
+          quizNav.appendChild(btn);
+        }
+      }
+      
+      // Navigate to a specific question
+      function navigateToQuestion(qNum) {
+        // Hide current question
+        document.getElementById(`q${currentQuestion}`).style.display = 'none';
+        
+        // Update navigation
+        document.querySelector(`.nav-btn[data-q="${currentQuestion}"]`).classList.remove('current');
+        
+        // Show new question
+        currentQuestion = qNum;
+        document.getElementById(`q${currentQuestion}`).style.display = 'block';
+        document.querySelector(`.nav-btn[data-q="${currentQuestion}"]`).classList.add('current');
+        
+        // Update progress
+        currentQ.textContent = currentQuestion;
+        progressFill.style.width = `${(currentQuestion / 10) * 100}%`;
+        
+        // Update button visibility
+        prevBtn.style.display = currentQuestion === 1 ? 'none' : 'inline-block';
+        nextBtn.style.display = currentQuestion === 10 ? 'none' : 'inline-block';
+        submitBtn.style.display = currentQuestion === 10 ? 'inline-block' : 'none';
+      }
+      
+      // Start timer
+      function startTimer() {
+        timerInterval = setInterval(function() {
+          timeLeft--;
+          
+          const minutes = Math.floor(timeLeft / 60);
+          const seconds = timeLeft % 60;
+          
+          timer.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+          
+          if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            submitQuiz();
+          }
+        }, 1000);
+      }
+      
+      // Option selection
+      options.forEach(option => {
+        option.addEventListener('click', function() {
+          const question = this.closest('.question');
+          const optionsInQuestion = question.querySelectorAll('.option');
+          const input = this.querySelector('input');
+          const qNum = question.id.replace('q', '');
+          
+          // Deselect all options in this question
+          optionsInQuestion.forEach(opt => {
+            opt.classList.remove('selected');
+            opt.querySelector('input').checked = false;
+          });
+          
+          // Select clicked option
+          this.classList.add('selected');
+          input.checked = true;
+          
+          // Update navigation button
+          document.querySelector(`.nav-btn[data-q="${qNum}"]`).classList.add('answered');
+        });
+      });
+      
+      // Navigation buttons
+      prevBtn.addEventListener('click', function() {
+        if (currentQuestion > 1) {
+          navigateToQuestion(currentQuestion - 1);
+        }
+      });
+      
+      nextBtn.addEventListener('click', function() {
+        if (currentQuestion < 10) {
+          navigateToQuestion(currentQuestion + 1);
+        }
+      });
+      
+      // Reset answers
+      resetBtn.addEventListener('click', function() {
+        const allOptions = document.querySelectorAll('.option');
+        allOptions.forEach(option => {
+          option.classList.remove('selected');
+          option.querySelector('input').checked = false;
+        });
+        
+        const navButtons = document.querySelectorAll('.nav-btn');
+        navButtons.forEach(btn => {
+          btn.classList.remove('answered');
+        });
+      });
+      
+      // Submit quiz
+      function submitQuiz() {
+        clearInterval(timerInterval);
+        
+        let score = 0;
+        let topicResults = {
+          "Computer Fundamentals": { correct: 0, total: 0 },
+          "Computer Literacy": { correct: 0, total: 0 },
+          "Computer Functions": { correct: 0, total: 0 },
+          "Computer Components": { correct: 0, total: 0 },
+          "Computer Characteristics": { correct: 0, total: 0 },
+          "Computer Classification": { correct: 0, total: 0 },
+          "Computer Generations": { correct: 0, total: 0 },
+          "Memory Operations": { correct: 0, total: 0 },
+          "Artificial Intelligence": { correct: 0, total: 0 },
+          "Operating Systems": { correct: 0, total: 0 }
+        };
+        
+        let resultsHTML = '';
+        
+        // Calculate score and topic performance
+        for (let i = 1; i <= 10; i++) {
+          const questionName = `q${i}`;
+          const selectedOption = document.querySelector(`input[name="${questionName}"]:checked`);
+          const topic = questionTopics[i];
+          
+          // Update topic totals
+          topicResults[topic].total++;
+          
+          if (selectedOption) {
+            const questionElement = document.getElementById(questionName);
+            const questionText = questionElement.querySelector('.question-text').textContent;
+            const userAnswer = selectedOption.closest('.option').dataset.value;
+            const isCorrect = userAnswer === correctAnswers[questionName];
+            
+            if (isCorrect) {
+              score++;
+              topicResults[topic].correct++;
+            }
+            
+            // Add to detailed results
+            resultsHTML += `
+              <div class="result-item ${isCorrect ? 'correct' : 'incorrect'}">
+                <div class="result-question">${questionText}</div>
+                <div class="result-answer">Your answer: ${userAnswer.toUpperCase()} - ${isCorrect ? 'Correct' : 'Incorrect'}</div>
+                <div class="result-answer">${explanations[questionName]}</div>
+              </div>
+            `;
+          }
+        }
+        
+        // Calculate percentage
+        const percentage = (score / 10) * 100;
+        
+        // Update results
+        scoreCircle.textContent = `${percentage}%`;
+        detailedResults.innerHTML = resultsHTML;
+        
+        // Generate topic breakdown
+        let topicHTML = '';
+        for (const [topic, data] of Object.entries(topicResults)) {
+          if (data.total > 0) {
+            const topicPercentage = (data.correct / data.total) * 100;
+            topicHTML += `
+              <div class="topic-score">
+                <span>${topic}</span>
+                <div class="topic-bar"><div class="topic-fill" style="width: ${topicPercentage}%"></div></div>
+                <span>${Math.round(topicPercentage)}%</span>
+              </div>
+            `;
+          }
+        }
+        topicScores.innerHTML = topicHTML;
+        
+        // Set grade and feedback
+        if (percentage >= 90) {
+          grade.textContent = "Excellent!";
+          feedback.textContent = "You have demonstrated outstanding understanding of computer systems fundamentals. You're well prepared for advanced computer studies.";
+        } else if (percentage >= 80) {
+          grade.textContent = "Very Good";
+          feedback.textContent = "You have a strong grasp of computer systems concepts with only minor areas needing review.";
+        } else if (percentage >= 70) {
+          grade.textContent = "Good";
+          feedback.textContent = "You understand the key computer concepts but should focus on improving in specific topic areas.";
+        } else if (percentage >= 60) {
+          grade.textContent = "Fair";
+          feedback.textContent = "You have basic computer knowledge but need more thorough review of the course material.";
+        } else {
+          grade.textContent = "Needs Improvement";
+          feedback.textContent = "You should systematically review all computer systems topics to build a stronger foundation in technology fundamentals.";
+        }
+        
+        // Show results
+        results.classList.add('active');
+        results.scrollIntoView({ behavior: 'smooth' });
+      }
+      
+      submitBtn.addEventListener('click', submitQuiz);
+      
+      // Retry quiz
+      retryBtn.addEventListener('click', function() {
+        results.classList.remove('active');
+        resetBtn.click();
+        navigateToQuestion(1);
+        timeLeft = 45 * 60;
+        timer.textContent = "45:00";
+        startTimer();
+        document.querySelector('.quiz-container').scrollIntoView({ behavior: 'smooth' });
+      });
+      
+      // Initialize quiz
+      initNavigation();
+      navigateToQuestion(1);
+      startTimer();
+    });
+  </script>
+</body>
+</html>

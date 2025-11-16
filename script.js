@@ -12,7 +12,6 @@ document.body.classList.add('dark');
 }
 } catch (e) {}
 }
-
 // theme toggle (supports multiple)
 const toggles = Array.from(document.querySelectorAll('#theme-toggle'));
 const updateToggle = () => toggles.forEach(btn => btn && btn.setAttribute('aria-pressed', document.body.classList.contains('dark')));
@@ -24,7 +23,6 @@ document.documentElement.style.transition = 'background .25s, color .25s';
 setTimeout(()=> document.documentElement.style.transition = '', 300);
 updateToggle();
 }));
-
 // PRELOADER
 const pre = document.getElementById('preloader');
 if (pre) {
@@ -33,47 +31,80 @@ function hidePre(){ if(hidden) return; hidden=true; pre.style.transition='opacit
 window.addEventListener('load', hidePre);
 setTimeout(hidePre, 900);
 }
-
-// SEARCH FILTER — FIXED with error message
+// ENHANCED SEARCH FILTER WITH COURSE FILTER
 function initSearchFilter() {
-  const searchInputs = document.querySelectorAll('.search-bar input');
-  if (!searchInputs.length) return;
+  const searchInput = document.getElementById('videoSearch');
+  const courseSelect = document.getElementById('courseSelect');
+  
+  if (!searchInput || !courseSelect) return;
 
-  searchInputs.forEach(input => {
-    input.addEventListener('input', function() {
-      const term = this.value.trim().toLowerCase();
-      const cards = document.querySelectorAll('.store-card, .video-card');
-      let visibleCount = 0;
+  function filterVideos() {
+    const searchTerm = searchInput.value.trim().toLowerCase();
+    const selectedCourse = courseSelect.value;
+    const videoCards = document.querySelectorAll('.video-card');
+    const courseSections = document.querySelectorAll('.video-course-section');
+    
+    let visibleCount = 0;
+
+    videoCards.forEach(card => {
+      const videoTitle = card.querySelector('h4').textContent.toLowerCase();
+      const courseSection = card.closest('.video-course-section');
+      const courseName = courseSection.dataset.course;
       
-      cards.forEach(card => {
-        const text = card.textContent.toLowerCase();
-        if (term === '' || text.includes(term)) {
-          card.style.display = '';
-          visibleCount++;
-        } else {
-          card.style.display = 'none';
-        }
-      });
-
-      // Remove existing error message
-      const existingError = document.querySelector('.no-results-message');
-      if (existingError) existingError.remove();
-
-      // Show error message if no results found
-      if (term !== '' && visibleCount === 0) {
-        const errorMsg = document.createElement('div');
-        errorMsg.className = 'no-results-message';
-        errorMsg.innerHTML = `No results found for "<strong>${term}</strong>"`;
-        input.closest('.search-bar').after(errorMsg);
+      const matchesSearch = searchTerm === '' || videoTitle.includes(searchTerm);
+      const matchesCourse = selectedCourse === 'all' || courseName === selectedCourse;
+      
+      if (matchesSearch && matchesCourse) {
+        card.style.display = '';
+        courseSection.style.display = '';
+        visibleCount++;
+      } else {
+        card.style.display = 'none';
       }
     });
-  });
+
+    // Hide empty course sections
+    courseSections.forEach(section => {
+      const visibleVideos = section.querySelectorAll('.video-card[style=""]');
+      if (visibleVideos.length === 0) {
+        section.style.display = 'none';
+      } else {
+        section.style.display = '';
+      }
+    });
+
+    // Remove existing error message
+    const existingError = document.querySelector('.no-results-message');
+    if (existingError) existingError.remove();
+
+    // Show error message if no results found
+    if ((searchTerm !== '' || selectedCourse !== 'all') && visibleCount === 0) {
+      const errorMsg = document.createElement('div');
+      errorMsg.className = 'no-results-message';
+      let message = 'No results found';
+      if (searchTerm !== '' && selectedCourse !== 'all') {
+        message = `No results found for "<strong>${searchTerm}</strong>" in <strong>${courseSelect.options[courseSelect.selectedIndex].text}</strong>`;
+      } else if (searchTerm !== '') {
+        message = `No results found for "<strong>${searchTerm}</strong>"`;
+      } else if (selectedCourse !== 'all') {
+        message = `No videos found in <strong>${courseSelect.options[courseSelect.selectedIndex].text}</strong>`;
+      }
+      errorMsg.innerHTML = message;
+      searchInput.closest('.search-bar').after(errorMsg);
+    }
+  }
+
+  searchInput.addEventListener('input', filterVideos);
+  courseSelect.addEventListener('change', filterVideos);
 }
 
-// Initialize search immediately and on load
-initSearchFilter();
-window.addEventListener('load', initSearchFilter);
-
+// Initialize enhanced search when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+  // Your existing theme, preloader, carousel code...
+  
+  // Initialize the enhanced search filter
+  initSearchFilter();
+});
 // CAROUSEL
 const slides = Array.from(document.querySelectorAll('.slide'));
 if (slides.length) {

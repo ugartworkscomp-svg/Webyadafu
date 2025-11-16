@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Organizational Psychology Quiz | UG Artworks</title>
+  <style>
+    :root {
+      --bg: #f6f2ea;
+      --text: #1f1f1f;
+      --accent: #3b2412;
+      --accent-strong: #d99a2b;
+      --header: #3b2412;
+      --card: #ffffffee;
+      --shadow: rgba(0,0,0,0.12);
+      --transition: all 0.3s ease;
+    }
+
+    body.dark {
+      --bg: #0b0b0b;
+      --text: #f5f5f5;
+      --accent: #f0b24b;
+      --accent-strong: #d99a2b;
+      --header: #0b0b0b;
+      --card: #161616dd;
+      --shadow: rgba(0,0,0,0.6);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Inter, system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      transition: var(--transition);
+      padding: 0;
+    }
+
+    /* Header */
+    .site-header {
+      background: var(--header);
+      color: #fff;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 6px 14px var(--shadow);
+      padding: 18px 12px;
+    }
+
+    .brand {
+      font-weight: 500;
+      font-size: 1.25rem;
+      letter-spacing: 3px;
+      text-align: center;
+      margin-bottom: 10px;
+      color: #fff;
+    }
+
+    .main-nav.centered {
+      display: flex;
+      justify-content: center;
+      gap: 28px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .main-nav.centered a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 700;
+      padding: 8px 10px;
+      border-radius: 6px;
+      transition: var(--transition);
+    }
+
+    .main-nav.centered a:hover {
+      background: rgba(255,255,255,0.06);
+    }
+
+    .main-nav.centered a.active {
+      background: rgba(0,0,0,0.12);
+    }
+
+    .actions.centered {
+      text-align: center;
+    }
+
+    .actions button, #theme-toggle {
+      background: var(--accent-strong);
+      border: none;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700;
+      color: #000;
+      transition: var(--transition);
+    }
+
+    /* Main Content */
+    main {
+      max-width: 1000px;
+      margin: 22px auto;
+      padding: 0 18px;
+    }
+
+    .quiz-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .quiz-header h1 {
+      color: var(--header);
+      margin-bottom: 0.5rem;
+    }
+
+    .quiz-header p {
+      color: var(--text);
+      opacity: 0.8;
+    }
+
+    .instructions {
+      background: var(--card);
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+      margin-bottom: 2rem;
+    }
+
+    .instructions h3 {
+      color: var(--header);
+      margin-bottom: 1rem;
+    }
+
+    .instructions ul {
+      padding-left: 1.5rem;
+    }
+
+    .instructions li {
+      margin-bottom: 0.5rem;
+    }
+
+    /* Quiz Container */
+    .quiz-container {
+      background: var(--card);
+      border-radius: 12px;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .question {
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .dark .question {
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .question:last-child {
+      border-bottom: none;
+    }
+
+    .question-text {
+      font-weight: 600;
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    .option {
+      display: flex;
+      align-items: flex-start;
+      padding: 0.8rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: var(--transition);
+      border: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .dark .option {
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .option:hover {
+      background: rgba(0,0,0,0.03);
+    }
+
+    .dark .option:hover {
+      background: rgba(255,255,255,0.05);
+    }
+
+    .option.selected {
+      background: rgba(217, 154, 43, 0.1);
+      border-color: var(--accent-strong);
+    }
+
+    .option input {
+      margin-right: 0.8rem;
+      margin-top: 0.2rem;
+    }
+
+    .option-label {
+      font-weight: 500;
+      margin-right: 0.5rem;
+      min-width: 1.5rem;
+    }
+
+    .option-text {
+      flex: 1;
+    }
+
+    /* Quiz Controls */
+    .quiz-controls {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 2rem;
+    }
+
+    .btn {
+      background: var(--accent-strong);
+      color: #000;
+      padding: 0.8rem 1.5rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      display: inline-block;
+      transition: var(--transition);
+      text-align: center;
+    }
+
+    .btn:hover {
+      background: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: rgba(0,0,0,0.1);
+      color: var(--text);
+    }
+
+    .dark .btn-secondary {
+      background: rgba(255,255,255,0.1);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(0,0,0,0.2);
+    }
+
+    .dark .btn-secondary:hover {
+      background: rgba(255,255,255,0.2);
+    }
+
+    /* Results Section */
+    .results {
+      background: var(--card);
+      border-radius: 12px;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+      padding: 2rem;
+      text-align: center;
+      margin-bottom: 2rem;
+      display: none;
+    }
+
+    .results.active {
+      display: block;
+    }
+
+    .score-circle {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background: var(--accent-strong);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #000;
+    }
+
+    .grade {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: var(--header);
+    }
+
+    .feedback {
+      margin-bottom: 1.5rem;
+    }
+
+    .detailed-results {
+      text-align: left;
+      margin-top: 2rem;
+    }
+
+    .detailed-results h3 {
+      color: var(--header);
+      margin-bottom: 1rem;
+    }
+
+    .result-item {
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 0.8rem;
+      background: rgba(0,0,0,0.03);
+    }
+
+    .dark .result-item {
+      background: rgba(255,255,255,0.05);
+    }
+
+    .result-item.correct {
+      border-left: 4px solid #4CAF50;
+    }
+
+    .result-item.incorrect {
+      border-left: 4px solid #F44336;
+    }
+
+    .result-question {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .result-answer {
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    /* Footer */
+    footer {
+      padding: 20px;
+      text-align: center;
+      margin-top: 24px;
+      font-size: 0.9rem;
+      background: var(--header);
+      color: #fff;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .main-nav.centered {
+        gap: 14px;
+      }
+      
+      .quiz-container, .instructions, .results {
+        padding: 1.5rem;
+      }
+      
+      .quiz-controls {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      
+      .quiz-controls .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header stacked">
+    <div class="brand">UG Artworks</div>
+    <nav class="main-nav centered" aria-label="Main navigation">
+      <a href="./index">Home</a>
+      <a href="./courses">Course Hacks</a>
+      <a href="./videos">Videos</a>
+      <a href="./games" class="active">Mind Games & Tests</a>
+      <a href="./contact">Contact</a>
+    </nav>
+    <div class="actions centered">
+      <button id="theme-toggle" aria-label="Toggle theme">🌞 / 🌙</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="quiz-header">
+      <h1>Organizational Psychology Quiz</h1>
+      <p>Test your knowledge with these examiner-style questions</p>
+    </div>
+
+    <section class="instructions">
+      <h3>Quiz Instructions</h3>
+      <ul>
+        <li>This quiz contains 10 multiple-choice questions covering all topics in Organizational Psychology</li>
+        <li>Select the best answer for each question</li>
+        <li>You can review and change your answers before submitting</li>
+        <li>After submission, you'll receive a detailed score report with explanations</li>
+        <li>Try to score at least 70% to demonstrate good understanding of the material</li>
+      </ul>
+    </section>
+
+    <div class="quiz-container">
+      <div class="question">
+        <div class="question-text">1. Which of the following best describes the primary focus of Industrial-Organizational Psychology?</div>
+        <div class="options">
+          <div class="option" data-value="a">
+            <input type="radio" id="q1a" name="q1">
+            <label class="option-label" for="q1a">A</label>
+            <div class="option-text">Studying clinical disorders in workplace settings</div>
+          </div>
+          <div class="option" data-value="b">
+            <input type="radio" id="q1b" name="q1">
+            <label class="option-label" for="q1b">B</label>
+            <div class="option-text">Applying psychological principles to improve workplace productivity and employee well-being</div>
+          </div>
+          <div class="option" data-value="c">
+            <input type="radio" id="q1c" name="q1">
+            <label class="option-label" for="q1c">C</label>
+            <div class="option-text">Analyzing consumer behavior and marketing strategies</div>
+          </div>
+          <div class="option" data-value="d">
+            <input type="radio" id="q1d" name="q1">
+            <label class="option-label" for="q1d">D</label>
+            <div class="option-text">Focusing exclusively on organizational leadership and management</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="question-text">2. When conducting job analysis, what is the primary purpose of identifying KSAOs?</div>
+        <div class="options">
+          <div class="option" data-value="a">
+            <input type="radio" id="q2a" name="q2">
+            <label class="option-label" for="q2a">A</label>
+            <div class="option-text">To determine employee salary scales and compensation packages</div>
+          </div>
+          <div class="option" data-value="b">
+            <input type="radio" id="q2b" name="q2">
+            <label class="option-label" for="q2b">B</label>
+            <div class="option-text">To establish the Knowledge, Skills, Abilities, and Other characteristics required for successful job performance</div>
+          </div>
+          <div class="option" data-value="c">
+            <input type="radio" id="q2c" name="q2">
+            <label class="option-label" for="q2c">C</label>
+            <div class="option-text">To evaluate employee satisfaction and engagement levels</div>
+          </div>
+          <div class="option" data-value="d">
+            <input type="radio" id="q2d" name="q2">
+            <label class="option-label" for="q2d">D</label>
+            <div class="option-text">To assess organizational culture and climate</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="question-text">3. According to modern motivation theories, which approach emphasizes the importance of intrinsic rewards and psychological growth?</div>
+        <div class="options">
+          <div class="option" data-value="a">
+            <input type="radio" id="q3a" name="q3">
+            <label class="option-label" for="q3a">A</label>
+            <div class="option-text">Scientific Management Theory</div>
+          </div>
+          <div class="option" data-value="b">
+            <input type="radio" id="q3b" name="q3">
+            <label class="option-label" for="q3b">B</label>
+            <div class="option-text">Two-Factor Theory (Herzberg)</div>
+          </div>
+          <div class="option" data-value="c">
+            <input type="radio" id="q3c" name="q3">
+            <label class="option-label" for="q3c">C</label>
+            <div class="option-text">Self-Determination Theory</div>
+          </div>
+          <div class="option" data-value="d">
+            <input type="radio" id="q3d" name="q3">
+            <label class="option-label" for="q3d">D</label>
+            <div class="option-text">Equity Theory</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="question-text">4. In the context of stress management, which of the following represents a primary appraisal of a stressful situation?</div>
+        <div class="options">
+          <div class="option" data-value="a">
+            <input type="radio" id="q4a" name="q4">
+            <label class="option-label" for="q4a">A</label>
+            <div class="option-text">Evaluating available coping resources</div>
+          </div>
+          <div class="option" data-value="b">
+            <input type="radio" id="q4b" name="q4">
+            <label class="option-label" for="q4b">B</label>
+            <div class="option-text">Determining whether an event is threatening, challenging, or harmful</div>
+          </div>
+          <div class="option" data-value="c">
+            <input type="radio" id="q4c" name="q4">
+            <label class="option-label" for="q4c">C</label>
+            <div class="option-text">Implementing stress reduction techniques</div>
+          </div>
+          <div class="option" data-value="d">
+            <input type="radio" id="q4d" name="q4">
+            <label class="option-label" for="q4d">D</label>
+            <div class="option-text">Seeking social support from colleagues</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="question-text">5. Which assessment method is considered most effective for measuring interpersonal skills and teamwork abilities?</div>
+        <div class="options">
+          <div class="option" data-value="a">
+            <input type="radio" id="q5a" name="q5">
+            <label class="option-label" for="q5a">A</label>
+            <div class="option-text">Structured interviews</div>
+          </div>
+          <div class="option" data-value="b">
+            <input type="radio" id="q5b" name="q5">
+            <label class="option-label" for="q5b">B</label>
+            <div class="option-text">Assessment centers with situational exercises</div>
+          </div>
+          <div class="option" data-value="c">
+            <input type="radio" id="q5c" name="q5">
+            <label class="option-label" for="q5c">C</label>
+            <div class="option-text">Cognitive ability tests</div>
+          </div>
+          <div class="option" data-value="d">
+            <input type="radio" id="q5d" name="q5">
+            <label class="option-label" for="q5d">D</label>
+            <div class="option-text">Personality inventories</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="question-text">6. According to the Input-Process-Output model of team effectiveness, which factor is considered an input variable?</div>
+        <div class="options">
+          <div class="option" data-value="a">
+            <input type="radio" id="q6a" name="q6">
+            <label class="option-label" for="q6a">A</label>
+            <div class="option-text">Team coordination and communication</div>
+          </div>
+          <div class="option" data-value="b">
+            <input type="radio" id="q6b" name="q6">
+            <label class="option-label" for="q6b">B</label>
+            <div class="option-text">Team composition and member characteristics</div>
+          </div>
+          <div class="option" data-value="c">
+            <input type="radio" id="q6c" name="q6">
+            <label class="option-label" for="q6c">C</label>
+            <div class="option-text">Decision-making quality</div>
+          </div>
+          <div class="option" data-value="d">
+            <input type="radio" id="q6d" name="q6">
+            <label class="option-label" for="q6d">D</label>
+            <div class="option-text">Team performance and satisfaction</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="question-text">7. Which training evaluation level focuses on measuring the application of learned skills on the job?</div>
+        <div class="options">
+          <div class="option" data-value="a">
+            <input type="radio" id="q7a" name="q7">
+            <label class="option-label" for="q7a">A</label>
+            <div class="option-text">Reaction</div>
+          </div>
+          <div class="option" data-value="b">
+            <input type="radio" id="q7b" name="q7">
+            <label class="option-label" for="q7b">B</label>
+            <div class="option-text">Learning</div>
+          </div>
+          <div class="option" data-value="c">
+            <input type="radio" id="q7c" name="q7">
+            <label class="option-label" for="q7c">C</label>
+            <div class="option-text">Behavior</div>
+          </div>
+          <div class="option" data-value="d">
+            <input type="radio" id="q7d" name="q7">
+            <label class="option-label" for="q7d">D</label>
+            <div class="option-text">Results</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="question-text">8. In multicultural organizational contexts, what does the concept of "cultural intelligence" refer to?</div>
+        <div class="options">
+          <div class="option" data-value="a">
+            <input type="radio" id="q8a" name="q8">
+            <label class="option-label" for="q8a">A</label>
+            <div class="option-text">Knowledge of multiple languages</div>
+          </div>
+          <div class="option" data-value="b">
+            <input type="radio" id="q8b" name="q8">
+            <label class="option-label" for="q8b">B</label>
+            <div class="option-text">The ability to function effectively in culturally diverse settings</div>
+          </div>
+          <div class="option" data-value="c">
+            <input type="radio" id="q8c" name="q8">
+            <label class="option-label" for="q8c">C</label>
+            <div class="option-text">Understanding international business laws</div>
+          </div>
+          <div class="option" data-value="d">
+            <input type="radio" id="q8d" name="q8">
+            <label class="option-label" for="q8d">D</label>
+            <div class="option-text">Experience working in foreign countries</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="question-text">9. Which of the following best describes the relationship between job satisfaction and organizational commitment?</div>
+        <div class="options">
+          <div class="option" data-value="a">
+            <input type="radio" id="q9a" name="q9">
+            <label class="option-label" for="q9a">A</label>
+            <div class="option-text">They are unrelated constructs with different antecedents</div>
+          </div>
+          <div class="option" data-value="b">
+            <input type="radio" id="q9b" name="q9">
+            <label class="option-label" for="q9b">B</label>
+            <div class="option-text">Job satisfaction typically leads to increased organizational commitment</div>
+          </div>
+          <div class="option" data-value="c">
+            <input type="radio" id="q9c" name="q9">
+            <label class="option-label" for="q9c">C</label>
+            <div class="option-text">Organizational commitment is a stronger predictor of turnover than job satisfaction</div>
+          </div>
+          <div class="option" data-value="d">
+            <input type="radio" id="q9d" name="q9">
+            <label class="option-label" for="q9d">D</label>
+            <div class="option-text">They are essentially the same psychological construct</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="question">
+        <div class="question-text">10. In organizational development, what is the primary goal of action research?</div>
+        <div class="options">
+          <div class="option" data-value="a">
+            <input type="radio" id="q10a" name="q10">
+            <label class="option-label" for="q10a">A</label>
+            <div class="option-text">To conduct academic research with no practical application</div>
+          </div>
+          <div class="option" data-value="b">
+            <input type="radio" id="q10b" name="q10">
+            <label class="option-label" for="q10b">B</label>
+            <div class="option-text">To solve practical problems while generating scientific knowledge</div>
+          </div>
+          <div class="option" data-value="c">
+            <input type="radio" id="q10c" name="q10">
+            <label class="option-label" for="q10c">C</label>
+            <div class="option-text">To evaluate employee performance systematically</div>
+          </div>
+          <div class="option" data-value="d">
+            <input type="radio" id="q10d" name="q10">
+            <label class="option-label" for="q10d">D</label>
+            <div class="option-text">To implement standardized procedures across departments</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="quiz-controls">
+        <button class="btn-secondary" id="reset-btn">Reset Answers</button>
+        <button class="btn" id="submit-btn">Submit Quiz</button>
+      </div>
+    </div>
+
+    <div class="results" id="results">
+      <div class="score-circle" id="score-circle">0%</div>
+      <div class="grade" id="grade">Need Improvement</div>
+      <div class="feedback" id="feedback">You need to review the course material to improve your understanding.</div>
+      
+      <div class="detailed-results">
+        <h3>Question Review</h3>
+        <div id="detailed-results">
+          <!-- Detailed results will be inserted here -->
+        </div>
+      </div>
+      
+      <button class="btn" id="retry-btn" style="margin-top: 1.5rem;">Try Again</button>
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2025 UG Artworks | Organizational Psychology Quiz</p>
+  </footer>
+
+  <script>
+    // Theme Toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    const savedTheme = localStorage.getItem('ug-theme');
+    
+    if (savedTheme === 'dark') {
+      document.body.classList.add('dark');
+    } else if (savedTheme === 'light') {
+      document.body.classList.remove('dark');
+    } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      document.body.classList.add('dark');
+    }
+    
+    themeToggle.addEventListener('click', () => {
+      const isDark = document.body.classList.toggle('dark');
+      localStorage.setItem('ug-theme', isDark ? 'dark' : 'light');
+    });
+
+    // Quiz Functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const options = document.querySelectorAll('.option');
+      const submitBtn = document.getElementById('submit-btn');
+      const resetBtn = document.getElementById('reset-btn');
+      const retryBtn = document.getElementById('retry-btn');
+      const results = document.getElementById('results');
+      const scoreCircle = document.getElementById('score-circle');
+      const grade = document.getElementById('grade');
+      const feedback = document.getElementById('feedback');
+      const detailedResults = document.getElementById('detailed-results');
+      
+      // Correct answers
+      const correctAnswers = {
+        q1: 'b',
+        q2: 'b',
+        q3: 'c',
+        q4: 'b',
+        q5: 'b',
+        q6: 'b',
+        q7: 'c',
+        q8: 'b',
+        q9: 'b',
+        q10: 'b'
+      };
+      
+      // Question explanations
+      const explanations = {
+        q1: "Industrial-Organizational Psychology applies psychological principles to workplace issues, focusing on both productivity and employee well-being.",
+        q2: "KSAOs (Knowledge, Skills, Abilities, and Other characteristics) are identified during job analysis to determine what is required for successful job performance.",
+        q3: "Self-Determination Theory emphasizes intrinsic motivation and psychological needs for autonomy, competence, and relatedness.",
+        q4: "Primary appraisal involves evaluating whether an event is threatening, challenging, or harmful before considering how to cope with it.",
+        q5: "Assessment centers use situational exercises that simulate real work scenarios, making them effective for measuring interpersonal and teamwork skills.",
+        q6: "Input variables in the IPO model include team composition, member characteristics, and organizational context that exist before team processes begin.",
+        q7: "The Behavior level in Kirkpatrick's model measures the application of learned skills and knowledge on the job.",
+        q8: "Cultural intelligence refers to the capability to function effectively in situations characterized by cultural diversity.",
+        q9: "Research generally shows that job satisfaction contributes to the development of organizational commitment over time.",
+        q10: "Action research aims to solve practical organizational problems while simultaneously contributing to scientific knowledge."
+      };
+      
+      // Option selection
+      options.forEach(option => {
+        option.addEventListener('click', function() {
+          const question = this.closest('.question');
+          const optionsInQuestion = question.querySelectorAll('.option');
+          const input = this.querySelector('input');
+          
+          // Deselect all options in this question
+          optionsInQuestion.forEach(opt => {
+            opt.classList.remove('selected');
+            opt.querySelector('input').checked = false;
+          });
+          
+          // Select clicked option
+          this.classList.add('selected');
+          input.checked = true;
+        });
+      });
+      
+      // Reset answers
+      resetBtn.addEventListener('click', function() {
+        const allOptions = document.querySelectorAll('.option');
+        allOptions.forEach(option => {
+          option.classList.remove('selected');
+          option.querySelector('input').checked = false;
+        });
+      });
+      
+      // Submit quiz
+      submitBtn.addEventListener('click', function() {
+        let score = 0;
+        let resultsHTML = '';
+        
+        // Calculate score
+        for (let i = 1; i <= 10; i++) {
+          const questionName = `q${i}`;
+          const selectedOption = document.querySelector(`input[name="${questionName}"]:checked`);
+          
+          if (selectedOption) {
+            const questionElement = selectedOption.closest('.question');
+            const questionText = questionElement.querySelector('.question-text').textContent;
+            const userAnswer = selectedOption.closest('.option').dataset.value;
+            const isCorrect = userAnswer === correctAnswers[questionName];
+            
+            if (isCorrect) {
+              score++;
+            }
+            
+            // Add to detailed results
+            resultsHTML += `
+              <div class="result-item ${isCorrect ? 'correct' : 'incorrect'}">
+                <div class="result-question">${questionText}</div>
+                <div class="result-answer">Your answer: ${userAnswer.toUpperCase()} - ${isCorrect ? 'Correct' : 'Incorrect'}</div>
+                <div class="result-answer">${explanations[questionName]}</div>
+              </div>
+            `;
+          }
+        }
+        
+        // Calculate percentage
+        const percentage = (score / 10) * 100;
+        
+        // Update results
+        scoreCircle.textContent = `${percentage}%`;
+        detailedResults.innerHTML = resultsHTML;
+        
+        // Set grade and feedback
+        if (percentage >= 90) {
+          grade.textContent = "Excellent!";
+          feedback.textContent = "You have an outstanding understanding of Organizational Psychology concepts.";
+        } else if (percentage >= 80) {
+          grade.textContent = "Very Good";
+          feedback.textContent = "You have a strong grasp of the material with room for minor improvements.";
+        } else if (percentage >= 70) {
+          grade.textContent = "Good";
+          feedback.textContent = "You understand the key concepts but should review some areas.";
+        } else if (percentage >= 60) {
+          grade.textContent = "Fair";
+          feedback.textContent = "You have basic understanding but need to study more thoroughly.";
+        } else {
+          grade.textContent = "Needs Improvement";
+          feedback.textContent = "You should review the course material to improve your understanding.";
+        }
+        
+        // Show results
+        results.classList.add('active');
+        results.scrollIntoView({ behavior: 'smooth' });
+      });
+      
+      // Retry quiz
+      retryBtn.addEventListener('click', function() {
+        results.classList.remove('active');
+        resetBtn.click();
+        document.querySelector('.quiz-container').scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+  </script>
+</body>
+</html>

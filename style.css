@@ -187,3 +187,81 @@ footer{padding:20px;text-align:center;margin-top:24px;font-size:0.9rem;backgroun
 
 /* page fade */
 body{opacity:0;animation:fadeIn .5s ease forwards}@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+/* Course Filter Dropdown */
+.course-filter {
+  display: flex;
+  justify-content: center;
+  padding: 0 1rem 1rem;
+  margin: 0 auto;
+  max-width: 800px;
+}
+
+.course-filter select {
+  width: 100%;
+  max-width: 500px;
+  padding: 0.8rem 1.5rem;
+  border-radius: 25px;
+  border: 2px solid var(--accent);
+  outline: none;
+  font-size: 1rem;
+  background: var(--card);
+  color: var(--text);
+  box-shadow: 0 2px 10px var(--shadow);
+  transition: all 0.3s ease;
+  appearance: none;
+  background-image: url('data:image/svg+xml;utf8,<svg fill="black" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1rem;
+}
+
+.course-filter select:focus {
+  border-color: var(--accent-strong);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.dark .course-filter select {
+  background-image: url('data:image/svg+xml;utf8,<svg fill="white" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+}
+
+/* Video Course Sections */
+.video-course-section {
+  margin-bottom: 3rem;
+}
+
+.video-course-section h4 {
+  color: var(--header);
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--accent);
+}
+
+/* Lazy loading improvements */
+.thumb {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+.thumb img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.thumb img:hover {
+  transform: scale(1.05);
+}
+
+.dark .thumb {
+  background: linear-gradient(90deg, #333 25%, #444 50%, #333 75%);
+}
+
+@keyframes loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
