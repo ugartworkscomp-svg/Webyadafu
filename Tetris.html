@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>African Tetris - UG Artworks</title>
+    <title> 🐝 AgogoTetris - Desktop Edition</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            touch-action: manipulation;
+            user-select: none;
         }
 
         :root {
@@ -30,22 +30,41 @@
             color: var(--light-cream);
             min-height: 100vh;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             overflow: hidden;
-            padding: 10px;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 3.5em;
+            color: var(--savanna-yellow);
+            text-shadow: 0 0 10px rgba(244, 164, 96, 0.5);
+            font-weight: 800;
+            margin-bottom: 5px;
+        }
+
+        .header h2 {
+            font-size: 1.8em;
+            color: var(--sunset-orange);
+            font-weight: 700;
         }
 
         .game-container {
             display: flex;
-            flex-direction: column;
-            gap: 15px;
-            padding: 15px;
+            gap: 30px;
+            padding: 25px;
             background: rgba(139, 69, 19, 0.2);
             border-radius: 20px;
             backdrop-filter: blur(10px);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            max-width: 100%;
+            max-width: 1100px;
             width: 100%;
             border: 2px solid var(--sunset-orange);
             position: relative;
@@ -63,13 +82,34 @@
             z-index: -1;
         }
 
+        .game-board-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+
+        #gameCanvas {
+            border: 3px solid var(--sunset-orange);
+            border-radius: 10px;
+            background: rgba(62, 39, 35, 0.9);
+            width: 400px;
+            height: 800px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .side-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            width: 250px;
+        }
+
         .top-panel {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-            padding: 10px;
+            padding: 20px;
             background: rgba(94, 64, 55, 0.7);
             border-radius: 15px;
             border: 2px solid var(--sunset-orange);
@@ -82,12 +122,12 @@
         }
 
         .logo i {
-            font-size: 24px;
+            font-size: 28px;
             color: var(--savanna-yellow);
         }
 
         .logo-text {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: bold;
             color: var(--savanna-yellow);
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
@@ -95,48 +135,27 @@
 
         .info-panel {
             display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
         }
 
         .info-item {
             background: rgba(210, 105, 30, 0.8);
-            padding: 8px 12px;
+            padding: 15px;
             border-radius: 10px;
-            font-size: 14px;
+            font-size: 18px;
             font-weight: bold;
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-width: 70px;
             box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
         }
 
         .info-value {
-            font-size: 18px;
+            font-size: 28px;
             color: var(--light-cream);
-            margin-top: 3px;
-        }
-
-        .game-area {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .game-board-container {
-            display: flex;
-            justify-content: center;
-            position: relative;
-        }
-
-        #gameCanvas {
-            border: 3px solid var(--sunset-orange);
-            border-radius: 10px;
-            background: rgba(62, 39, 35, 0.9);
-            max-width: 100%;
-            height: auto;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            margin-top: 5px;
         }
 
         .next-piece-container {
@@ -144,14 +163,14 @@
             flex-direction: column;
             align-items: center;
             background: rgba(94, 64, 55, 0.7);
-            padding: 10px;
+            padding: 20px;
             border-radius: 15px;
             border: 2px solid var(--sunset-orange);
         }
 
         .next-piece-label {
-            font-size: 16px;
-            margin-bottom: 8px;
+            font-size: 20px;
+            margin-bottom: 15px;
             color: var(--savanna-yellow);
             font-weight: bold;
         }
@@ -160,71 +179,50 @@
             background: rgba(62, 39, 35, 0.7);
             border-radius: 8px;
             border: 1px solid var(--savanna-yellow);
+            width: 120px;
+            height: 120px;
         }
 
         .controls-container {
             display: flex;
             flex-direction: column;
-            gap: 10px;
-        }
-
-        .touch-controls {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            grid-template-rows: 1fr 1fr;
-            gap: 10px;
-            margin-top: 10px;
-            height: 150px;
-        }
-
-        .touch-area {
-            background: rgba(210, 105, 30, 0.8);
-            border: 2px solid var(--savanna-yellow);
-            border-radius: 15px;
-            display: flex;
-            justify-content: center;
             align-items: center;
-            font-size: 24px;
-            color: var(--light-cream);
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-            box-shadow: 0 4px 0 var(--earth-brown);
-            transition: all 0.1s;
+            background: rgba(94, 64, 55, 0.7);
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid var(--sunset-orange);
         }
 
-        .touch-area:active {
-            transform: translateY(4px);
-            box-shadow: 0 0 0 var(--earth-brown);
-            background: rgba(210, 105, 30, 0.9);
+        .controls-title {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: var(--savanna-yellow);
+            font-weight: bold;
         }
 
-        .touch-rotate {
-            grid-column: 2;
-            grid-row: 1;
-            background: rgba(178, 34, 34, 0.8);
-            border-color: var(--accent-red);
+        .controls-list {
+            list-style: none;
+            padding: 0;
+            width: 100%;
         }
 
-        .touch-left {
-            grid-column: 1;
-            grid-row: 2;
+        .controls-list li {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            font-size: 16px;
         }
 
-        .touch-down {
-            grid-column: 2;
-            grid-row: 2;
-        }
-
-        .touch-right {
-            grid-column: 3;
-            grid-row: 2;
-        }
-
-        .touch-drop {
-            grid-column: 1 / -1;
-            grid-row: 1;
-            background: rgba(34, 139, 34, 0.8);
-            border-color: var(--accent-green);
+        .key {
+            display: inline-block;
+            background: rgba(210, 105, 30, 0.8);
+            padding: 8px 12px;
+            border-radius: 5px;
+            margin-right: 12px;
+            min-width: 50px;
+            text-align: center;
+            font-weight: bold;
+            box-shadow: 0 2px 0 var(--earth-brown);
         }
 
         /* Screens */
@@ -247,26 +245,26 @@
         }
 
         .screen h1 {
-            font-size: 2.5em;
-            margin-bottom: 15px;
+            font-size: 3.5em;
+            margin-bottom: 20px;
             color: var(--savanna-yellow);
             text-shadow: 0 0 10px rgba(244, 164, 96, 0.5);
             font-weight: 800;
         }
 
         .screen h2 {
-            font-size: 1.8em;
-            margin-bottom: 20px;
+            font-size: 2.2em;
+            margin-bottom: 25px;
             color: var(--sunset-orange);
             font-weight: 700;
         }
 
         .screen p {
-            font-size: 1.1em;
-            margin-bottom: 20px;
+            font-size: 1.4em;
+            margin-bottom: 25px;
             text-align: center;
-            max-width: 400px;
-            line-height: 1.5;
+            max-width: 500px;
+            line-height: 1.6;
             color: var(--light-cream);
         }
 
@@ -274,17 +272,16 @@
             background: linear-gradient(to bottom, var(--sunset-orange), var(--earth-brown));
             border: none;
             border-radius: 50px;
-            padding: 15px 30px;
-            font-size: 1.2em;
+            padding: 18px 35px;
+            font-size: 1.4em;
             color: white;
             cursor: pointer;
-            margin: 10px;
+            margin: 12px;
             transition: all 0.3s;
             box-shadow: 0 5px 0 var(--deep-brown);
             font-weight: bold;
-            min-width: 180px;
+            min-width: 220px;
             user-select: none;
-            -webkit-tap-highlight-color: transparent;
         }
 
         .btn:hover {
@@ -311,106 +308,15 @@
             display: none;
         }
 
-        /* Block colors with African theme */
-        .block-1 { background: var(--savanna-yellow); } /* I */
-        .block-2 { background: var(--sunset-orange); } /* J */
-        .block-3 { background: var(--accent-red); } /* L */
-        .block-4 { background: var(--accent-green); } /* O */
-        .block-5 { background: var(--earth-brown); } /* S */
-        .block-6 { background: #8B4513; } /* T */
-        .block-7 { background: #A0522D; } /* Z */
-
-        /* Desktop controls */
-        .desktop-controls {
-            display: none;
-        }
-
-        /* Mobile-specific adjustments */
-        @media (min-width: 768px) {
-            .game-container {
-                flex-direction: row;
-                max-width: 900px;
-            }
-            
-            .touch-controls {
-                display: none;
-            }
-            
-            .desktop-controls {
-                display: block;
-                text-align: center;
-                margin-top: 20px;
-                color: var(--savanna-yellow);
-                font-size: 14px;
-            }
-            
-            .game-area {
-                flex-direction: row;
-                align-items: flex-start;
-            }
-            
-            .next-piece-container {
-                margin-left: 15px;
-            }
-        }
-
-        @media (max-width: 767px) {
-            .desktop-controls {
-                display: none;
-            }
-            
-            .game-container {
-                max-width: 100%;
-            }
-            
-            #gameCanvas {
-                width: 100%;
-            }
-            
-            .top-panel {
-                flex-direction: column;
-            }
-            
-            .info-panel {
-                width: 100%;
-                justify-content: space-around;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .screen h1 {
-                font-size: 2em;
-            }
-            
-            .screen h2 {
-                font-size: 1.5em;
-            }
-            
-            .btn {
-                padding: 12px 24px;
-                font-size: 1em;
-                min-width: 160px;
-            }
-            
-            .info-item {
-                font-size: 12px;
-                min-width: 60px;
-            }
-            
-            .info-value {
-                font-size: 16px;
-            }
-        }
-
         .sound-toggle {
             position: absolute;
-            top: 15px;
-            right: 15px;
+            top: 20px;
+            right: 20px;
             background: rgba(210, 105, 30, 0.8);
             border: 2px solid var(--savanna-yellow);
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -418,6 +324,7 @@
             cursor: pointer;
             z-index: 20;
             box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
+            font-size: 1.2em;
         }
 
         .pattern-overlay {
@@ -430,9 +337,24 @@
             pointer-events: none;
             z-index: -1;
         }
+        
+        .footer {
+            margin-top: 25px;
+            text-align: center;
+            color: var(--savanna-yellow);
+            font-size: 1.3em;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+            padding: 10px;
+        }
     </style>
 </head>
 <body>
+    <div class="header">
+        <h1><i class="fas fa-mountain"></i>  🐝 AgogoTETRIS</h1>
+        <h2>UG ARTWORKS</h2>
+    </div>
+    
     <div class="game-container">
         <div class="pattern-overlay"></div>
         
@@ -441,20 +363,16 @@
         </div>
         
         <div class="game-board-container">
-            <canvas id="gameCanvas"></canvas>
+            <canvas id="gameCanvas" width="400" height="800"></canvas>
             
             <!-- Menu Screen -->
             <div id="menuScreen" class="screen">
-                <h1><i class="fas fa-mountain"></i> AFRICAN TETRIS</h1>
+                <h1><i class="fas fa-mountain"></i>  🐝 AgogoTETRIS</h1>
                 <h2>UG ARTWORKS</h2>
                 <p>Experience the classic Tetris game with an African-inspired design. Clear lines by completing rows with falling blocks.</p>
-                <p>Credit to James Mlelemba</p>
-                <button class="btn" onclick="startGame()">
+                <button class="btn" id="startButton">
                     <i class="fas fa-play"></i> START GAME
                 </button>
-                <div class="desktop-controls">
-                    <p>Use keyboard arrows to play<br>↑ Rotate, ← → Move, ↓ Soft Drop, Space Hard Drop</p>
-                </div>
             </div>
 
             <!-- Game Over Screen -->
@@ -463,75 +381,66 @@
                 <p id="finalScore">Score: 0</p>
                 <p id="finalLevel">Level: 1</p>
                 <p id="finalLines">Lines: 0</p>
-                <button class="btn restart" onclick="restartGame()">
+                <button class="btn restart" id="restartButton">
                     <i class="fas fa-redo"></i> PLAY AGAIN
                 </button>
-                <button class="btn menu" onclick="showMenu()">
+                <button class="btn menu" id="menuButton">
                     <i class="fas fa-home"></i> MAIN MENU
                 </button>
             </div>
         </div>
 
-        <div class="game-area">
+        <div class="side-panel">
             <div class="top-panel">
                 <div class="logo">
                     <i class="fas fa-mountain-sun"></i>
-                    <div class="logo-text">AFRICAN TETRIS</div>
+                    <div class="logo-text"> 🐝 AgogoTETRIS</div>
                 </div>
-                
-                <div class="info-panel">
-                    <div class="info-item">
-                        SCORE
-                        <div class="info-value" id="score">0</div>
-                    </div>
-                    <div class="info-item">
-                        LEVEL
-                        <div class="info-value" id="level">1</div>
-                    </div>
-                    <div class="info-item">
-                        LINES
-                        <div class="info-value" id="lines">0</div>
-                    </div>
+            </div>
+            
+            <div class="info-panel">
+                <div class="info-item">
+                    SCORE
+                    <div class="info-value" id="score">0</div>
+                </div>
+                <div class="info-item">
+                    LEVEL
+                    <div class="info-value" id="level">1</div>
+                </div>
+                <div class="info-item">
+                    LINES
+                    <div class="info-value" id="lines">0</div>
                 </div>
             </div>
             
             <div class="next-piece-container">
                 <div class="next-piece-label">NEXT PIECE</div>
-                <canvas id="nextCanvas" width="80" height="80"></canvas>
+                <canvas id="nextCanvas" width="120" height="120"></canvas>
             </div>
             
             <div class="controls-container">
-                <!-- Touch controls (visible on mobile) -->
-                <div class="touch-controls">
-                    <div class="touch-area touch-drop" ontouchstart="hardDrop()">
-                        <i class="fas fa-arrow-down"></i>
-                    </div>
-                    <div class="touch-area touch-rotate" ontouchstart="rotatePiece()">
-                        <i class="fas fa-redo"></i>
-                    </div>
-                    <div class="touch-area touch-left" ontouchstart="moveLeft()">
-                        <i class="fas fa-arrow-left"></i>
-                    </div>
-                    <div class="touch-area touch-down" ontouchstart="moveDown()">
-                        <i class="fas fa-arrow-down"></i>
-                    </div>
-                    <div class="touch-area touch-right" ontouchstart="moveRight()">
-                        <i class="fas fa-arrow-right"></i>
-                    </div>
-                </div>
-                
-                <div class="desktop-controls">
-                    <p>Use keyboard arrows to play</p>
-                </div>
+                <div class="controls-title">CONTROLS</div>
+                <ul class="controls-list">
+                    <li><span class="key">←</span> Move Left</li>
+                    <li><span class="key">→</span> Move Right</li>
+                    <li><span class="key">↓</span> Soft Drop</li>
+                    <li><span class="key">↑</span> Rotate</li>
+                    <li><span class="key">SPACE</span> Hard Drop</li>
+                    <li><span class="key">P</span> Pause Game</li>
+                </ul>
             </div>
         </div>
+    </div>
+    
+    <div class="footer">
+        <p>Designed by James Mlelemba | UG Artworks</p>
     </div>
 
     <script>
         // Game Constants
         const COLS = 10;
         const ROWS = 20;
-        let BLOCK_SIZE;
+        const BLOCK_SIZE = 40;
         const COLORS = [
             '', // 0 - empty
             '#F4A460', // 1 - I (Yellow)
@@ -606,12 +515,14 @@
             lines: 0,
             gameOver: false,
             dropTime: 0,
-            dropInterval: 1000
+            dropInterval: 1000,
+            paused: false
         };
 
         // Sound variables
         let soundEnabled = true;
-        let moveSound, rotateSound, dropSound, clearSound, gameOverSound;
+        let moveSound, rotateSound, dropSound, clearSound, gameOverSound, levelUpSound;
+        let backgroundMusic;
 
         // Initialize game
         function init() {
@@ -623,33 +534,48 @@
             // Initialize sounds
             initSounds();
             
-            // Calculate block size based on screen size
-            calculateBlockSize();
-            
             // Initialize empty board
-            board = Array(ROWS).fill().map(() => Array(COLS).fill(0));
+            resetBoard();
             
             // Create first pieces
             currentPiece = createPiece();
             nextPiece = createPiece();
             
+            // Set up event listeners
+            document.getElementById('startButton').addEventListener('click', startGame);
+            document.getElementById('restartButton').addEventListener('click', restartGame);
+            document.getElementById('menuButton').addEventListener('click', showMenu);
+            document.getElementById('soundToggle').addEventListener('click', toggleSound);
+            
             // Start game loop
             gameLoop();
-            
-            // Handle window resize
-            window.addEventListener('resize', calculateBlockSize);
-            
-            // Sound toggle
-            document.getElementById('soundToggle').addEventListener('click', toggleSound);
         }
 
         function initSounds() {
             // Create audio elements for sound effects
-            moveSound = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==');
-            rotateSound = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==');
-            dropSound = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==');
-            clearSound = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==');
-            gameOverSound = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==');
+            moveSound = new Audio();
+            moveSound.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=";
+            
+            rotateSound = new Audio();
+            rotateSound.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=";
+            
+            dropSound = new Audio();
+            dropSound.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=";
+            
+            clearSound = new Audio();
+            clearSound.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=";
+            
+            gameOverSound = new Audio();
+            gameOverSound.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=";
+            
+            levelUpSound = new Audio();
+            levelUpSound.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=";
+            
+            // Background music (African-inspired rhythm)
+            backgroundMusic = new Audio();
+            backgroundMusic.src = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=";
+            backgroundMusic.loop = true;
+            backgroundMusic.volume = 0.4;
             
             // Set sound volumes
             moveSound.volume = 0.3;
@@ -657,6 +583,7 @@
             dropSound.volume = 0.5;
             clearSound.volume = 0.6;
             gameOverSound.volume = 0.7;
+            levelUpSound.volume = 0.6;
         }
 
         function playSound(sound) {
@@ -670,21 +597,22 @@
             soundEnabled = !soundEnabled;
             const icon = document.querySelector('#soundToggle i');
             icon.className = soundEnabled ? 'fas fa-volume-up' : 'fas fa-volume-mute';
+            
+            if (soundEnabled) {
+                backgroundMusic.play().catch(e => console.log("Music play failed:", e));
+            } else {
+                backgroundMusic.pause();
+            }
         }
 
-        function calculateBlockSize() {
-            // Calculate the maximum block size that fits the screen
-            const maxWidth = window.innerWidth * 0.9;
-            const maxHeight = window.innerHeight * 0.6;
-            
-            const blockSizeByWidth = Math.floor(maxWidth / COLS);
-            const blockSizeByHeight = Math.floor(maxHeight / ROWS);
-            
-            BLOCK_SIZE = Math.min(blockSizeByWidth, blockSizeByHeight, 30);
-            
-            // Set canvas dimensions
-            canvas.width = COLS * BLOCK_SIZE;
-            canvas.height = ROWS * BLOCK_SIZE;
+        function resetBoard() {
+            board = [];
+            for (let y = 0; y < ROWS; y++) {
+                board[y] = [];
+                for (let x = 0; x < COLS; x++) {
+                    board[y][x] = 0;
+                }
+            }
         }
 
         function createPiece() {
@@ -775,17 +703,18 @@
             nextCtx.fillRect(0, 0, nextCanvas.width, nextCanvas.height);
             
             const shape = nextPiece.shape;
-            const offsetX = (nextCanvas.width / 20 - shape[0].length) * 10;
-            const offsetY = (nextCanvas.height / 20 - shape.length) * 10;
+            const blockSize = 25;
+            const offsetX = (nextCanvas.width - shape[0].length * blockSize) / 2;
+            const offsetY = (nextCanvas.height - shape.length * blockSize) / 2;
             
             for (let y = 0; y < shape.length; y++) {
                 for (let x = 0; x < shape[y].length; x++) {
                     if (shape[y][x]) {
                         nextCtx.fillStyle = COLORS[nextPiece.type + 1];
-                        nextCtx.fillRect(offsetX + x * 20, offsetY + y * 20, 20, 20);
+                        nextCtx.fillRect(offsetX + x * blockSize, offsetY + y * blockSize, blockSize, blockSize);
                         nextCtx.strokeStyle = '#ffffff';
                         nextCtx.lineWidth = 1;
-                        nextCtx.strokeRect(offsetX + x * 20, offsetY + y * 20, 20, 20);
+                        nextCtx.strokeRect(offsetX + x * blockSize, offsetY + y * blockSize, blockSize, blockSize);
                     }
                 }
             }
@@ -850,9 +779,15 @@
             for (let y = ROWS - 1; y >= 0; y--) {
                 if (board[y].every(cell => cell !== 0)) {
                     // Remove the line
-                    board.splice(y, 1);
+                    for (let yy = y; yy > 0; yy--) {
+                        for (let x = 0; x < COLS; x++) {
+                            board[yy][x] = board[yy-1][x];
+                        }
+                    }
                     // Add new empty line at top
-                    board.unshift(Array(COLS).fill(0));
+                    for (let x = 0; x < COLS; x++) {
+                        board[0][x] = 0;
+                    }
                     linesCleared++;
                     y++; // Check the same line again
                 }
@@ -862,13 +797,18 @@
                 playSound(clearSound);
                 gameState.lines += linesCleared;
                 gameState.score += [0, 100, 300, 500, 800][linesCleared] * gameState.level;
-                gameState.level = Math.floor(gameState.lines / 10) + 1;
-                gameState.dropInterval = Math.max(100, 1000 - (gameState.level - 1) * 100);
+                
+                const newLevel = Math.floor(gameState.lines / 10) + 1;
+                if (newLevel > gameState.level) {
+                    gameState.level = newLevel;
+                    gameState.dropInterval = Math.max(100, 1000 - (gameState.level - 1) * 100);
+                    playSound(levelUpSound);
+                }
             }
         }
 
         function moveLeft() {
-            if (!gameState.gameOver) {
+            if (!gameState.gameOver && !gameState.paused) {
                 currentPiece.x--;
                 if (checkCollision(currentPiece)) {
                     currentPiece.x++;
@@ -879,7 +819,7 @@
         }
 
         function moveRight() {
-            if (!gameState.gameOver) {
+            if (!gameState.gameOver && !gameState.paused) {
                 currentPiece.x++;
                 if (checkCollision(currentPiece)) {
                     currentPiece.x--;
@@ -890,7 +830,7 @@
         }
 
         function moveDown() {
-            if (!gameState.gameOver) {
+            if (!gameState.gameOver && !gameState.paused) {
                 currentPiece.y++;
                 if (checkCollision(currentPiece)) {
                     currentPiece.y--;
@@ -902,7 +842,7 @@
         }
 
         function rotatePiece() {
-            if (!gameState.gameOver) {
+            if (!gameState.gameOver && !gameState.paused) {
                 const newRotation = (currentPiece.rotation + 1) % 4;
                 const oldRotation = currentPiece.rotation;
                 
@@ -930,7 +870,7 @@
         }
 
         function hardDrop() {
-            if (!gameState.gameOver) {
+            if (!gameState.gameOver && !gameState.paused) {
                 playSound(dropSound);
                 while (!checkCollision(currentPiece, currentPiece.x, currentPiece.y + 1)) {
                     currentPiece.y++;
@@ -939,9 +879,29 @@
             }
         }
 
+        function togglePause() {
+            if (!gameState.gameOver) {
+                gameState.paused = !gameState.paused;
+                if (gameState.paused) {
+                    document.getElementById('menuScreen').classList.remove('hidden');
+                    document.getElementById('menuScreen').querySelector('h1').textContent = "GAME PAUSED";
+                    document.getElementById('menuScreen').querySelector('h2').textContent = "";
+                    document.getElementById('menuScreen').querySelector('p').textContent = "Press P or click Resume to continue playing";
+                    document.getElementById('menuScreen').querySelector('button').innerHTML = '<i class="fas fa-play"></i> RESUME GAME';
+                    backgroundMusic.pause();
+                } else {
+                    document.getElementById('menuScreen').classList.add('hidden');
+                    if (soundEnabled) {
+                        backgroundMusic.play().catch(e => console.log("Music play failed:", e));
+                    }
+                }
+            }
+        }
+
         function gameOver() {
             gameState.gameOver = true;
             playSound(gameOverSound);
+            backgroundMusic.pause();
             document.getElementById('finalScore').textContent = `Score: ${gameState.score}`;
             document.getElementById('finalLevel').textContent = `Level: ${gameState.level}`;
             document.getElementById('finalLines').textContent = `Lines: ${gameState.lines}`;
@@ -952,27 +912,38 @@
             document.getElementById('menuScreen').classList.add('hidden');
             document.getElementById('gameOverScreen').classList.add('hidden');
             resetGame();
+            if (soundEnabled) {
+                backgroundMusic.play().catch(e => console.log("Music play failed:", e));
+            }
         }
 
         function restartGame() {
             document.getElementById('gameOverScreen').classList.add('hidden');
             resetGame();
+            if (soundEnabled) {
+                backgroundMusic.play().catch(e => console.log("Music play failed:", e));
+            }
         }
 
         function showMenu() {
             document.getElementById('gameOverScreen').classList.add('hidden');
             document.getElementById('menuScreen').classList.remove('hidden');
+            document.getElementById('menuScreen').querySelector('h1').innerHTML = '<i class="fas fa-mountain"></i>  🐝 AgogoTETRIS';
+            document.getElementById('menuScreen').querySelector('h2').textContent = "UG ARTWORKS";
+            document.getElementById('menuScreen').querySelector('p').textContent = "Experience the classic Tetris game with an African-inspired design. Clear lines by completing rows with falling blocks.";
+            document.getElementById('menuScreen').querySelector('button').innerHTML = '<i class="fas fa-play"></i> START GAME';
         }
 
         function resetGame() {
-            board = Array(ROWS).fill().map(() => Array(COLS).fill(0));
+            resetBoard();
             gameState = {
                 score: 0,
                 level: 1,
                 lines: 0,
                 gameOver: false,
                 dropTime: 0,
-                dropInterval: 1000
+                dropInterval: 1000,
+                paused: false
             };
             currentPiece = createPiece();
             nextPiece = createPiece();
@@ -980,12 +951,17 @@
         }
 
         // Game loop
+        let lastTime = 0;
         function gameLoop(timestamp = 0) {
-            if (!gameState.gameOver) {
+            const deltaTime = timestamp - lastTime;
+            lastTime = timestamp;
+            
+            if (!gameState.gameOver && !gameState.paused) {
                 // Automatic dropping
-                if (timestamp - gameState.dropTime > gameState.dropInterval) {
+                gameState.dropTime += deltaTime;
+                if (gameState.dropTime > gameState.dropInterval) {
                     moveDown();
-                    gameState.dropTime = timestamp;
+                    gameState.dropTime = 0;
                 }
                 
                 drawBoard();
@@ -1003,26 +979,29 @@
             switch(e.key) {
                 case 'ArrowLeft':
                     moveLeft();
+                    e.preventDefault();
                     break;
                 case 'ArrowRight':
                     moveRight();
+                    e.preventDefault();
                     break;
                 case 'ArrowDown':
                     moveDown();
+                    e.preventDefault();
                     break;
                 case 'ArrowUp':
                     rotatePiece();
+                    e.preventDefault();
                     break;
                 case ' ':
                     hardDrop();
+                    e.preventDefault();
                     break;
-            }
-        });
-
-        // Prevent arrow key scrolling
-        window.addEventListener('keydown', (e) => {
-            if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(e.key)) {
-                e.preventDefault();
+                case 'p':
+                case 'P':
+                    togglePause();
+                    e.preventDefault();
+                    break;
             }
         });
 
