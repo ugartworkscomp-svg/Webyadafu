@@ -3,437 +3,344 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> 🐝 AgogoTetris - Desktop Edition</title>
+    <title>AgogoTETRIS - UG Artworks</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            user-select: none;
-        }
-
-        :root {
-            --earth-brown: #8B4513;
-            --sunset-orange: #D2691E;
-            --savanna-yellow: #F4A460;
-            --accent-red: #B22222;
-            --accent-green: #228B22;
-            --deep-brown: #5D4037;
-            --light-cream: #F5F5DC;
-            --dark-brown: #3E2723;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, var(--deep-brown), var(--dark-brown));
-            color: var(--light-cream);
+            font-family: "Segoe UI", sans-serif;
+            background: linear-gradient(135deg, #3E2723, #5D4037);
+            color: #F5F5DC;
             min-height: 100vh;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
-            overflow: hidden;
             padding: 20px;
         }
 
+        /* Center App */
+        .app-wrapper {
+            width: 100%;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        /* Header */
         .header {
             text-align: center;
             margin-bottom: 20px;
         }
-
         .header h1 {
-            font-size: 3.5em;
-            color: var(--savanna-yellow);
+            font-size: 3.5rem;
+            color: #F4A460;
             text-shadow: 0 0 10px rgba(244, 164, 96, 0.5);
-            font-weight: 800;
-            margin-bottom: 5px;
         }
-
         .header h2 {
-            font-size: 1.8em;
-            color: var(--sunset-orange);
-            font-weight: 700;
-        }
-
-        .game-container {
-            display: flex;
-            gap: 30px;
-            padding: 25px;
-            background: rgba(139, 69, 19, 0.2);
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            max-width: 1100px;
-            width: 100%;
-            border: 2px solid var(--sunset-orange);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .game-container::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path fill="%23D2691E" opacity="0.1" d="M20,20 C40,0 60,0 80,20 C100,40 100,60 80,80 C60,100 40,100 20,80 C0,60 0,40 20,20 Z"/></svg>');
-            z-index: -1;
-        }
-
-        .game-board-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            flex: 1;
-        }
-
-        #gameCanvas {
-            border: 3px solid var(--sunset-orange);
-            border-radius: 10px;
-            background: rgba(62, 39, 35, 0.9);
-            width: 400px;
-            height: 800px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-        }
-
-        .side-panel {
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
-            width: 250px;
-        }
-
-        .top-panel {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px;
-            background: rgba(94, 64, 55, 0.7);
-            border-radius: 15px;
-            border: 2px solid var(--sunset-orange);
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .logo i {
-            font-size: 28px;
-            color: var(--savanna-yellow);
-        }
-
-        .logo-text {
-            font-size: 20px;
-            font-weight: bold;
-            color: var(--savanna-yellow);
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-        }
-
-        .info-panel {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            width: 100%;
-        }
-
-        .info-item {
-            background: rgba(210, 105, 30, 0.8);
-            padding: 15px;
-            border-radius: 10px;
-            font-size: 18px;
-            font-weight: bold;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
-        }
-
-        .info-value {
-            font-size: 28px;
-            color: var(--light-cream);
+            font-size: 1.8rem;
+            color: #D2691E;
             margin-top: 5px;
         }
 
-        .next-piece-container {
+        /* Main Layout: Desktop wide */
+        .game-layout {
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            background: rgba(94, 64, 55, 0.7);
-            padding: 20px;
-            border-radius: 15px;
-            border: 2px solid var(--sunset-orange);
-        }
-
-        .next-piece-label {
-            font-size: 20px;
-            margin-bottom: 15px;
-            color: var(--savanna-yellow);
-            font-weight: bold;
-        }
-
-        #nextCanvas {
-            background: rgba(62, 39, 35, 0.7);
-            border-radius: 8px;
-            border: 1px solid var(--savanna-yellow);
-            width: 120px;
-            height: 120px;
-        }
-
-        .controls-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background: rgba(94, 64, 55, 0.7);
-            padding: 20px;
-            border-radius: 15px;
-            border: 2px solid var(--sunset-orange);
-        }
-
-        .controls-title {
-            font-size: 20px;
-            margin-bottom: 20px;
-            color: var(--savanna-yellow);
-            font-weight: bold;
-        }
-
-        .controls-list {
-            list-style: none;
-            padding: 0;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 40px;
             width: 100%;
         }
 
-        .controls-list li {
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            font-size: 16px;
+        /* Game Board Section */
+        .board-section {
+            position: relative;
         }
 
-        .key {
-            display: inline-block;
-            background: rgba(210, 105, 30, 0.8);
-            padding: 8px 12px;
-            border-radius: 5px;
-            margin-right: 12px;
-            min-width: 50px;
-            text-align: center;
-            font-weight: bold;
-            box-shadow: 0 2px 0 var(--earth-brown);
+        #gameCanvas {
+            width: 400px;
+            height: 800px;
+            border: 3px solid #D2691E;
+            border-radius: 12px;
+            background: rgba(62,39,35,0.9);
+            box-shadow: 0 0 20px rgba(0,0,0,0.4);
         }
 
-        /* Screens */
+        /* Screen overlays */
         .screen {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
+            background: rgba(30, 20, 15, 0.95);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            background: rgba(62, 39, 35, 0.95);
-            border-radius: 20px;
-            z-index: 10;
-            padding: 20px;
+            border-radius: inherit;
             text-align: center;
-            backdrop-filter: blur(5px);
+            padding: 20px;
         }
+        .hidden { display: none; }
 
         .screen h1 {
-            font-size: 3.5em;
-            margin-bottom: 20px;
-            color: var(--savanna-yellow);
+            font-size: 2.8em;
+            margin-bottom: 15px;
+            color: #F4A460;
             text-shadow: 0 0 10px rgba(244, 164, 96, 0.5);
-            font-weight: 800;
         }
 
         .screen h2 {
-            font-size: 2.2em;
-            margin-bottom: 25px;
-            color: var(--sunset-orange);
-            font-weight: 700;
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #D2691E;
         }
 
         .screen p {
-            font-size: 1.4em;
-            margin-bottom: 25px;
+            font-size: 1.2em;
+            margin-bottom: 20px;
             text-align: center;
-            max-width: 500px;
-            line-height: 1.6;
-            color: var(--light-cream);
+            max-width: 400px;
+            line-height: 1.5;
         }
 
+        /* Buttons */
         .btn {
-            background: linear-gradient(to bottom, var(--sunset-orange), var(--earth-brown));
+            padding: 15px 40px;
+            font-size: 1.2rem;
             border: none;
             border-radius: 50px;
-            padding: 18px 35px;
-            font-size: 1.4em;
+            margin: 10px;
+            background: linear-gradient(to bottom, #D2691E, #8B4513);
             color: white;
             cursor: pointer;
-            margin: 12px;
-            transition: all 0.3s;
-            box-shadow: 0 5px 0 var(--deep-brown);
             font-weight: bold;
-            min-width: 220px;
-            user-select: none;
+            min-width: 200px;
+            box-shadow: 0 5px 0 #5D4037;
+            transition: all 0.3s;
         }
 
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 7px 0 var(--deep-brown);
+            box-shadow: 0 7px 0 #5D4037;
         }
 
         .btn:active {
             transform: translateY(3px);
-            box-shadow: 0 2px 0 var(--deep-brown);
+            box-shadow: 0 2px 0 #5D4037;
         }
 
         .btn.restart {
-            background: linear-gradient(to bottom, var(--accent-green), #1a6b1a);
+            background: linear-gradient(to bottom, #228B22, #1a6b1a);
             box-shadow: 0 5px 0 #145214;
         }
 
         .btn.menu {
-            background: linear-gradient(to bottom, var(--accent-red), #8b1a1a);
+            background: linear-gradient(to bottom, #B22222, #8b1a1a);
             box-shadow: 0 5px 0 #5e1212;
         }
 
-        .hidden {
-            display: none;
+        /* Right Panel */
+        .side-panel {
+            width: 350px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
         }
 
+        .info-box, .next-box, .controls-box {
+            background: rgba(94, 64, 55, 0.8);
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid #D2691E;
+            text-align: center;
+        }
+
+        .info-box h3, .next-box h3, .controls-box h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #F4A460;
+        }
+
+        .value {
+            font-size: 2.5rem;
+            margin-top: 5px;
+            color: #F5F5DC;
+            font-weight: bold;
+        }
+
+        #nextCanvas {
+            background: rgba(62, 39, 35, 0.7);
+            border-radius: 8px;
+            border: 1px solid #F4A460;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto;
+        }
+
+        /* Controls list */
+        .controls-box ul {
+            list-style: none;
+            padding-left: 0;
+            text-align: left;
+        }
+        .controls-box li {
+            padding: 8px 0;
+            font-size: 1.1rem;
+            border-bottom: 1px solid rgba(210, 105, 30, 0.3);
+        }
+
+        /* Sound Button */
         .sound-toggle {
-            position: absolute;
-            top: 20px;
+            position: fixed;
             right: 20px;
-            background: rgba(210, 105, 30, 0.8);
-            border: 2px solid var(--savanna-yellow);
+            bottom: 20px;
+            background: #D2691E;
+            border: 2px solid #F4A460;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
-            width: 50px;
-            height: 50px;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
             display: flex;
             justify-content: center;
             align-items: center;
-            color: var(--light-cream);
-            cursor: pointer;
-            z-index: 20;
-            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
-            font-size: 1.2em;
         }
 
-        .pattern-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path fill="%23D2691E" opacity="0.05" d="M20,20 C40,0 60,0 80,20 C100,40 100,60 80,80 C60,100 40,100 20,80 C0,60 0,40 20,20 Z"/></svg>');
-            pointer-events: none;
-            z-index: -1;
-        }
-        
+        /* Footer */
         .footer {
-            margin-top: 25px;
             text-align: center;
-            color: var(--savanna-yellow);
-            font-size: 1.3em;
+            margin-top: 30px;
+            font-size: 1.2rem;
+            color: #F4A460;
             font-weight: bold;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-            padding: 10px;
+        }
+
+        /* -------- MOBILE RESPONSIVE -------- */
+        @media (max-width: 900px) {
+            .game-layout {
+                flex-direction: column;
+                align-items: center;
+                gap: 20px;
+            }
+
+            #gameCanvas {
+                width: 320px;
+                height: 640px;
+            }
+
+            .side-panel {
+                width: 90%;
+            }
+        }
+
+        @media (max-width: 500px) {
+            #gameCanvas {
+                width: 280px;
+                height: 560px;
+            }
+            
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .header h2 {
+                font-size: 1.3rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1><i class="fas fa-mountain"></i>  🐝 AgogoTETRIS</h1>
-        <h2>UG ARTWORKS</h2>
-    </div>
-    
-    <div class="game-container">
-        <div class="pattern-overlay"></div>
+    <div class="app-wrapper">
         
-        <div class="sound-toggle" id="soundToggle">
+        <!-- Header -->
+        <header class="header">
+            <h1>🐝 AgogoTETRIS</h1>
+            <h2>UG ARTWORKS</h2>
+        </header>
+
+        <!-- Main Game Layout -->
+        <div class="game-layout">
+
+            <!-- Left: Game Board -->
+            <div class="board-section">
+                <canvas id="gameCanvas" width="400" height="800"></canvas>
+
+                <!-- Menu Screen -->
+                <div id="menuScreen" class="screen">
+                    <h1>🐝 AgogoTETRIS</h1>
+                    <h2>UG ARTWORKS</h2>
+                    <p>Experience the classic but redesigned African Tetris.</p>
+                    <button class="btn" id="startButton">Start Game</button>
+                </div>
+
+                <!-- Game Over Screen -->
+                <div id="gameOverScreen" class="screen hidden">
+                    <h1>GAME OVER</h1>
+                    <p id="finalScore"></p>
+                    <p id="finalLevel"></p>
+                    <p id="finalLines"></p>
+
+                    <button class="btn restart" id="restartButton">Play Again</button>
+                    <button class="btn menu" id="menuButton">Main Menu</button>
+                </div>
+            </div>
+
+            <!-- Right Side Panel -->
+            <aside class="side-panel">
+
+                <section class="info-box">
+                    <h3>SCORE</h3>
+                    <div id="score" class="value">0</div>
+                </section>
+
+                <section class="info-box">
+                    <h3>LEVEL</h3>
+                    <div id="level" class="value">1</div>
+                </section>
+
+                <section class="info-box">
+                    <h3>LINES</h3>
+                    <div id="lines" class="value">0</div>
+                </section>
+
+                <section class="next-box">
+                    <h3>NEXT PIECE</h3>
+                    <canvas id="nextCanvas" width="120" height="120"></canvas>
+                </section>
+
+                <section class="controls-box">
+                    <h3>CONTROLS</h3>
+                    <ul>
+                        <li>← Move Left</li>
+                        <li>→ Move Right</li>
+                        <li>↓ Soft Drop</li>
+                        <li>↑ Rotate</li>
+                        <li>SPACE – Hard Drop</li>
+                        <li>P – Pause</li>
+                    </ul>
+                </section>
+
+            </aside>
+
+        </div>
+
+        <!-- Sound Toggle -->
+        <button id="soundToggle" class="sound-toggle">
             <i class="fas fa-volume-up"></i>
-        </div>
-        
-        <div class="game-board-container">
-            <canvas id="gameCanvas" width="400" height="800"></canvas>
-            
-            <!-- Menu Screen -->
-            <div id="menuScreen" class="screen">
-                <h1><i class="fas fa-mountain"></i>  🐝 AgogoTETRIS</h1>
-                <h2>UG ARTWORKS</h2>
-                <p>Experience the classic Tetris game with an African-inspired design. Clear lines by completing rows with falling blocks.</p>
-                <button class="btn" id="startButton">
-                    <i class="fas fa-play"></i> START GAME
-                </button>
-            </div>
+        </button>
 
-            <!-- Game Over Screen -->
-            <div id="gameOverScreen" class="screen hidden">
-                <h1><i class="fas fa-gamepad"></i> GAME OVER</h1>
-                <p id="finalScore">Score: 0</p>
-                <p id="finalLevel">Level: 1</p>
-                <p id="finalLines">Lines: 0</p>
-                <button class="btn restart" id="restartButton">
-                    <i class="fas fa-redo"></i> PLAY AGAIN
-                </button>
-                <button class="btn menu" id="menuButton">
-                    <i class="fas fa-home"></i> MAIN MENU
-                </button>
-            </div>
-        </div>
+        <!-- Footer -->
+        <footer class="footer">
+            Designed by James Mlelemba | UG Artworks
+        </footer>
 
-        <div class="side-panel">
-            <div class="top-panel">
-                <div class="logo">
-                    <i class="fas fa-mountain-sun"></i>
-                    <div class="logo-text"> 🐝 AgogoTETRIS</div>
-                </div>
-            </div>
-            
-            <div class="info-panel">
-                <div class="info-item">
-                    SCORE
-                    <div class="info-value" id="score">0</div>
-                </div>
-                <div class="info-item">
-                    LEVEL
-                    <div class="info-value" id="level">1</div>
-                </div>
-                <div class="info-item">
-                    LINES
-                    <div class="info-value" id="lines">0</div>
-                </div>
-            </div>
-            
-            <div class="next-piece-container">
-                <div class="next-piece-label">NEXT PIECE</div>
-                <canvas id="nextCanvas" width="120" height="120"></canvas>
-            </div>
-            
-            <div class="controls-container">
-                <div class="controls-title">CONTROLS</div>
-                <ul class="controls-list">
-                    <li><span class="key">←</span> Move Left</li>
-                    <li><span class="key">→</span> Move Right</li>
-                    <li><span class="key">↓</span> Soft Drop</li>
-                    <li><span class="key">↑</span> Rotate</li>
-                    <li><span class="key">SPACE</span> Hard Drop</li>
-                    <li><span class="key">P</span> Pause Game</li>
-                </ul>
-            </div>
-        </div>
-    </div>
-    
-    <div class="footer">
-        <p>Designed by James Mlelemba | UG Artworks</p>
     </div>
 
     <script>
@@ -887,7 +794,7 @@
                     document.getElementById('menuScreen').querySelector('h1').textContent = "GAME PAUSED";
                     document.getElementById('menuScreen').querySelector('h2').textContent = "";
                     document.getElementById('menuScreen').querySelector('p').textContent = "Press P or click Resume to continue playing";
-                    document.getElementById('menuScreen').querySelector('button').innerHTML = '<i class="fas fa-play"></i> RESUME GAME';
+                    document.getElementById('menuScreen').querySelector('button').innerHTML = 'RESUME GAME';
                     backgroundMusic.pause();
                 } else {
                     document.getElementById('menuScreen').classList.add('hidden');
@@ -928,10 +835,10 @@
         function showMenu() {
             document.getElementById('gameOverScreen').classList.add('hidden');
             document.getElementById('menuScreen').classList.remove('hidden');
-            document.getElementById('menuScreen').querySelector('h1').innerHTML = '<i class="fas fa-mountain"></i>  🐝 AgogoTETRIS';
+            document.getElementById('menuScreen').querySelector('h1').innerHTML = '🐝 AgogoTETRIS';
             document.getElementById('menuScreen').querySelector('h2').textContent = "UG ARTWORKS";
-            document.getElementById('menuScreen').querySelector('p').textContent = "Experience the classic Tetris game with an African-inspired design. Clear lines by completing rows with falling blocks.";
-            document.getElementById('menuScreen').querySelector('button').innerHTML = '<i class="fas fa-play"></i> START GAME';
+            document.getElementById('menuScreen').querySelector('p').textContent = "Experience the classic but redesigned African Tetris.";
+            document.getElementById('menuScreen').querySelector('button').innerHTML = 'START GAME';
         }
 
         function resetGame() {
