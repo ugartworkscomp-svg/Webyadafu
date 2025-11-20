@@ -133,7 +133,7 @@
     flex-direction: column;
     position: relative;
     overflow: hidden;
-    min-height: 0; /* Important for flex child scrolling */
+    min-height: 0;
   }
 
   #chatbox {
@@ -191,7 +191,7 @@
     display: block;
   }
 
-  /* Input area */
+  /* Input area - FIXED POSITION */
   .input-area {
     display: flex;
     padding: 8px 16px;
@@ -200,6 +200,9 @@
     border-top: 1px solid rgba(0,0,0,0.08);
     min-height: 62px;
     flex-shrink: 0;
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
   }
 
   .input-container {
@@ -389,6 +392,9 @@
     flex-shrink: 0;
     max-height: 80px;
     overflow-y: auto;
+    position: sticky;
+    bottom: 62px;
+    z-index: 4;
   }
 
   .suggestion-chip {
@@ -497,9 +503,9 @@
       font-size: 12px;
     }
     
-    /* Mobile-specific chat area adjustments */
+    /* Mobile-specific adjustments */
     .main-content {
-      height: calc(100vh - 60px - 62px - 60px); /* viewport - header - input - footer */
+      height: calc(100vh - 60px - 62px - 60px);
     }
     
     .chat-area {
@@ -508,12 +514,14 @@
     
     #chatbox {
       padding: 12px;
+      padding-bottom: 70px; /* Extra padding to account for suggestions */
     }
     
     .suggestion-chips {
       max-height: 60px;
       padding: 8px 12px;
       gap: 6px;
+      bottom: 62px;
     }
     
     .suggestion-chip {
@@ -524,6 +532,8 @@
     .input-area {
       padding: 8px 12px;
       min-height: 56px;
+      position: sticky;
+      bottom: 0;
     }
     
     .input-container {
@@ -548,6 +558,7 @@
     .suggestion-chips {
       max-height: 50px;
       padding: 6px 10px;
+      bottom: 56px;
     }
     
     .suggestion-chip {
@@ -571,12 +582,17 @@
     .header-subtitle {
       font-size: 11px;
     }
+    
+    #chatbox {
+      padding-bottom: 60px;
+    }
   }
 
   /* Extra small devices */
   @media (max-width: 360px) {
     .suggestion-chips {
       max-height: 45px;
+      bottom: 56px;
     }
     
     .suggestion-chip {
@@ -586,6 +602,7 @@
     
     #chatbox {
       padding: 10px;
+      padding-bottom: 55px;
     }
     
     .message {
