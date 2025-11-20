@@ -75,6 +75,7 @@
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     z-index: 10;
     min-height: 60px;
+    flex-shrink: 0;
   }
 
   .header-info {
@@ -122,6 +123,7 @@
     display: flex;
     overflow: hidden;
     position: relative;
+    flex-direction: column;
   }
 
   /* Chat area */
@@ -131,6 +133,7 @@
     flex-direction: column;
     position: relative;
     overflow: hidden;
+    min-height: 0; /* Important for flex child scrolling */
   }
 
   #chatbox {
@@ -196,6 +199,7 @@
     align-items: center;
     border-top: 1px solid rgba(0,0,0,0.08);
     min-height: 62px;
+    flex-shrink: 0;
   }
 
   .input-container {
@@ -343,6 +347,7 @@
     padding: 8px 0;
     background: var(--header);
     color: rgba(255,255,255,0.7);
+    flex-shrink: 0;
   }
 
   .footer-credit {
@@ -373,37 +378,65 @@
     background: transparent;
   }
 
-  /* Responsive */
-  @media (max-width: 768px) {
-    .kb-panel {
-      width: 85%;
-    }
-    
-    .message {
-      max-width: 85%;
-    }
-    
-    .header-title {
-      font-size: 15px;
-    }
-    
-    .header-subtitle {
-      font-size: 12px;
-    }
+  /* Smart AI Features */
+  .suggestion-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px 16px;
+    background: var(--input-bg);
+    border-top: 1px solid rgba(0,0,0,0.08);
+    flex-shrink: 0;
+    max-height: 80px;
+    overflow-y: auto;
   }
 
-  @media (max-width: 480px) {
-    .kb-panel {
-      width: 100%;
-    }
-    
-    .input-area {
-      padding: 8px 12px;
-    }
-    
-    .input-container {
-      margin: 5px 4px;
-    }
+  .suggestion-chip {
+    background: var(--card);
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 16px;
+    padding: 6px 12px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: var(--transition);
+    color: var(--text);
+    white-space: nowrap;
+  }
+
+  .suggestion-chip:hover {
+    background: var(--accent-strong);
+    color: #000;
+  }
+
+  .confidence-meter {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+    font-style: italic;
+  }
+
+  .follow-up-questions {
+    margin-top: 12px;
+    padding-top: 8px;
+    border-top: 1px dashed rgba(0,0,0,0.1);
+  }
+
+  .follow-up-title {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .follow-up-item {
+    font-size: 12px;
+    color: var(--accent);
+    cursor: pointer;
+    margin: 2px 0;
+    padding: 2px 0;
+  }
+
+  .follow-up-item:hover {
+    text-decoration: underline;
   }
 
   /* Welcome message */
@@ -445,6 +478,121 @@
     0%, 60%, 100% { transform: translateY(0); }
     30% { transform: translateY(-5px); }
   }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .kb-panel {
+      width: 85%;
+    }
+    
+    .message {
+      max-width: 85%;
+    }
+    
+    .header-title {
+      font-size: 15px;
+    }
+    
+    .header-subtitle {
+      font-size: 12px;
+    }
+    
+    /* Mobile-specific chat area adjustments */
+    .main-content {
+      height: calc(100vh - 60px - 62px - 60px); /* viewport - header - input - footer */
+    }
+    
+    .chat-area {
+      height: 100%;
+    }
+    
+    #chatbox {
+      padding: 12px;
+    }
+    
+    .suggestion-chips {
+      max-height: 60px;
+      padding: 8px 12px;
+      gap: 6px;
+    }
+    
+    .suggestion-chip {
+      font-size: 12px;
+      padding: 5px 10px;
+    }
+    
+    .input-area {
+      padding: 8px 12px;
+      min-height: 56px;
+    }
+    
+    .input-container {
+      margin: 5px 4px;
+    }
+    
+    footer {
+      font-size: 11px;
+      padding: 6px 0;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .kb-panel {
+      width: 100%;
+    }
+    
+    .message {
+      max-width: 90%;
+    }
+    
+    .suggestion-chips {
+      max-height: 50px;
+      padding: 6px 10px;
+    }
+    
+    .suggestion-chip {
+      font-size: 11px;
+      padding: 4px 8px;
+    }
+    
+    .input-area {
+      padding: 6px 10px;
+    }
+    
+    .header {
+      padding: 8px 12px;
+      min-height: 54px;
+    }
+    
+    .header-title {
+      font-size: 14px;
+    }
+    
+    .header-subtitle {
+      font-size: 11px;
+    }
+  }
+
+  /* Extra small devices */
+  @media (max-width: 360px) {
+    .suggestion-chips {
+      max-height: 45px;
+    }
+    
+    .suggestion-chip {
+      font-size: 10px;
+      padding: 3px 6px;
+    }
+    
+    #chatbox {
+      padding: 10px;
+    }
+    
+    .message {
+      max-width: 95%;
+      padding: 6px 10px;
+    }
+  }
 </style>
 </head>
 
@@ -453,7 +601,7 @@
     <header>
       <div class="header-info">
         <div class="header-title">🐝 Agogo AI Tutor</div>
-        <div class="header-subtitle">Business Studies • Offline Mode</div>
+        <div class="header-subtitle">Business Studies • Offline Mode • Smart AI</div>
       </div>
       <div class="header-actions">
         <button class="header-btn" id="theme-toggle" aria-label="Toggle theme">🌙</button>
@@ -479,6 +627,10 @@
       </div>
     </div>
 
+    <div class="suggestion-chips" id="suggestionChips">
+      <!-- Dynamic suggestion chips will appear here -->
+    </div>
+
     <div class="input-area">
       <div class="input-container">
         <button class="input-btn" aria-label="Attach file">📎</button>
@@ -495,15 +647,13 @@
     </div>
 
     <footer>
-      <span class="footer-credit">Designed by James Mlelemba</span> • 🐝 Agogo AI Tutor
+      <span class="footer-credit">Designed by James Mlelemba</span> • 🐝 Agogo AI Tutor • Smart AI Enhanced
     </footer>
   </div>
 
 <script>
 /* -----------------------
-   Knowledge base - Semester 1 Business Studies
-   Each item: id, title, content, keywords (array)
-   Edit or extend these entries as you like.
+   Enhanced Knowledge Base - All Courses
    ----------------------- */
 const KB = [
   {
@@ -512,7 +662,8 @@ const KB = [
     content:
 `Microeconomics studies how individual consumers, households and firms make decisions under scarcity.
 Key concepts: scarcity, opportunity cost, demand, supply, equilibrium, elasticity, marginal cost and benefit.`,
-    keywords: ["microeconomics","scarcity","opportunity cost","demand","supply","equilibrium","elasticity","marginal"]
+    keywords: ["microeconomics","scarcity","opportunity cost","demand","supply","equilibrium","elasticity","marginal"],
+    course: "Elementary Microeconomics"
   },
   {
     id: "demand_supply",
@@ -521,7 +672,8 @@ Key concepts: scarcity, opportunity cost, demand, supply, equilibrium, elasticit
 `Demand: quantity buyers want at different prices. Law of Demand: price up → quantity demanded down (ceteris paribus).
 Supply: quantity sellers offer. Law of Supply: price up → quantity supplied up.
 Market equilibrium: price where quantity demanded = quantity supplied. Changes in non-price factors shift curves.`,
-    keywords: ["demand","supply","law of demand","law of supply","equilibrium","shift","price"]
+    keywords: ["demand","supply","law of demand","law of supply","equilibrium","shift","price"],
+    course: "Elementary Microeconomics"
   },
   {
     id: "elasticity",
@@ -529,7 +681,8 @@ Market equilibrium: price where quantity demanded = quantity supplied. Changes i
     content:
 `Elasticity measures responsiveness. Price elasticity of demand = % change in quantity demanded / % change in price.
 If |PED| > 1 demand is elastic; < 1 inelastic. Income elasticity, cross elasticity also important for businesses.`,
-    keywords: ["elasticity","price elasticity","ped","income elasticity","cross elasticity"]
+    keywords: ["elasticity","price elasticity","ped","income elasticity","cross elasticity"],
+    course: "Elementary Microeconomics"
   },
   {
     id: "costs",
@@ -537,7 +690,8 @@ If |PED| > 1 demand is elastic; < 1 inelastic. Income elasticity, cross elastici
     content:
 `Fixed costs do not change with output (rent, salaries). Variable costs change (materials).
 Total cost = fixed + variable. Marginal cost = cost to produce one more unit. Firms use these for pricing and production decisions.`,
-    keywords: ["fixed cost","variable cost","marginal cost","total cost","production"]
+    keywords: ["fixed cost","variable cost","marginal cost","total cost","production"],
+    course: "Elementary Microeconomics"
   },
   {
     id: "market_structures",
@@ -547,14 +701,16 @@ Total cost = fixed + variable. Marginal cost = cost to produce one more unit. Fi
 Monopoly: single seller, high barriers to entry.
 Oligopoly: few large firms, strategic behaviour.
 Monopolistic competition: many firms, differentiated products.`,
-    keywords: ["perfect competition","monopoly","oligopoly","monopolistic","market structure"]
+    keywords: ["perfect competition","monopoly","oligopoly","monopolistic","market structure"],
+    course: "Elementary Microeconomics"
   },
   {
     id: "macro_intro",
     title: "Macroeconomics — Introduction",
     content:
 `Macroeconomics studies the whole economy: GDP, inflation, unemployment, fiscal and monetary policy, economic growth and balance of payments.`,
-    keywords: ["macroeconomics","gdp","inflation","unemployment","fiscal policy","monetary policy"]
+    keywords: ["macroeconomics","gdp","inflation","unemployment","fiscal policy","monetary policy"],
+    course: "Elementary Microeconomics"
   },
   {
     id: "gdp_inflation",
@@ -562,7 +718,190 @@ Monopolistic competition: many firms, differentiated products.`,
     content:
 `GDP = market value of final goods and services. Inflation = sustained increase in price level (CPI often used).
 High inflation reduces purchasing power; deflation can harm growth.`,
-    keywords: ["gdp","inflation","cpi","price level"]
+    keywords: ["gdp","inflation","cpi","price level"],
+    course: "Elementary Microeconomics"
+  },
+  {
+    id: "elementary_microeconomics",
+    title: "Elementary Microeconomics - Full Course",
+    content:
+`Elementary Microeconomics studies individual economic units like households, firms, and markets. It examines how these entities make decisions and interact in specific markets.
+
+Key Topics:
+• Scarcity, choice, and opportunity cost
+• Demand and supply analysis
+• Market equilibrium and price determination
+• Elasticity concepts (price, income, cross)
+• Consumer behavior theory
+• Production and costs
+• Market structures (perfect competition, monopoly, oligopoly, monopolistic competition)
+• Factor markets (labor, capital, land)
+
+Core Principles:
+1. People face trade-offs
+2. The cost of something is what you give up to get it
+3. Rational people think at the margin
+4. People respond to incentives`,
+    keywords: ["microeconomics", "demand", "supply", "elasticity", "market structures", "opportunity cost", "scarcity", "equilibrium", "consumer behavior", "production", "costs"],
+    course: "Elementary Microeconomics"
+  },
+  {
+    id: "fundamentals_accounting",
+    title: "Fundamentals of Accounting",
+    content:
+`Fundamentals of Accounting covers the complete accounting cycle and financial reporting process.
+
+Course Units:
+1. Introduction to Financial Accounting - Basic concepts, users of accounting information
+2. Accounting Equation & Balance Sheet - Assets = Liabilities + Owner's Equity
+3. Double Entry Bookkeeping - Debits and credits, balancing accounts
+4. Trial Balance & Financial Statements - Income statement, balance sheet preparation
+5. Adjustments for Financial Statements - Accruals, prepayments, depreciation
+6. Inventory Valuation - FIFO, LIFO, weighted average methods
+7. Accounting Concepts - Going concern, accruals, consistency, prudence
+8. Books of Original Entry & Ledger - Journals, cash book, general ledger
+9. Bank Reconciliations - Matching bank statements with cash records
+10. Partnership Financial Statements - Profit sharing, capital accounts
+11. Limited Company Financial Statements - Share capital, reserves, dividends
+
+Key Skills: Recording transactions, preparing financial statements, interpreting financial data`,
+    keywords: ["accounting", "double entry", "trial balance", "financial statements", "balance sheet", "ledger", "bank reconciliation", "partnership", "limited company", "debits", "credits", "assets", "liabilities"],
+    course: "Fundamentals of Accounting"
+  },
+  {
+    id: "computer_systems",
+    title: "Introduction to Computer Systems",
+    content:
+`Introduction to Computer Systems covers fundamental concepts of computing technology and systems.
+
+Main Components:
+• Hardware: CPU, memory, storage devices, input/output devices
+• Software: Operating systems, application software, utilities
+• Data: Representation, storage, processing
+• Networking: Basic concepts, internet protocols
+
+Key Topics:
+- Computer architecture and organization
+- Operating system functions (Windows, Linux, macOS)
+- Data representation (binary, hexadecimal)
+- Memory hierarchy (cache, RAM, secondary storage)
+- Input/output systems
+- Basic networking concepts
+- Computer security fundamentals
+- Emerging technologies
+
+Practical Skills: File management, basic troubleshooting, software installation, hardware identification`,
+    keywords: ["computer systems", "hardware", "software", "operating systems", "networking", "data representation", "computer architecture", "cpu", "memory", "storage", "input devices", "output devices"],
+    course: "Introduction to Computer Systems"
+  },
+  {
+    id: "organizational_psychology",
+    title: "Organizational Psychology",
+    content:
+`Organizational Psychology applies psychological principles to workplace behavior and organizational effectiveness.
+
+Course Modules:
+1. Nature & Scope of I-O Psychology - Definition, history, multicultural issues
+2. Individual Differences - Personality, intelligence, assessment methods
+3. Job Analysis - Performance models, job evaluation techniques
+4. Training & Development - Learning principles, training methods, evaluation
+5. Work Motivation - Classic and modern motivational theories
+6. Work Attitudes & Emotions - Job satisfaction, organizational commitment
+7. Stress & Well-being - Stress theories, management techniques, workplace violence
+8. Team Effectiveness - Team types, input-process-output model
+9. Organizational Behavior - Social dynamics, group behavior
+10. Organizational Development - Change management, intervention strategies
+
+Applications: Employee selection, performance management, leadership development, organizational change`,
+    keywords: ["organizational psychology", "motivation", "job analysis", "training", "stress management", "team effectiveness", "organizational development", "workplace behavior", "leadership", "employee selection"],
+    course: "Organizational Psychology"
+  },
+  {
+    id: "life_managerial_skills",
+    title: "Life and Managerial Skills",
+    content:
+`Life and Managerial Skills develops essential competencies for personal and professional effectiveness.
+
+Core Areas:
+a) Personal Skills Development
+   - Self-awareness, emotional intelligence, learning styles
+   - Values clarification, attitude toward change
+
+b) Stress Management
+   - Stress identification and coping strategies
+   - Managing fear, depression, anger in institutional settings
+   - Crisis and disaster management
+
+c) Social & Conflict Management
+   - Effective interpersonal interactions
+   - Conflict types and resolution techniques
+   - Body language interpretation and assertiveness
+
+d) Interpersonal & Leadership Skills
+   - Team building and team spirit
+   - Leadership styles and emotional intelligence
+   - Negotiation skills and preparation
+
+e) Time Management
+   - Identifying time wasters (procrastination)
+   - Time management strategies and benefits
+
+f) Empowerment & Ethics
+   - Innovation stimulation and change management
+   - Power dynamics and managerial empowerment
+   - Ethical conduct and social responsibility
+
+g) Communication Arts
+   - Oral presentations and meeting management
+   - Reporting, case analysis, and academic writing skills`,
+    keywords: ["managerial skills", "stress management", "conflict resolution", "time management", "leadership", "team building", "communication", "empowerment", "emotional intelligence", "negotiation", "ethics"],
+    course: "Life and Managerial Skills"
+  },
+  {
+    id: "english_academic_purposes",
+    title: "English for Academic Purposes",
+    content:
+`English for Academic Purposes develops essential language and study skills for academic success.
+
+Key Components:
+
+1. Study Skills
+   - Time management and work planning
+   - Note-taking systems (Cornell method)
+   - SMART goals setting
+   - Overcoming procrastination
+   - Study groups and learning styles
+
+2. Listening Skills
+   - Informative and reflective listening
+   - Active listening techniques
+   - Barriers to effective listening
+
+3. Reading Skills
+   - Skimming, scanning, inference strategies
+   - SQ3R reading method
+   - Text analysis: graphics, word relationships, semantic organizers
+   - Scientific text comprehension
+
+4. Writing Skills
+   - Paragraph structure and development
+   - Sentence types and common problems
+   - Academic referencing (APA style)
+   - Plagiarism avoidance
+
+5. Examination Skills
+   - Question type strategies (essay, multiple choice)
+   - Examination preparation techniques
+   - Time management during exams
+   - Understanding instruction words
+
+6. Library Skills
+   - Information source identification
+   - Classification systems
+   - Electronic database access
+   - Reference material usage`,
+    keywords: ["academic english", "study skills", "listening skills", "reading skills", "writing skills", "examination techniques", "library skills", "referencing", "apa", "plagiarism", "note-taking"],
+    course: "English for Academic Purposes"
   },
   {
     id: "business_law",
@@ -570,7 +909,8 @@ High inflation reduces purchasing power; deflation can harm growth.`,
     content:
 `Contract essentials: offer, acceptance, consideration, capacity, and legality.
 Contracts may be valid, void, or voidable. Company types: sole trader, partnership, private company, public company.`,
-    keywords: ["contract","offer","acceptance","consideration","company","partnership","sole trader"]
+    keywords: ["contract","offer","acceptance","consideration","company","partnership","sole trader"],
+    course: "Business Law"
   },
   {
     id: "management",
@@ -578,47 +918,260 @@ Contracts may be valid, void, or voidable. Company types: sole trader, partnersh
     content:
 `Management functions: planning, organizing, staffing, directing, and controlling.
 Levels: top, middle, lower. Forms of business ownership: sole trader, partnership, corporation, cooperative.`,
-    keywords: ["management","planning","organizing","staffing","directing","controlling","business ownership"]
+    keywords: ["management","planning","organizing","staffing","directing","controlling","business ownership"],
+    course: "Business Management"
   },
   {
     id: "communication",
     title: "Communication Skills",
     content:
 `Types: verbal, non-verbal, written, visual. Barriers: noise, language, culture, emotions. Key skills: clarity, active listening, feedback, confidence.`,
-    keywords: ["communication","verbal","written","listening","feedback","barriers"]
+    keywords: ["communication","verbal","written","listening","feedback","barriers"],
+    course: "Communication Skills"
   },
   {
     id: "ict",
     title: "ICT / Computer Applications",
     content:
 `Basics of hardware and software, operating systems, MS Word/Excel/PowerPoint, internet basics, email, and file management. Data protection basics are essential.`,
-    keywords: ["ict","computer","excel","word","powerpoint","internet","email","data protection"]
+    keywords: ["ict","computer","excel","word","powerpoint","internet","email","data protection"],
+    course: "ICT Applications"
   },
   {
     id: "maths_business",
     title: "Mathematics for Business",
     content:
 `Key topics: percentages, ratios, proportions, simple & compound interest, linear equations, demand/supply functions, and break-even analysis.`,
-    keywords: ["percentages","ratios","interest","break-even","equations","maths"]
+    keywords: ["percentages","ratios","interest","break-even","equations","maths"],
+    course: "Business Mathematics"
   },
   {
     id: "life_skills",
     title: "Life & Managerial Skills",
     content:
 `Life skills: cognitive, interpersonal and emotional skills. Important: time management, decision making, stress control, conflict resolution, and leadership.`,
-    keywords: ["life skills","time management","decision making","stress","conflict resolution"]
+    keywords: ["life skills","time management","decision making","stress","conflict resolution"],
+    course: "Life Skills"
   },
   {
     id: "exam_tips",
     title: "Exam Tips & Study Strategy",
     content:
 `Understand core concepts first. Make short notes, practice past papers, use diagrams and examples (use Malawi examples where possible). Manage time during exams and revise regularly.`,
-    keywords: ["exam","revision","past papers","study","tips","exam tips"]
+    keywords: ["exam","revision","past papers","study","tips","exam tips"],
+    course: "Study Strategies"
   }
 ];
 
 /* -----------------------
-   Theme toggle functionality
+   Enhanced AI Functions
+   ----------------------- */
+
+// Advanced tokenization with stemming
+function tokenize(text) {
+  return text.toLowerCase()
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .split(/\s+/)
+    .filter(Boolean)
+    .map(word => {
+      // Simple stemming
+      if (word.length > 3) {
+        if (word.endsWith('ing')) return word.slice(0, -3);
+        if (word.endsWith('ed')) return word.slice(0, -2);
+        if (word.endsWith('s')) return word.slice(0, -1);
+      }
+      return word;
+    });
+}
+
+// Enhanced retrieval with multiple matching strategies
+function retrieveBestMatch(question) {
+  const qTokens = tokenize(question);
+  let bestMatches = [];
+  
+  for (const item of KB) {
+    let score = 0;
+    const kws = item.keywords.map(k => k.toLowerCase());
+    const titleTokens = tokenize(item.title);
+    const contentTokens = tokenize(item.content);
+    
+    // Keyword matching (highest weight)
+    for (const t of qTokens) {
+      if (kws.some(k => k.includes(t) || t.includes(k))) score += 4;
+    }
+    
+    // Title matching (medium weight)
+    for (const t of qTokens) {
+      if (titleTokens.includes(t)) score += 3;
+    }
+    
+    // Content matching (lower weight)
+    for (const t of qTokens) {
+      if (contentTokens.includes(t)) score += 1;
+    }
+    
+    // Course name matching
+    if (item.course && question.toLowerCase().includes(item.course.toLowerCase())) {
+      score += 5;
+    }
+    
+    if (score > 0) {
+      bestMatches.push({ score, item, matches: score });
+    }
+  }
+  
+  // Sort by score and return top 3 matches
+  bestMatches.sort((a, b) => b.score - a.score);
+  return bestMatches.slice(0, 3);
+}
+
+// Confidence calculation
+function calculateConfidence(matches) {
+  if (matches.length === 0) return 0;
+  const maxScore = Math.max(...matches.map(m => m.score));
+  return Math.min(100, (maxScore / 20) * 100); // Normalize to 100
+}
+
+// Generate follow-up questions
+function generateFollowUpQuestions(mainTopic, question) {
+  const followUps = [];
+  const q = question.toLowerCase();
+  
+  if (q.includes('what is') || q.includes('define')) {
+    followUps.push(`Explain ${mainTopic.title} with examples`);
+    followUps.push(`What are the key concepts in ${mainTopic.title}?`);
+    followUps.push(`How is ${mainTopic.title} applied in business?`);
+  } else if (q.includes('how') || q.includes('work')) {
+    followUps.push(`What are the steps in ${mainTopic.title}?`);
+    followUps.push(`What are the benefits of ${mainTopic.title}?`);
+    followUps.push(`Can you give a Malawi example of ${mainTopic.title}?`);
+  } else if (q.includes('why') || q.includes('important')) {
+    followUps.push(`What are the advantages of ${mainTopic.title}?`);
+    followUps.push(`How does ${mainTopic.title} affect business decisions?`);
+    followUps.push(`What problems does ${mainTopic.title} solve?`);
+  } else {
+    // Default follow-ups
+    followUps.push(`Explain this in simpler terms`);
+    followUps.push(`Give me a practical example`);
+    followUps.push(`How is this relevant to Malawi businesses?`);
+  }
+  
+  return followUps;
+}
+
+// Enhanced reply composition
+function composeReply(question) {
+  const matches = retrieveBestMatch(question);
+  const confidence = calculateConfidence(matches);
+  
+  if (matches.length > 0 && confidence >= 40) {
+    const mainMatch = matches[0];
+    let reply = `📚 ${mainMatch.item.title}\n\n${mainMatch.item.content}`;
+    
+    // Add course context
+    if (mainMatch.item.course) {
+      reply += `\n\n📖 Course: ${mainMatch.item.course}`;
+    }
+    
+    // Add confidence indicator
+    reply += `\n\n<div class="confidence-meter">Confidence: ${Math.round(confidence)}% • Source: Course Notes</div>`;
+    
+    // Add example
+    const example = generateExample(mainMatch.item.id, question);
+    reply += `\n\n${example}`;
+    
+    // Add follow-up questions if confidence is high
+    if (confidence >= 70) {
+      const followUps = generateFollowUpQuestions(mainMatch.item, question);
+      reply += `\n\n<div class="follow-up-questions">`;
+      reply += `<div class="follow-up-title">Related questions you might ask:</div>`;
+      followUps.forEach(fq => {
+        reply += `<div class="follow-up-item" onclick="document.getElementById('userInput').value='${fq}'; handleSend();">• ${fq}</div>`;
+      });
+      reply += `</div>`;
+    }
+    
+    return reply;
+  } else {
+    // Smart fallback with multiple strategies
+    return smartFallback(question, matches, confidence);
+  }
+}
+
+// Smart fallback when no good matches
+function smartFallback(question, matches, confidence) {
+  const q = question.toLowerCase();
+  
+  // Try to identify course context
+  const courses = [...new Set(KB.map(item => item.course))];
+  const courseMatch = courses.find(course => 
+    course && q.includes(course.toLowerCase())
+  );
+  
+  if (courseMatch) {
+    return `I don't have specific notes on "${question}" in ${courseMatch}, but here's general advice:\n\n• Review the core concepts of ${courseMatch}\n• Look for related topics in your course materials\n• Practice with examples from Malawian businesses\n• Ask your instructor for clarification on this specific topic\n\nConfidence: ${Math.round(confidence)}%`;
+  }
+  
+  // General study advice based on question type
+  if (q.includes('exam') || q.includes('test') || q.includes('study')) {
+    return `📝 Exam Preparation Tips:\n\n1. Create a study schedule and stick to it\n2. Focus on understanding concepts rather than memorization\n3. Practice with past papers and time yourself\n4. Use mind maps and diagrams for visual learning\n5. Form study groups for discussion\n6. Get adequate rest before exams\n7. Read questions carefully during exams\n\n🇲🇼 Malawi Context: Relate concepts to local businesses like Illovo, Press Corporation, or small enterprises in your community.`;
+  }
+  
+  if (q.includes('assignment') || q.includes('project')) {
+    return `📋 Assignment Guidance:\n\n1. Start early and plan your time\n2. Understand the assignment requirements clearly\n3. Research using multiple sources\n4. Structure your work with clear introduction, body, and conclusion\n5. Use proper referencing (APA style)\n6. Proofread for errors\n7. Submit before deadline\n\n💡 Tip: Use real Malawian business examples to make your assignment more relevant.`;
+  }
+  
+  // Default intelligent response
+  return `🤔 I'm not entirely sure about "${question}". Here's how I can help:\n\n• Use the 📚 button to browse specific course topics\n• Ask about specific concepts like "demand and supply" or "accounting equation"\n• Request exam tips or study strategies\n• Ask for Malawi-specific business examples\n\nConfidence: ${Math.round(confidence)}% • Try rephrasing your question for better results.`;
+}
+
+// Enhanced example generation
+function generateExample(kbId, question) {
+  const examples = {
+    "demand_supply": "🇲🇼 Example: When maize prices rise in Malawi due to poor harvests, quantity demanded decreases as consumers switch to alternatives like cassava, while suppliers may increase production if they expect higher profits.",
+    "micro_intro": "🇲🇼 Example: A small shop in Blantyre deciding between stocking imported rice or local maize faces opportunity costs—the profit lost from not choosing the alternative.",
+    "elasticity": "🇲🇼 Example: Salt has inelastic demand in Malawi (people buy similar amounts despite price changes), while airtime for mobile phones is more elastic.",
+    "fundamentals_accounting": "🇲🇼 Example: A Malawian small business owner uses double-entry bookkeeping to track sales (credit revenue) and expenses (debit costs) for accurate financial reporting.",
+    "computer_systems": "🇲🇼 Example: Malawian businesses use computer systems for inventory management, payroll processing, and connecting with customers through email and social media.",
+    "organizational_psychology": "🇲🇼 Example: A manager at a Lilongwe company uses motivational theories to improve employee performance through recognition and career development opportunities.",
+    "life_managerial_skills": "🇲🇼 Example: Effective time management helps Malawian professionals balance work responsibilities with family commitments and community activities.",
+    "english_academic_purposes": "🇲🇼 Example: Using the Cornell note-taking system helps Malawian students better organize lecture notes for exam preparation.",
+    "default": "💡 Tip: Apply this concept to a Malawian context—consider how local businesses, farmers, or government policies might be affected."
+  };
+  
+  return examples[kbId] || examples.default;
+}
+
+// Generate suggestion chips
+function generateSuggestionChips() {
+  const suggestions = [
+    "Explain demand and supply",
+    "What is double entry accounting?",
+    "How to manage stress?",
+    "Give me exam tips",
+    "Explain market structures",
+    "What is organizational psychology?",
+    "How to write a good paragraph?",
+    "Time management strategies"
+  ];
+  
+  const container = document.getElementById('suggestionChips');
+  container.innerHTML = '';
+  
+  suggestions.forEach(suggestion => {
+    const chip = document.createElement('div');
+    chip.className = 'suggestion-chip';
+    chip.textContent = suggestion;
+    chip.addEventListener('click', () => {
+      document.getElementById('userInput').value = suggestion;
+      handleSend();
+    });
+    container.appendChild(chip);
+  });
+}
+
+/* -----------------------
+   UI Functionality
    ----------------------- */
 const themeToggle = document.getElementById('theme-toggle');
 themeToggle.addEventListener('click', () => {
@@ -657,110 +1210,6 @@ document.addEventListener('click', (e) => {
 });
 
 /* -----------------------
-   Utility: sanitize and tokenize
-   ----------------------- */
-function tokenize(text){
-  return text.toLowerCase().replace(/[^a-z0-9\s]/g,' ').split(/\s+/).filter(Boolean);
-}
-
-/* -----------------------
-   Simple retrieval: count keyword hits
-   - Looks at KB keywords and inside content
-   - Returns best match and score
-   ----------------------- */
-function retrieveBestMatch(question){
-  const qTokens = tokenize(question);
-  let best = {score:0, item:null, matches:0};
-  for(const item of KB){
-    // keyword hit count
-    const kws = item.keywords.map(k=>k.toLowerCase());
-    let score = 0;
-    for(const t of qTokens){
-      if(kws.some(k=>k.includes(t) || t.includes(k))) score += 3;
-      // check content tokens
-      if(item.content.toLowerCase().includes(t)) score += 1;
-    }
-    // small boost for title matches
-    const titleTokens = tokenize(item.title);
-    for(const t of qTokens) if(titleTokens.includes(t)) score += 2;
-    if(score > best.score){
-      best = {score, item, matches: score};
-    }
-  }
-  return best;
-}
-
-/* -----------------------
-   Compose a natural reply:
-   - If strong KB match: return KB content + short example
-   - If weak match: return a general explanation (synthesized)
-   - Also include "See topic" label for clarity
-   ----------------------- */
-function composeReply(question){
-  const best = retrieveBestMatch(question);
-  // threshold tuning: consider match strong if score >= 6 (empirical)
-  if(best.item && best.score >= 6){
-    // Return KB content, then a short Malawi-specific example or study tip
-    const kbText = best.item.content;
-    const example = generateExample(best.item.id, question);
-    return `📚 ${best.item.title}\n\n${kbText}\n\n${example}`;
-  } else {
-    // fallback: try to provide a useful generic explanation
-    return generalExplain(question);
-  }
-}
-
-/* -----------------------
-   Generate a short Malawi-related example for some topics
-   ----------------------- */
-function generateExample(kbId, question){
-  switch(kbId){
-    case "demand_supply":
-      return "🇲🇼 Example: If the price of maize increases due to poor harvests, quantity demanded will fall and supply may increase if farmers can sell more at higher prices—until equilibrium adjusts.";
-    case "micro_intro":
-      return "🇲🇼 Example: A small shop in Lilongwe decides whether to stock imported rice or local maize—its choice depends on prices, customer demand, and storage costs (opportunity cost).";
-    case "elasticity":
-      return "🇲🇼 Example: Salt has inelastic demand (people buy similar amounts despite small price changes), while luxury goods are more elastic.";
-    case "management":
-      return "📝 Study tip: For planning questions, show clear steps: objective → SWOT → resources → timeline → control metrics.";
-    case "exam_tips":
-      return "📝 Tip: Summarise each topic in one page, practise past questions, and time yourself.";
-    default:
-      return "💡 Tip: Use simple examples, define terms, and show one short Malawi example for clarity.";
-  }
-}
-
-/* -----------------------
-   General explanation generator (fallback)
-   - Tries simple templates: defines terms found, explains cause-effect
-   ----------------------- */
-function generalExplain(question){
-  const q = question.toLowerCase();
-  // quick pattern answers
-  if(q.includes("what is") || q.includes("define") || q.startsWith("define")){
-    // try to detect a keyword from KB
-    for(const item of KB){
-      for(const kw of item.keywords){
-        if(q.includes(kw.split(" ")[0])){
-          return `📚 ${item.title}:\n\n${item.content}\n\n(Provided as a general explanation based on course notes.)`;
-        }
-      }
-    }
-  }
-
-  if(q.includes("how") && q.includes("change") || q.includes("how to")){
-    return "💡 General advice: break problems into steps, apply core concepts (e.g., for management use planning→organising→leading→controlling), and give local examples.";
-  }
-
-  if(q.includes("example") || q.includes("give an example")){
-    return "🇲🇼 Example: For supply and demand, imagine fuel price rises—drivers reduce trips (demand falls), and fuel suppliers may increase supply if they can find higher-priced markets.";
-  }
-
-  // fallback short study answer
-  return "💡 I don't have an exact note for that phrase, but here's a useful explanation: identify the key concept, define it simply, list 2–3 main points, and finish with a short real-life example related to Malawi.";
-}
-
-/* -----------------------
    Chat UI + logic
    ----------------------- */
 const chatbox = document.getElementById('chatbox');
@@ -782,9 +1231,8 @@ function renderKB(){
   for(const item of KB){
     const node = document.createElement('div');
     node.className = 'kb-item';
-    node.innerHTML = `<h4>${item.title}</h4><p>${item.content.substring(0,100)}${item.content.length>100?"...":""}</p>`;
+    node.innerHTML = `<h4>${item.title}</h4><p>${item.content.substring(0,100)}${item.content.length>100?"...":""}</p><small style="color:var(--accent);">${item.course}</small>`;
     node.addEventListener('click', ()=> {
-      // on click, paste a suggested question into input
       input.value = `Explain ${item.title}`;
       input.focus();
       kbPanel.classList.remove('open');
@@ -850,7 +1298,10 @@ async function handleSend(){
   setTimeout(() => {
     const reply = composeReply(q);
     appendMessage(reply, 'bot');
-  }, 1000 + Math.random() * 1000);
+    
+    // Regenerate suggestion chips after response
+    setTimeout(generateSuggestionChips, 100);
+  }, 800 + Math.random() * 800);
 }
 
 sendBtn.addEventListener('click', handleSend);
@@ -863,31 +1314,42 @@ clearBtn.addEventListener('click', ()=> {
     history = [];
     localStorage.removeItem('luanar_chat_history');
     renderHistory();
-    appendMessage("Welcome! I'm the 🐝 Agogo Offline Tutor. Ask about microeconomics, management, business law, ICT, maths, life skills, or tap the 📚 icon to see course notes.", 'bot');
+    appendMessage("Welcome! I'm the 🐝 Agogo Smart AI Tutor. I now have enhanced understanding of all your courses. Ask about any topic or use the 📚 icon to browse course notes.", 'bot');
+    generateSuggestionChips();
   }
 });
 
-/* keyboard shortcuts: type 'topics' to show KB titles */
+/* keyboard shortcuts */
 input.addEventListener('input', e=>{
-  if(e.target.value.trim().toLowerCase()==='topics'){
+  const value = e.target.value.trim().toLowerCase();
+  if(value === 'topics'){
     e.target.value = '';
-    // show a helpful bot list
-    const titles = KB.map(i=>`• ${i.title}`).join('\n');
+    const titles = KB.map(i=>`• ${i.title} (${i.course})`).join('\n');
     appendMessage('Available topics:\n' + titles, 'bot');
+  } else if (value === 'courses') {
+    e.target.value = '';
+    const courses = [...new Set(KB.map(item => item.course))].filter(Boolean);
+    appendMessage('Available courses:\n' + courses.map(c => `• ${c}`).join('\n'), 'bot');
   }
 });
 
 /* initial render */
 renderKB();
 renderHistory();
+generateSuggestionChips();
 
 /* If no history, show a welcome message */
 if(history.length === 0){
-  appendMessage("Welcome! I'm the  🐝 Agogo Offline Tutor. Ask about microeconomics, management, business law, ICT, maths, life skills, or tap the 📚 icon to see course notes.", 'bot');
+  appendMessage("Welcome! I'm the 🐝 Agogo Smart AI Tutor. I now have enhanced understanding of all your courses including:\n\n• Elementary Microeconomics\n• Fundamentals of Accounting\n• Computer Systems\n• Organizational Psychology\n• Life & Managerial Skills\n• English for Academic Purposes\n\nAsk me anything about these courses, or use the 📚 icon to browse specific topics!", 'bot');
 }
 
-/* Expose KB for quick editing in console (optional) */
-window.LUANAR_KB = KB;
+/* Expose enhanced functions for debugging */
+window.SMART_AI = {
+  KB,
+  retrieveBestMatch,
+  composeReply,
+  calculateConfidence
+};
 </script>
 </body>
 </html>
