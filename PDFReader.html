@@ -1,0 +1,1384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern PDF TTS Reader</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.min.js"></script>
+    <style>
+        :root {
+            --bg: #f6f2ea;
+            --text: #1f1f1f;
+            --accent: #3b2412;
+            --accent-strong: #d99a2b;
+            --header: #3b2412;
+            --card: #ffffffee;
+            --shadow: rgba(0,0,0,0.12);
+            --muted: #666;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+        }
+
+        .dark {
+            --bg: #0b0b0b;
+            --text: #f5f5f5;
+            --accent: #f0b24b;
+            --accent-strong: #d99a2b;
+            --header: #0b0b0b;
+            --card: #161616dd;
+            --shadow: rgba(0,0,0,0.6);
+            --muted: #9aa7bf;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            height: 100%;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            transition: background 0.3s, color 0.3s;
+            overflow: hidden;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            background: var(--header);
+            color: #fff;
+            box-shadow: 0 2px 10px var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        header h1 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-right: auto;
+        }
+
+        .controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: none;
+            background: var(--card);
+            color: var(--text);
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .btn.primary {
+            background: var(--accent-strong);
+            color: #000;
+        }
+
+        .btn.success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn.danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn.small {
+            padding: 6px 10px;
+            font-size: 13px;
+        }
+
+        /* Main layout */
+        .app-container {
+            display: flex;
+            height: calc(100vh - 60px);
+            overflow: hidden;
+        }
+
+        /* Viewer column - Single page view */
+        #viewerContainer {
+            flex: 1;
+            background: var(--card);
+            overflow: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .single-page-view {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .pdfPage {
+            position: relative;
+            margin: 0 auto;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+            max-width: 100%;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 400px;
+        }
+
+        canvas.pageCanvas {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            max-height: 70vh;
+        }
+
+        .textLayer {
+            position: absolute;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: auto;
+            mix-blend-mode: multiply;
+            overflow: hidden;
+        }
+
+        .textLayer span {
+            position: absolute;
+            cursor: text;
+            user-select: text;
+            padding: 0;
+            margin: 0;
+            line-height: 1;
+            color: transparent;
+            transform-origin: 0 0;
+        }
+
+        .hl {
+            background: rgba(255, 230, 70, 0.8);
+            border-radius: 3px;
+            box-shadow: 0 0 4px rgba(255, 200, 0, 0.5);
+        }
+
+        .page-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+            margin-top: 16px;
+            width: 100%;
+        }
+
+        .page-info {
+            font-size: 14px;
+            color: var(--muted);
+            font-weight: 500;
+        }
+
+        /* Sidebar */
+        aside {
+            width: 340px;
+            background: var(--card);
+            border-left: 1px solid rgba(0,0,0,0.1);
+            padding: 16px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .section {
+            background: var(--bg);
+            border-radius: 8px;
+            padding: 16px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+
+        .section-title {
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--accent);
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin: 12px 0;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+
+        select, input[type="range"], input[type="number"] {
+            width: 100%;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid rgba(0,0,0,0.1);
+            background: var(--card);
+            color: var(--text);
+        }
+
+        .status {
+            font-size: 14px;
+            color: var(--muted);
+            margin-top: 8px;
+        }
+
+        .progress-container {
+            margin: 12px 0;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: var(--bg);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--accent-strong);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .file-upload {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .file-info {
+            font-size: 14px;
+            color: var(--muted);
+            word-break: break-word;
+            padding: 8px;
+            background: rgba(0,0,0,0.05);
+            border-radius: 6px;
+        }
+
+        /* Mobile improvements */
+        .mobile-toolbar {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--card);
+            padding: 10px;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.1);
+            z-index: 50;
+            justify-content: space-around;
+            border-top: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .mobile-toolbar .btn {
+            flex: 1;
+            margin: 0 4px;
+            text-align: center;
+            justify-content: center;
+        }
+
+        /* Loading spinner */
+        .loading {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            background: rgba(0,0,0,0.7);
+            padding: 20px;
+            border-radius: 8px;
+            color: white;
+            text-align: center;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 4px solid transparent;
+            border-top-color: var(--accent-strong);
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Footer */
+        footer {
+            background: var(--header);
+            color: #fff;
+            padding: 16px;
+            text-align: center;
+            margin-top: auto;
+        }
+
+        footer p {
+            margin: 0;
+            font-size: 14px;
+        }
+
+        /* Responsive design */
+        @media (max-width: 900px) {
+            .app-container {
+                flex-direction: column;
+                height: calc(100vh - 120px);
+            }
+            
+            aside {
+                width: 100%;
+                max-height: 40%;
+                order: 2;
+                border-left: none;
+                border-top: 1px solid rgba(0,0,0,0.1);
+            }
+            
+            #viewerContainer {
+                order: 1;
+                max-height: 60%;
+                flex: none;
+                padding: 10px;
+            }
+            
+            .mobile-toolbar {
+                display: flex;
+            }
+            
+            .controls {
+                justify-content: center;
+            }
+            
+            header {
+                padding: 8px 12px;
+            }
+            
+            header h1 {
+                font-size: 16px;
+            }
+            
+            /* Fix file input visibility on mobile */
+            #fileInput {
+                display: block !important;
+                width: 120px;
+            }
+            
+            .pdfPage {
+                max-height: 50vh;
+            }
+            
+            canvas.pageCanvas {
+                max-height: 50vh;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .controls .btn:not(.primary):not(#fileInput) {
+                display: none;
+            }
+            
+            .mobile-toolbar {
+                bottom: 0;
+            }
+            
+            .app-container {
+                height: calc(100vh - 110px);
+            }
+        }
+
+        /* Toast notifications */
+        .toast {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            background: var(--card);
+            color: var(--text);
+            padding: 12px 16px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: transform 0.3s, opacity 0.3s;
+            max-width: 300px;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Empty state */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            padding: 20px;
+            color: var(--muted);
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+        
+        /* Control group styling */
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            background: rgba(0,0,0,0.05);
+        }
+        
+        /* Fix for file input button */
+        #fileInput {
+            display: block;
+            width: 140px;
+        }
+
+        /* Zoom controls */
+        .zoom-controls {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <header id="topbar">
+        <h1>Modern PDF TTS Reader</h1>
+
+        <div class="controls">
+            <input id="fileInput" class="btn small" type="file" accept="application/pdf" />
+            <button id="loadBtn" class="btn primary small">Load PDF</button>
+
+            <div class="control-group">
+                <select id="voiceSelect" class="btn small"></select>
+            </div>
+
+            <div class="control-group">
+                <input id="speed" type="range" min="0.5" max="2.0" step="0.05" value="1">
+                <span id="speedLabel" style="width:36px;text-align:center;font-size:13px">1.00x</span>
+            </div>
+
+            <button id="startBtn" class="btn primary small">Start ▶</button>
+            <button id="pauseBtn" class="btn small">Pause ⏸</button>
+            <button id="stopBtn" class="btn small">Stop ⏹</button>
+
+            <button id="modeBtn" class="btn small" title="Toggle dark mode">Dark</button>
+        </div>
+    </header>
+
+    <div class="app-container">
+        <div id="viewerContainer" aria-live="polite">
+            <div class="empty-state">
+                <i>📄</i>
+                <h3>No PDF Loaded</h3>
+                <p>Select a PDF file to begin reading</p>
+            </div>
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Loading PDF...</p>
+            </div>
+            
+            <!-- Single Page View -->
+            <div class="single-page-view" id="singlePageView" style="display: none;">
+                <div class="pdfPage" id="currentPageContainer">
+                    <canvas class="pageCanvas" id="pageCanvas"></canvas>
+                    <div class="textLayer" id="textLayer"></div>
+                </div>
+                <div class="page-controls">
+                    <button id="prevPage" class="btn small">◀ Previous</button>
+                    <div class="page-info">Page <span id="currentPage">1</span> of <span id="totalPages">0</span></div>
+                    <button id="nextPage" class="btn small">Next ▶</button>
+                </div>
+                <div class="zoom-controls">
+                    <button id="zoomOut" class="btn small">-</button>
+                    <span id="zoomLevel" style="min-width: 60px; text-align: center;">100%</span>
+                    <button id="zoomIn" class="btn small">+</button>
+                    <button id="fitWidth" class="btn small">Fit Width</button>
+                </div>
+            </div>
+        </div>
+
+        <aside>
+            <div class="section">
+                <div class="section-title">📁 File</div>
+                <div class="file-upload">
+                    <label>Select PDF File</label>
+                    <div class="file-info" id="fileInfo">No file selected</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">⚙️ Controls</div>
+                <div class="row">
+                    <label>Go to page</label>
+                    <input id="pageNum" type="number" min="1" value="1" />
+                    <button id="goPage" class="btn small">Go</button>
+                </div>
+
+                <div class="row">
+                    <label>Reading mode</label>
+                    <select id="readMode">
+                        <option value="continuous">Continuous (auto advance)</option>
+                        <option value="study">Study (pause between sentences)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">📊 Progress</div>
+                <div class="status">Page: <span id="currentPageSpan">0</span> / <span id="totalPagesSpan">0</span></div>
+                <div class="status">Sentence: <span id="currentSentence">0</span> / <span id="totalSentences">0</span></div>
+                
+                <div class="progress-container">
+                    <label>Reading Progress</label>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="status" id="progressText">0%</div>
+                </div>
+                
+                <div style="margin-top:12px; display: flex; gap: 8px;">
+                    <button id="saveProgress" class="btn small success">Save Progress</button>
+                    <button id="loadProgress" class="btn small">Load Progress</button>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">💡 Tips</div>
+                <ul style="color:var(--muted);font-size:14px; padding-left: 20px;">
+                    <li>PDF always starts at <strong>Page 1</strong> when loaded</li>
+                    <li>Tap any sentence to start reading from there</li>
+                    <li>Use Study mode for sentence-by-sentence reading</li>
+                    <li>Save your progress to continue later</li>
+                    <li>On mobile, use the bottom toolbar for quick access</li>
+                    <li>Use zoom controls to adjust PDF display</li>
+                </ul>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Mobile toolbar -->
+    <div class="mobile-toolbar">
+        <button id="mobileStart" class="btn primary small">Start</button>
+        <button id="mobilePause" class="btn small">Pause</button>
+        <button id="mobileStop" class="btn small">Stop</button>
+        <button id="mobilePrev" class="btn small">◀</button>
+        <button id="mobileNext" class="btn small">▶</button>
+    </div>
+
+    <footer>
+        <p>© 2025 Modern PDF TTS Reader</p>
+    </footer>
+
+    <!-- Toast notification -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        (async function(){
+            // PDF.js setup
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.14.305/pdf.worker.min.js';
+
+            // DOM elements
+            const elements = {
+                fileInput: document.getElementById('fileInput'),
+                loadBtn: document.getElementById('loadBtn'),
+                viewer: document.getElementById('viewerContainer'),
+                startBtn: document.getElementById('startBtn'),
+                pauseBtn: document.getElementById('pauseBtn'),
+                stopBtn: document.getElementById('stopBtn'),
+                voiceSelect: document.getElementById('voiceSelect'),
+                speedInput: document.getElementById('speed'),
+                speedLabel: document.getElementById('speedLabel'),
+                modeBtn: document.getElementById('modeBtn'),
+                pageNum: document.getElementById('pageNum'),
+                goPage: document.getElementById('goPage'),
+                prevPage: document.getElementById('prevPage'),
+                nextPage: document.getElementById('nextPage'),
+                currentPageSpan: document.getElementById('currentPageSpan'),
+                totalPagesSpan: document.getElementById('totalPagesSpan'),
+                currentPageDisplay: document.getElementById('currentPage'),
+                totalPagesDisplay: document.getElementById('totalPages'),
+                currentSentenceSpan: document.getElementById('currentSentence'),
+                totalSentencesSpan: document.getElementById('totalSentences'),
+                fileInfo: document.getElementById('fileInfo'),
+                readMode: document.getElementById('readMode'),
+                saveProgressBtn: document.getElementById('saveProgress'),
+                loadProgressBtn: document.getElementById('loadProgress'),
+                progressFill: document.getElementById('progressFill'),
+                progressText: document.getElementById('progressText'),
+                loadingElement: document.querySelector('.loading'),
+                emptyState: document.querySelector('.empty-state'),
+                singlePageView: document.getElementById('singlePageView'),
+                pageCanvas: document.getElementById('pageCanvas'),
+                textLayer: document.getElementById('textLayer'),
+                currentPageContainer: document.getElementById('currentPageContainer'),
+                toast: document.getElementById('toast'),
+                // Zoom controls
+                zoomOut: document.getElementById('zoomOut'),
+                zoomIn: document.getElementById('zoomIn'),
+                zoomLevel: document.getElementById('zoomLevel'),
+                fitWidth: document.getElementById('fitWidth'),
+                // Mobile buttons
+                mobileStart: document.getElementById('mobileStart'),
+                mobilePause: document.getElementById('mobilePause'),
+                mobileStop: document.getElementById('mobileStop'),
+                mobilePrev: document.getElementById('mobilePrev'),
+                mobileNext: document.getElementById('mobileNext')
+            };
+
+            // App state
+            let state = {
+                pdfDoc: null,
+                currentPageNum: 1, // ALWAYS start at page 1
+                pages: [],
+                fullText: '',
+                sentences: [],
+                sentenceCharRanges: [],
+                sentenceToSpans: [],
+                currentSentenceIndex: 0,
+                utterance: null,
+                isReading: false,
+                voices: [],
+                fileKey: null,
+                studyWaitMs: 800,
+                currentScale: 1.0,
+                isMobile: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
+                isRendering: false, // Prevent multiple simultaneous renders
+                renderQueue: [] // Queue for render requests
+            };
+
+            // Utility functions
+            const utils = {
+                showLoading(show) {
+                    elements.loadingElement.style.display = show ? 'block' : 'none';
+                },
+                
+                showToast(message, duration = 3000) {
+                    elements.toast.textContent = message;
+                    elements.toast.classList.add('show');
+                    
+                    setTimeout(() => {
+                        elements.toast.classList.remove('show');
+                    }, duration);
+                },
+                
+                hideEmptyState() {
+                    elements.emptyState.style.display = 'none';
+                    elements.singlePageView.style.display = 'flex';
+                },
+                
+                showEmptyState() {
+                    elements.emptyState.style.display = 'flex';
+                    elements.singlePageView.style.display = 'none';
+                },
+                
+                splitToSentences(text) {
+                    // Improved sentence splitter
+                    const regex = /[^.!?]+[.!?]+["')\]]*|[^.!?]+$/g;
+                    const matches = text.match(regex);
+                    return matches ? matches.filter(s => s.trim().length > 0) : [];
+                },
+                
+                makeFileKey(file) {
+                    return `${file.name}::${file.size}::${file.lastModified}`;
+                },
+                
+                updateProgressBar() {
+                    if (state.sentences.length === 0) {
+                        elements.progressFill.style.width = '0%';
+                        elements.progressText.textContent = '0%';
+                        return;
+                    }
+                    const progress = (state.currentSentenceIndex / state.sentences.length) * 100;
+                    elements.progressFill.style.width = `${progress}%`;
+                    elements.progressText.textContent = `${Math.round(progress)}%`;
+                },
+                
+                // Calculate optimal scale for mobile
+                calculateOptimalScale(viewport) {
+                    if (!state.isMobile) return 1.5;
+                    
+                    const containerWidth = elements.viewer.offsetWidth - 40; // Account for padding
+                    const scale = (containerWidth / viewport.width) * 0.95; // Slight margin
+                    return Math.min(scale, 2.0); // Cap at 200% zoom
+                },
+                
+                // Update zoom display
+                updateZoomDisplay() {
+                    elements.zoomLevel.textContent = `${Math.round(state.currentScale * 100)}%`;
+                },
+                
+                // Debounced render function to prevent stuttering
+                debounceRender(func, wait) {
+                    let timeout;
+                    return function executedFunction(...args) {
+                        const later = () => {
+                            clearTimeout(timeout);
+                            func(...args);
+                        };
+                        clearTimeout(timeout);
+                        timeout = setTimeout(later, wait);
+                    };
+                }
+            };
+
+            // Theme toggle
+            elements.modeBtn.addEventListener('click', () => {
+                document.documentElement.classList.toggle('dark');
+                elements.modeBtn.textContent = document.documentElement.classList.contains('dark') ? 'Light' : 'Dark';
+                // Save theme preference
+                localStorage.setItem('pdf-tts-theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+            });
+
+            // Load saved theme
+            const savedTheme = localStorage.getItem('pdf-tts-theme');
+            if (savedTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+                elements.modeBtn.textContent = 'Light';
+            }
+
+            // Load voices
+            function loadVoices() {
+                state.voices = speechSynthesis.getVoices() || [];
+                elements.voiceSelect.innerHTML = '';
+                
+                state.voices.forEach((voice, i) => {
+                    const opt = document.createElement('option');
+                    opt.value = i;
+                    opt.textContent = `${voice.name} (${voice.lang})`;
+                    elements.voiceSelect.appendChild(opt);
+                });
+                
+                // Set default voice if available
+                const defaultVoice = state.voices.find(v => v.default) || state.voices[0];
+                if (defaultVoice) {
+                    elements.voiceSelect.value = state.voices.indexOf(defaultVoice);
+                }
+            }
+            
+            // Load voices when they become available
+            if (speechSynthesis.onvoiceschanged !== undefined) {
+                speechSynthesis.onvoiceschanged = loadVoices;
+            }
+            loadVoices();
+
+            // Speed control
+            elements.speedInput.addEventListener('input', () => {
+                elements.speedLabel.textContent = parseFloat(elements.speedInput.value).toFixed(2) + 'x';
+                if (state.utterance) state.utterance.rate = parseFloat(elements.speedInput.value);
+            });
+
+            // Zoom controls with debouncing to prevent stuttering
+            elements.zoomOut.addEventListener('click', utils.debounceRender(() => {
+                state.currentScale = Math.max(0.5, state.currentScale - 0.1);
+                utils.updateZoomDisplay();
+                renderPage(state.currentPageNum);
+            }, 100));
+
+            elements.zoomIn.addEventListener('click', utils.debounceRender(() => {
+                state.currentScale = Math.min(3.0, state.currentScale + 0.1);
+                utils.updateZoomDisplay();
+                renderPage(state.currentPageNum);
+            }, 100));
+
+            elements.fitWidth.addEventListener('click', utils.debounceRender(() => {
+                if (state.pdfDoc && state.currentPageNum) {
+                    state.pdfDoc.getPage(state.currentPageNum).then(page => {
+                        const viewport = page.getViewport({ scale: 1 });
+                        state.currentScale = utils.calculateOptimalScale(viewport);
+                        utils.updateZoomDisplay();
+                        renderPage(state.currentPageNum);
+                    });
+                }
+            }, 100));
+
+            // File handling
+            let currentFile = null;
+            
+            elements.fileInput.addEventListener('change', function(e) {
+                if (this.files && this.files[0]) {
+                    currentFile = this.files[0];
+                    loadPDF(currentFile);
+                }
+            });
+            
+            elements.loadBtn.addEventListener('click', function() {
+                if (currentFile) {
+                    loadPDF(currentFile);
+                } else {
+                    elements.fileInput.click();
+                }
+            });
+
+            async function loadPDF(file) {
+                if (!file) {
+                    utils.showToast('Please select a PDF file first');
+                    return;
+                }
+                
+                utils.showLoading(true);
+                
+                // CRITICAL: Always reset to page 1 when loading new PDF
+                state.fileKey = utils.makeFileKey(file);
+                elements.fileInfo.textContent = `${file.name} • ${Math.round(file.size/1024)} KB`;
+                state.pages = [];
+                state.fullText = '';
+                state.sentences = [];
+                state.sentenceCharRanges = [];
+                state.sentenceToSpans = [];
+                state.currentSentenceIndex = 0;
+                state.currentPageNum = 1; // FORCE START AT PAGE 1
+                state.currentScale = 1.5; // Reset scale
+                state.isRendering = false;
+                state.renderQueue = [];
+                
+                // Reset all UI elements to show page 1
+                elements.currentPageSpan.textContent = '1';
+                elements.totalPagesSpan.textContent = '0';
+                elements.currentSentenceSpan.textContent = '0';
+                elements.totalSentencesSpan.textContent = '0';
+                elements.pageNum.value = '1';
+                elements.currentPageDisplay.textContent = '1';
+                utils.updateProgressBar();
+                utils.updateZoomDisplay();
+
+                try {
+                    const arrayBuffer = await file.arrayBuffer();
+                    state.pdfDoc = await pdfjsLib.getDocument({data: arrayBuffer}).promise;
+                    elements.totalPagesSpan.textContent = state.pdfDoc.numPages;
+                    elements.totalPagesDisplay.textContent = state.pdfDoc.numPages;
+                    
+                    // CRITICAL: Always load page 1 first
+                    await renderPage(1);
+
+                    // Build sentence mapping
+                    await buildSentenceMapping();
+
+                    // Update UI to reflect page 1
+                    elements.currentPageSpan.textContent = '1';
+                    elements.currentPageDisplay.textContent = '1';
+                    elements.currentSentenceSpan.textContent = state.currentSentenceIndex + 1;
+                    elements.totalSentencesSpan.textContent = state.sentences.length;
+                    utils.updateProgressBar();
+
+                    utils.hideEmptyState();
+
+                    // Show confirmation that we're starting at page 1
+                    utils.showToast('PDF loaded successfully! Starting at page 1.');
+
+                    // Try loading stored progress (but don't auto-jump)
+                    const stored = localStorage.getItem('pdf_progress::' + state.fileKey);
+                    if (stored) {
+                        utils.showToast('Saved progress found. Click "Load Progress" to restore your position.');
+                    }
+                    
+                } catch (error) {
+                    console.error('Error loading PDF:', error);
+                    utils.showToast('Error loading PDF. Please try another file.');
+                    utils.showEmptyState();
+                } finally {
+                    utils.showLoading(false);
+                }
+            }
+
+            // Improved renderPage function with queue system to prevent stuttering
+            async function renderPage(pageNumber) {
+                if (!state.pdfDoc || pageNumber < 1 || pageNumber > state.pdfDoc.numPages) {
+                    return;
+                }
+
+                // If already rendering, queue the request
+                if (state.isRendering) {
+                    state.renderQueue.push(pageNumber);
+                    return;
+                }
+
+                state.isRendering = true;
+
+                try {
+                    const page = await state.pdfDoc.getPage(pageNumber);
+                    const viewport = page.getViewport({scale: state.currentScale});
+                    
+                    // Set canvas dimensions
+                    elements.pageCanvas.width = Math.floor(viewport.width);
+                    elements.pageCanvas.height = Math.floor(viewport.height);
+                    elements.pageCanvas.style.width = viewport.width + 'px';
+                    elements.pageCanvas.style.height = viewport.height + 'px';
+                    
+                    // Set container dimensions
+                    elements.currentPageContainer.style.width = viewport.width + 'px';
+                    elements.currentPageContainer.style.height = viewport.height + 'px';
+                    elements.textLayer.style.width = viewport.width + 'px';
+                    elements.textLayer.style.height = viewport.height + 'px';
+
+                    // Render canvas
+                    const renderContext = {
+                        canvasContext: elements.pageCanvas.getContext('2d'),
+                        viewport: viewport
+                    };
+                    
+                    // Use a small delay to allow UI to update smoothly
+                    await new Promise(resolve => setTimeout(resolve, 16));
+                    await page.render(renderContext).promise;
+
+                    // Extract text content and create text layer
+                    const textContent = await page.getTextContent({normalizeWhitespace: true});
+                    const items = textContent.items;
+                    
+                    // Clear existing text layer
+                    elements.textLayer.innerHTML = '';
+                    
+                    let pageTextConcatenated = '';
+
+                    for (let i = 0; i < items.length; i++) {
+                        const item = items[i];
+                        const str = item.str;
+                        if (!str || str.trim() === '') continue;
+                        
+                        // Compute position with current scale
+                        const tx = pdfjsLib.Util.transform(viewport.transform, item.transform);
+                        const x = tx[4];
+                        const y = tx[5];
+
+                        // Estimate font size
+                        const fontSize = Math.hypot(tx[2], tx[3]) || 10;
+
+                        // Create span
+                        const sp = document.createElement('span');
+                        sp.textContent = str;
+                        sp.style.left = x + 'px';
+                        sp.style.top = (y - fontSize) + 'px';
+                        sp.style.fontSize = fontSize + 'px';
+                        sp.style.transformOrigin = '0 0';
+                        sp.setAttribute('data-p', pageNumber - 1);
+                        sp.setAttribute('data-idx', i);
+                        
+                        // Add click handler
+                        sp.addEventListener('click', (ev) => {
+                            ev.stopPropagation();
+                            const globalCharIndex = getGlobalCharIndexBySpan(pageNumber - 1, i);
+                            if (globalCharIndex >= 0) {
+                                for (let s = 0; s < state.sentenceCharRanges.length; s++) {
+                                    const r = state.sentenceCharRanges[s];
+                                    if (globalCharIndex >= r.start && globalCharIndex < r.end) {
+                                        state.currentSentenceIndex = s;
+                                        state.currentPageNum = r.pageIndex + 1;
+                                        stopReading();
+                                        highlightSentence(s);
+                                        renderPage(state.currentPageNum);
+                                        startReading();
+                                        break;
+                                    }
+                                }
+                            }
+                        });
+                        
+                        elements.textLayer.appendChild(sp);
+                        pageTextConcatenated += str + ' ';
+                    }
+
+                    // Store page data
+                    state.pages[pageNumber - 1] = {
+                        pageNumber: pageNumber,
+                        canvas: elements.pageCanvas,
+                        viewport: viewport,
+                        textItems: items,
+                        spanElements: Array.from(elements.textLayer.children),
+                        pageText: pageTextConcatenated
+                    };
+
+                    // Update current page display
+                    elements.currentPageDisplay.textContent = pageNumber;
+                    elements.currentPageSpan.textContent = pageNumber;
+                    elements.pageNum.value = pageNumber;
+                    state.currentPageNum = pageNumber;
+                    
+                    // Auto-fit width on mobile (only on first load)
+                    if (state.isMobile && pageNumber === 1 && state.currentScale === 1.5) {
+                        setTimeout(() => {
+                            elements.fitWidth.click();
+                        }, 100);
+                    }
+
+                } catch (error) {
+                    console.error('Error rendering page:', error);
+                    utils.showToast('Error rendering page ' + pageNumber);
+                } finally {
+                    state.isRendering = false;
+                    
+                    // Process any queued render requests
+                    if (state.renderQueue.length > 0) {
+                        const nextPage = state.renderQueue.shift();
+                        setTimeout(() => renderPage(nextPage), 50);
+                    }
+                }
+            }
+
+            async function buildSentenceMapping() {
+                const spansOrdered = [];
+                let globalIndex = 0;
+                
+                // First, ensure all pages are loaded
+                for (let pi = 0; pi < state.pdfDoc.numPages; pi++) {
+                    if (!state.pages[pi]) {
+                        await renderPage(pi + 1);
+                    }
+                }
+                
+                for (let pi = 0; pi < state.pages.length; pi++) {
+                    const p = state.pages[pi];
+                    if (!p) continue;
+                    
+                    const spans = p.spanElements;
+                    for (let si = 0; si < spans.length; si++) {
+                        const txt = spans[si].textContent || '';
+                        if (!txt || txt.trim() === '') continue;
+                        
+                        const start = globalIndex;
+                        const end = start + txt.length;
+                        spansOrdered.push({
+                            pageIndex: pi,
+                            spanIndex: si,
+                            start: start,
+                            end: end,
+                            text: txt
+                        });
+                        globalIndex = end + 1;
+                    }
+                    
+                    state.fullText += p.pageText + ' ';
+                }
+
+                // Split text to sentences
+                state.sentences = utils.splitToSentences(state.fullText);
+                state.sentenceCharRanges = [];
+                state.sentenceToSpans = [];
+                
+                let charPtr = 0;
+                for (let s = 0; s < state.sentences.length; s++) {
+                    const sent = state.sentences[s].trim();
+                    if (!sent) continue;
+                    
+                    const start = charPtr;
+                    const end = start + sent.length;
+                    
+                    // Find spans that overlap with this sentence
+                    const mapping = [];
+                    for (const sp of spansOrdered) {
+                        if (sp.end <= start) continue;
+                        if (sp.start >= end) break;
+                        mapping.push({
+                            pageIndex: sp.pageIndex,
+                            spanIndex: sp.spanIndex,
+                            spanStart: sp.start,
+                            spanEnd: sp.end
+                        });
+                    }
+                    
+                    state.sentenceCharRanges.push({
+                        start: start,
+                        end: end,
+                        pageIndex: mapping.length ? mapping[0].pageIndex : 0
+                    });
+                    
+                    state.sentenceToSpans.push(mapping);
+                    charPtr = end + 1;
+                }
+            }
+
+            function getGlobalCharIndexBySpan(pIndex, sIndex) {
+                let idx = 0;
+                for (let pi = 0; pi < state.pages.length; pi++) {
+                    const p = state.pages[pi];
+                    if (!p) continue;
+                    
+                    const spans = p.spanElements;
+                    for (let si = 0; si < spans.length; si++) {
+                        if (pi === pIndex && si === sIndex) return idx;
+                        idx += (spans[si].textContent || '').length + 1;
+                    }
+                }
+                return -1;
+            }
+
+            function highlightSentence(sIndex) {
+                // Clear previous highlights
+                document.querySelectorAll('.hl').forEach(e => e.classList.remove('hl'));
+                
+                if (sIndex < 0 || sIndex >= state.sentenceToSpans.length) return;
+                
+                const mapping = state.sentenceToSpans[sIndex];
+                if (!mapping) return;
+
+                // Highlight each span in the sentence
+                for (const m of mapping) {
+                    const p = state.pages[m.pageIndex];
+                    if (p && p.spanElements[m.spanIndex]) {
+                        p.spanElements[m.spanIndex].classList.add('hl');
+                    }
+                }
+
+                // Update UI
+                elements.currentSentenceSpan.textContent = sIndex + 1;
+                utils.updateProgressBar();
+            }
+
+            function readNext() {
+                if (state.currentSentenceIndex >= state.sentences.length) {
+                    stopReading();
+                    utils.showToast('Reading complete!');
+                    return;
+                }
+                
+                const text = state.sentences[state.currentSentenceIndex].trim();
+                if (!text) {
+                    state.currentSentenceIndex++;
+                    readNext();
+                    return;
+                }
+
+                // Check if we need to change pages
+                const sentencePageIndex = state.sentenceCharRanges[state.currentSentenceIndex].pageIndex;
+                if (sentencePageIndex + 1 !== state.currentPageNum) {
+                    state.currentPageNum = sentencePageIndex + 1;
+                    renderPage(state.currentPageNum);
+                }
+
+                highlightSentence(state.currentSentenceIndex);
+
+                // Prepare utterance
+                state.utterance = new SpeechSynthesisUtterance(text);
+                const vIndex = parseInt(elements.voiceSelect.value || 0);
+                if (state.voices[vIndex]) state.utterance.voice = state.voices[vIndex];
+                state.utterance.rate = parseFloat(elements.speedInput.value) || 1.0;
+                
+                state.utterance.onend = () => {
+                    saveProgressAuto();
+                    if (elements.readMode.value === 'study') {
+                        state.isReading = false;
+                        state.currentSentenceIndex++;
+                    } else {
+                        state.currentSentenceIndex++;
+                        readNext();
+                    }
+                };
+                
+                state.utterance.onerror = (e) => {
+                    console.error('TTS error', e);
+                    state.isReading = false;
+                    utils.showToast('Text-to-speech error occurred');
+                };
+
+                // Start speaking
+                speechSynthesis.speak(state.utterance);
+                state.isReading = true;
+            }
+
+            // Reading controls
+            function startReading() {
+                if (!state.pdfDoc) {
+                    utils.showToast('Load a PDF first');
+                    return;
+                }
+                
+                if (!state.isReading) {
+                    if (speechSynthesis.paused) {
+                        speechSynthesis.resume();
+                        state.isReading = true;
+                    } else {
+                        if (!state.voices.length) loadVoices();
+                        readNext();
+                    }
+                }
+            }
+
+            elements.startBtn.addEventListener('click', startReading);
+            elements.mobileStart.addEventListener('click', startReading);
+
+            function pauseReading() {
+                try {
+                    speechSynthesis.pause();
+                    state.isReading = false;
+                } catch (e) {
+                    console.error('Error pausing speech:', e);
+                }
+            }
+
+            elements.pauseBtn.addEventListener('click', pauseReading);
+            elements.mobilePause.addEventListener('click', pauseReading);
+
+            function stopReading() {
+                try {
+                    speechSynthesis.cancel();
+                } catch (e) {
+                    console.error('Error stopping speech:', e);
+                }
+                state.isReading = false;
+                state.utterance = null;
+            }
+
+            elements.stopBtn.addEventListener('click', stopReading);
+            elements.mobileStop.addEventListener('click', stopReading);
+
+            // Page navigation with debouncing to prevent stuttering
+            elements.goPage.addEventListener('click', utils.debounceRender(() => {
+                if (!state.pdfDoc) {
+                    utils.showToast('No PDF loaded');
+                    return;
+                }
+                
+                const p = Math.min(
+                    Math.max(1, parseInt(elements.pageNum.value || 1)),
+                    state.pdfDoc.numPages
+                );
+                renderPage(p);
+            }, 100));
+
+            function goToPrevPage() {
+                if (!state.pdfDoc || state.currentPageNum <= 1) return;
+                renderPage(state.currentPageNum - 1);
+            }
+
+            function goToNextPage() {
+                if (!state.pdfDoc || state.currentPageNum >= state.pdfDoc.numPages) return;
+                renderPage(state.currentPageNum + 1);
+            }
+
+            elements.prevPage.addEventListener('click', utils.debounceRender(goToPrevPage, 100));
+            elements.mobilePrev.addEventListener('click', utils.debounceRender(goToPrevPage, 100));
+            elements.nextPage.addEventListener('click', utils.debounceRender(goToNextPage, 100));
+            elements.mobileNext.addEventListener('click', utils.debounceRender(goToNextPage, 100));
+
+            // Save and load progress
+            elements.saveProgressBtn.addEventListener('click', () => {
+                if (!state.fileKey) {
+                    utils.showToast('Load a file first');
+                    return;
+                }
+                const payload = {
+                    sentence: state.currentSentenceIndex,
+                    page: state.currentPageNum,
+                    updated: Date.now()
+                };
+                localStorage.setItem('pdf_progress::' + state.fileKey, JSON.stringify(payload));
+                utils.showToast('Progress saved successfully');
+            });
+
+            elements.loadProgressBtn.addEventListener('click', () => {
+                if (!state.fileKey) {
+                    utils.showToast('Load a file first');
+                    return;
+                }
+                const raw = localStorage.getItem('pdf_progress::' + state.fileKey);
+                if (!raw) {
+                    utils.showToast('No saved progress found for this file');
+                    return;
+                }
+                const payload = JSON.parse(raw);
+                state.currentSentenceIndex = payload.sentence || 0;
+                state.currentPageNum = payload.page || 1;
+                renderPage(state.currentPageNum);
+                highlightSentence(state.currentSentenceIndex);
+                utils.showToast('Progress loaded successfully');
+            });
+
+            function saveProgressAuto() {
+                if (!state.fileKey) return;
+                const payload = {
+                    sentence: state.currentSentenceIndex,
+                    page: state.currentPageNum,
+                    updated: Date.now()
+                };
+                localStorage.setItem('pdf_progress::' + state.fileKey, JSON.stringify(payload));
+            }
+
+            // Ensure TTS stops when page is closed
+            window.addEventListener('beforeunload', () => {
+                try {
+                    speechSynthesis.cancel();
+                } catch (e) {}
+            });
+
+            // Keyboard shortcuts
+            window.addEventListener('keydown', (e) => {
+                if (e.code === 'Space') {
+                    e.preventDefault();
+                    if (state.isReading) {
+                        pauseReading();
+                    } else {
+                        startReading();
+                    }
+                }
+                if (e.key === 'ArrowRight') {
+                    state.currentSentenceIndex = Math.min(state.sentences.length - 1, state.currentSentenceIndex + 1);
+                    highlightSentence(state.currentSentenceIndex);
+                }
+                if (e.key === 'ArrowLeft') {
+                    state.currentSentenceIndex = Math.max(0, state.currentSentenceIndex - 1);
+                    highlightSentence(state.currentSentenceIndex);
+                }
+            });
+
+            // Initialize
+            utils.showEmptyState();
+        })();
+    </script>
+</body>
+</html>
